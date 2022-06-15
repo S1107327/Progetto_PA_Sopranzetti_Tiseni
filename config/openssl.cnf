@@ -1,0 +1,29 @@
+[ req ]
+prompt 				= no
+distinguished_name  = req_distinguished_name
+policy              = policy_match
+x509_extensions     = user_crt
+req_extensions      = v3_req
+
+[ req_distinguished_name ]
+commonName=
+countryName=
+stateOrProvinceName=
+localityName=
+organizationName=
+organizationalUnitName=
+emailAddress=
+serialNumber=
+dnQualifier=20175007693
+SN=
+
+[ user_crt ]
+nsCertType              = client, server, email
+nsComment               = "OpenSSL Generated Certificate"
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid,issuer
+
+[ v3_req ]
+basicConstraints        = CA:FALSE
+extendedKeyUsage        = serverAuth, clientAuth, codeSigning, emailProtection
+keyUsage                = nonRepudiation, digitalSignature, keyEncipherment
