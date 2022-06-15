@@ -1,7 +1,7 @@
 import { UserController } from './controllers/UserController';
 import Express, { Request, Response } from 'express';
-import { checkHeader } from './middleware/auth-JWT';
-import { errorHandler } from './middleware/middleware-error';
+import { checkHeader } from './middleware/mw-auth-JWT';
+import { errorHandler } from './middleware/mw-error';
 import { repository } from './database/Models/repository';
 const router = Express.Router();
 
