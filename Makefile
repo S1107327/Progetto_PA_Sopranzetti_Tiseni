@@ -8,5 +8,5 @@ build:
 	docker-compose -f docker-compose.yaml build
 build-prod:
 	docker-compose -f docker-compose.prod.yaml build
-image:
+openssl-build:
 	docker build -t node-openssl ./image

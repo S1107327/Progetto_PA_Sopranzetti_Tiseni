@@ -191,6 +191,19 @@ export class repository implements IRepository {
         return false
 
     }
+
+    @Retryable({
+        maxAttempts: 3,
+        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+        backOff: 1000,
+    })
+    async getUser(cf_user: string): Promise<User | null>{
+        return await User.findOne({
+            where: {
+                codice_fiscale: cf_user
+            }
+        })
+    }
     
     @Retryable({
         maxAttempts: 3,

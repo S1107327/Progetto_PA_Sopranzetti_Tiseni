@@ -39,6 +39,13 @@ export class JWTVerifyError extends Forbidden implements ErrorMsg{
     }
 }
 
+export class UnregisteredUser extends Forbidden implements ErrorMsg{
+
+    constructor(){
+        super(errorMessages.UnregisteredUser)
+    }
+}
+
 export class NotFound extends GenericError implements ErrorMsg{
     constructor(message?: string){
         super(message || errorMessages.NotFound, 404)
@@ -72,5 +79,6 @@ export enum ErrEnum {
     MissingAuthHeader,
     InvalidJSONPayload,
     JWTVerifyError,
-    InvalidJWTPayload
+    InvalidJWTPayload,
+    UnregisteredUser
 }
