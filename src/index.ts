@@ -4,6 +4,7 @@ import config from './config';
 import router from "./route";
 import { checkHeader, checkToken, verifyAndAuthenticate } from './middleware/mw-auth-JWT';
 import { checkUserAuthJWT } from './middleware/mw-async-db';
+import handler from "express-async-handler"
 
 // App
 const app = express();
@@ -18,7 +19,6 @@ app.use((req, res, next) => {
 });
 
 app.use([checkHeader, checkToken, verifyAndAuthenticate])
-app.use(checkUserAuthJWT)
 app.use('/', router);
 
 

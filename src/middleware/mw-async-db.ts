@@ -3,6 +3,8 @@ import { NextFunction } from "express";
 import { repository } from "../database/Models/repository";
 import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
+import handler from "express-async-handler";
+
 
 const repo:repository = new repository();
 
@@ -14,28 +16,28 @@ const repo:repository = new repository();
  * @param next 
  */
 
-export async function checkForm_Data (req: any, res: any, next: NextFunction): Promise<void>{
+export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunction): Promise<void> => {
     try{
         let signers: Array<string> = req.body.firmatari;
         for (let i = 0; i<signers.length; i++){
             let result = await repo.getUser(signers[i]);
             if (result === null)
-                throw new Error()
+                next(errorFactory.getError(ErrEnum.UnregisteredUser))
         }
     }catch (err){
         next(errorFactory.getError(ErrEnum.UnregisteredUser));
     }
     next();
-}
+})
 /*
-export async function checkForm_Data (req: any, res: any, next: NextFunction): Promise<void>{
+export function checkForm_Data (req: any, res: any, next: NextFunction): void{
     try{
         let signers: Array<string> = req.body.firmatari;
         for (let i = 0; i<signers.length; i++){
             repo.getUser(signers[i]).then((result) => {
             if (result === null)
-                next(errorFactory.getError(ErrEnum.UnregisteredUser))
-            })
+                next(errorFactory.getError(ErrEnum.UnregisteredUser));
+            }).catch(next)
         }
     }catch (err){
         next(errorFactory.getError(ErrEnum.UnregisteredUser));
@@ -51,21 +53,21 @@ export async function checkForm_Data (req: any, res: any, next: NextFunction): P
  * @param res 
  * @param next 
  */
-/*
-export async function checkUserAuthJWT (req: any, res: Response, next: NextFunction): Promise<void> {
+
+export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     try{
-        const repo = new repository();
         let result = await repo.getUser(req.user.serialNumber)
             if(result !== null) 
                 next()
             else
-                throw new Error();
+                next(errorFactory.getError(ErrEnum.UnregisteredUser))
     }catch (err){
         next(errorFactory.getError(ErrEnum.UnregisteredUser))
     }
-    
-}
-*/
+    next()
+})
+
+/*
 export function checkUserAuthJWT (req: any, res: Response, next: NextFunction): void{
     try{
         const repo = new repository();
@@ -80,3 +82,6 @@ export function checkUserAuthJWT (req: any, res: Response, next: NextFunction): 
     }
     
 }
+*/
+
+export const CriticalsAsyncMW = [checkUserAuthJWT]

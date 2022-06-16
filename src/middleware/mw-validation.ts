@@ -2,7 +2,7 @@ import { repository } from "../database/Models/repository";
 import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
 import { NextFunction, Request, Response } from "express";
-import { upload } from '../multer-config';
+import { upload } from '../utils/multer-config';
 import { checkForm_Data } from "./mw-async-db";
 
 const repo = new repository();
