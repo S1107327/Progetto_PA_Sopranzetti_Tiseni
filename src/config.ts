@@ -11,11 +11,13 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 interface ENV {
     PORT: number | undefined;
     HOST: string | undefined;
+    JWT_KEY: string | undefined;
 }
 
 interface Config {
     PORT: number;
     HOST: string;
+    JWT_KEY: string;
 }
 
 // Loading process.env as ENV interface
@@ -23,7 +25,8 @@ interface Config {
 const getConfig = (): ENV => {
   return {
     PORT: process.env.PORT ? Number(process.env.PORT) : undefined,
-    HOST: process.env.HOST
+    HOST: process.env.HOST,
+    JWT_KEY: process.env.JWT_KEY
   };
 };
 
