@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . .
 
-RUN mkdir certcnf
+RUN mkdir cnfFiles
 
 RUN mkdir certificati
 

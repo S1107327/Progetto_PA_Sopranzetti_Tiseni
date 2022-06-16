@@ -11,12 +11,15 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 interface ENV {
     PORT: number | undefined;
     HOST: string | undefined;
+    PEMPASSPHRASE: string | undefined;
     JWT_KEY: string | undefined;
+    
 }
 
 interface Config {
     PORT: number;
     HOST: string;
+    PEMPASSPHRASE: string;
     JWT_KEY: string;
 }
 
@@ -26,6 +29,7 @@ const getConfig = (): ENV => {
   return {
     PORT: process.env.PORT ? Number(process.env.PORT) : undefined,
     HOST: process.env.HOST,
+    PEMPASSPHRASE: process.env.PEMPASSPHRASE,
     JWT_KEY: process.env.JWT_KEY
   };
 };
@@ -39,7 +43,7 @@ const getConfig = (): ENV => {
 const getSanitzedConfig = (config: ENV): Config => {
   for (const [key, value] of Object.entries(config)) {
     if (value === undefined) {
-      throw new Error(`Missing key ${key} in config.env`);
+      throw new Error(`Missing key ${key} in .env`);
     }
   }
   return config as Config;
