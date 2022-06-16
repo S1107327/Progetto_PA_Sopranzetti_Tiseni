@@ -13,6 +13,7 @@ const repo:repository = new repository();
  * @param res 
  * @param next 
  */
+
 export async function checkForm_Data (req: any, res: any, next: NextFunction): Promise<void>{
     try{
         let signers: Array<string> = req.body.firmatari;
@@ -26,7 +27,22 @@ export async function checkForm_Data (req: any, res: any, next: NextFunction): P
     }
     next();
 }
-
+/*
+export async function checkForm_Data (req: any, res: any, next: NextFunction): Promise<void>{
+    try{
+        let signers: Array<string> = req.body.firmatari;
+        for (let i = 0; i<signers.length; i++){
+            repo.getUser(signers[i]).then((result) => {
+            if (result === null)
+                next(errorFactory.getError(ErrEnum.UnregisteredUser))
+            })
+        }
+    }catch (err){
+        next(errorFactory.getError(ErrEnum.UnregisteredUser));
+    }
+    next();
+}
+*/
 /**
  * Funzione che controlla se i dati nel payload del token JWT sono conformi ai dati
  * degli utenti nel database
@@ -35,14 +51,29 @@ export async function checkForm_Data (req: any, res: any, next: NextFunction): P
  * @param res 
  * @param next 
  */
+/*
 export async function checkUserAuthJWT (req: any, res: Response, next: NextFunction): Promise<void> {
     try{
         const repo = new repository();
-        await repo.getUser(req.user.serialNumber).then((result) => {
+        let result = await repo.getUser(req.user.serialNumber)
             if(result !== null) 
                 next()
             else
                 throw new Error();
+    }catch (err){
+        next(errorFactory.getError(ErrEnum.UnregisteredUser))
+    }
+    
+}
+*/
+export function checkUserAuthJWT (req: any, res: Response, next: NextFunction): void{
+    try{
+        const repo = new repository();
+        repo.getUser(req.user.serialNumber).then((result) => {
+            if(result !== null) 
+                next()
+            else
+                next(errorFactory.getError(ErrEnum.UnregisteredUser))
         })
     }catch (err){
         next(errorFactory.getError(ErrEnum.UnregisteredUser))
