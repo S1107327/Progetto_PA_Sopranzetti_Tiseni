@@ -18,6 +18,12 @@ export class GenericError extends Error implements ErrorMsg {
     }
 }
 
+export class SignError extends GenericError implements ErrorMsg {
+    constructor(){
+        super (errorMessages.SignError)
+    }
+}
+
 export class Forbidden extends GenericError implements ErrorMsg{
 
     constructor(message?: string) {
@@ -72,6 +78,12 @@ export class InvalidJWTPayload extends ValidationError implements ErrorMsg{
     }
 }
 
+export class FileReadingError extends GenericError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.FileReadingError, 400)
+    }
+}
+
 export enum ErrEnum {
     Forbidden,
     NotFound,
@@ -80,5 +92,7 @@ export enum ErrEnum {
     InvalidJSONPayload,
     JWTVerifyError,
     InvalidJWTPayload,
-    UnregisteredUser
+    UnregisteredUser,
+    SignError,
+    FileReadingError
 }

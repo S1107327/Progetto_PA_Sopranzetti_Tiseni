@@ -8,5 +8,7 @@ export enum errorMessages {
     InvalidJSONPayload = "Error! JSON payload is not correctly formatted",
     JWTVerifyError = "Error! JWT verification failed",
     InvalidJWTPayload = "Error! One or more values in JWT payload are malformed",
-    UnregisteredUser = "Error! User isn't registered"
+    UnregisteredUser = "Error! User isn't registered",
+    SignError = "Error! An error occurred during sign process",
+    FileReadingError = "Error! There is a problem in the reading file process, it's impossible to handle the request"
 }

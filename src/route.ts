@@ -1,10 +1,10 @@
 import { UserController } from './controllers/UserController';
 import Express, { Request, Response } from 'express';
-import { checkHeader, checkJWTPayload } from './middleware/mw-auth-JWT';
-import { errorHandler } from './middleware/mw-error';
+import { errorHandler, signProcessErrorHandler } from './middleware/mw-error';
 import { repository } from './database/Models/repository';
-const router = Express.Router();
+import { signProcessMW } from './middleware/mw-validation';
 
+const router = Express.Router();
 const controller = new UserController();
 
 router.get('/', (req, res) => {
@@ -13,14 +13,28 @@ router.get('/', (req, res) => {
 
 var repo = new repository();
 
-router.get('/test', checkHeader, errorHandler, (req: Request, res: Response) => {
+router.get('/test', errorHandler, (req: Request, res: Response) => {
     repo.test().then((result) => {
         res.send(result)
     })
 } )
 
+/**
+ * Rotta che serve per gestire le richieste per il recupero del credito di un utente
+ */
+router.get('/user/credit', errorHandler, (req: Request, res: Response) => {
+    //TODO: inserire la funzione del controller che recupera il credito dal model
+})
 
-router.get('/reqCertificate', checkJWTPayload, controller.createCertificate);
+/**
+ * Rotta che serve per gestire le richiesta per invalidare un certificato associato a un utente 
+ */
+router.get('/cert/invalidate')
+
+
+router.post('/file', controller.createCertificate);
+
+router.post('/file/sign/start', signProcessMW, signProcessErrorHandler, controller.startSignProcess)
 
 
 export default router
