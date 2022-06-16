@@ -6,5 +6,6 @@ export enum errorMessages {
     ValidationError = "Error! Invalid or malformed input",
     MissingAuthHeader = "Error! No authorization header",
     InvalidJSONPayload = "Error! JSON payload is not correctly formatted",
-    JWTVerifyError = "Error! JWT verification failed"
+    JWTVerifyError = "Error! JWT verification failed",
+    InvalidJWTPayload = "Error! One or more values in JWT payload are malformed"
 }

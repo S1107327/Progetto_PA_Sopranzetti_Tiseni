@@ -59,11 +59,18 @@ export class InvalidJSONPayload extends ValidationError implements ErrorMsg{
     }
 }
 
+export class InvalidJWTPayload extends ValidationError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.InvalidJWTPayload)
+    }
+}
+
 export enum ErrEnum {
     Forbidden,
     NotFound,
     ValidationError,
     MissingAuthHeader,
     InvalidJSONPayload,
-    JWTVerifyError
+    JWTVerifyError,
+    InvalidJWTPayload
 }
