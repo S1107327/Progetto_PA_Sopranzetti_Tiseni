@@ -1,6 +1,6 @@
 import { UserController } from './controllers/UserController';
 import Express, { Request, Response } from 'express';
-import { checkHeader } from './middleware/mw-auth-JWT';
+import { checkHeader, checkJWTPayload } from './middleware/mw-auth-JWT';
 import { errorHandler } from './middleware/mw-error';
 import { repository } from './database/Models/repository';
 const router = Express.Router();
@@ -20,11 +20,7 @@ router.get('/test', checkHeader, errorHandler, (req: Request, res: Response) => 
 } )
 
 
-router.post('/file', controller.createCertificate);
+router.get('/reqCertificate', checkJWTPayload, controller.createCertificate);
 
-/*router.get('/test', (req: Request, res: Response) => {
-    repo.test().then((result) => {
-        res.send(result)
-    })
-} )*/
+
 export default router

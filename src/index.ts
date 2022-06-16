@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
 import router from "./route";
+import { checkHeader, checkToken, verifyAndAuthenticate, checkUserAuthJWT } from './middleware/mw-auth-JWT';
 
 // App
 const app = express();
@@ -15,7 +16,9 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use([checkHeader, checkToken, verifyAndAuthenticate,checkUserAuthJWT])
 app.use('/', router);
+
 
 app.listen(config.PORT);
 console.log(`Running on http://${config.HOST}:${config.PORT}`);

@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import jwt  from "jsonwebtoken";
+import jwt, { JwtPayload }  from "jsonwebtoken";
 import { ErrEnum } from "../errors/error-types";
 import { errorFactory } from "../errors/error-factory";
 import { repository } from "../database/Models/repository";
+import config from "../config";
 
 /**
  * Controlla che l'header della richiesta possieda le autorizzazioni
@@ -13,7 +14,7 @@ import { repository } from "../database/Models/repository";
  */
 export const checkHeader = (req:any, res: Response, next: NextFunction): void => {
     const autheader = req.headers.authorization;
-    autheader ? next() : next(errorFactory.getError(ErrEnum.MissingAuthHeader))
+    autheader ? next() : next(errorFactory.getError(ErrEnum.MissingAuthHeader));
 }
 
 
@@ -45,17 +46,15 @@ export const checkToken = (req: any,res: Response ,next: NextFunction): void  =>
  */
 export const verifyAndAuthenticate = (req:any, res: Response, next: NextFunction): void => {
     try{
-        if (process.env.JWT_KEY !== undefined){
-            let decoded = jwt.verify(req.token, process.env.JWT_KEY);
-            if(decoded !== null){
-                req.user = decoded;
-                next();
-            } else {
-                next(errorFactory.getError(ErrEnum.JWTVerifyError))
-            }
+        let decoded = jwt.verify(req.token, config.JWT_KEY);
+        if(decoded !== null){
+            req.user = decoded;
+            next();
+        } else {
+            next(errorFactory.getError(ErrEnum.JWTVerifyError));
         }
     }catch{
-        next(errorFactory.getError(ErrEnum.JWTVerifyError))
+        next(errorFactory.getError(ErrEnum.JWTVerifyError));
     }
 }
 
@@ -73,23 +72,23 @@ export function checkJWTPayload (req: any, res: Response, next: NextFunction): v
     const countyStateProvinceRg: RegExp = /^[a-zA-Z]{2}$/; 
 
     try{    
-    let commonNameVal: boolean = variableLengthRg.test(req.user.commonName);
-    let countryName: boolean = countyStateProvinceRg.test(req.user.countryName);
-    let stateOrProvinceName: boolean = countyStateProvinceRg.test(req.user.stateOrProvinceName);
-    let localityName: boolean = variableLengthRg.test(req.user.localityName);
-    let organizationName: boolean = variableLengthRg.test(req.user.organizationName);
-    let organizationalUnitName: boolean = variableLengthRg.test(req.user.organizationalUnitName);
-    let emailAddress: boolean = emailAddressRg.test(req.user.emailAddress);
-    let serialNumber: boolean = codiceFiscaleRg.test(req.user.serialNumber);
-    let SN: boolean = variableLengthRg.test(req.user.SN);
+        let commonNameVal: boolean = variableLengthRg.test(req.user.commonName);
+        let countryName: boolean = countyStateProvinceRg.test(req.user.countryName);
+        let stateOrProvinceName: boolean = countyStateProvinceRg.test(req.user.stateOrProvinceName);
+        let localityName: boolean = variableLengthRg.test(req.user.localityName);
+        let organizationName: boolean = variableLengthRg.test(req.user.organizationName);
+        let organizationalUnitName: boolean = variableLengthRg.test(req.user.organizationalUnitName);
+        let emailAddress: boolean = emailAddressRg.test(req.user.emailAddress);
+        let serialNumber: boolean = codiceFiscaleRg.test(req.user.serialNumber);
+        let SN: boolean = variableLengthRg.test(req.user.SN);
 
-    if (commonNameVal && countryName && stateOrProvinceName && localityName && organizationName && organizationalUnitName && emailAddress && serialNumber && SN){
-        next()
-    }else{
-        next(errorFactory.getError(ErrEnum.InvalidJWTPayload))
-    }
+        if (commonNameVal && countryName && stateOrProvinceName && localityName && organizationName && organizationalUnitName && emailAddress && serialNumber && SN){
+            next();
+        }else{
+            next(errorFactory.getError(ErrEnum.InvalidJWTPayload));
+        }
     }catch{
-        next(errorFactory.getError(ErrEnum.InvalidJWTPayload))
+        next(errorFactory.getError(ErrEnum.InvalidJWTPayload));
     }
 }
 
@@ -110,4 +109,4 @@ export function checkUserAuthJWT (req: any, res: Response, next: NextFunction): 
 }
 
 
-export const JWT_AUTH_MW = [checkHeader, checkToken, verifyAndAuthenticate, checkJWTPayload, checkUserAuthJWT]
+export const JWT_certificate_creation = checkJWTPayload;
