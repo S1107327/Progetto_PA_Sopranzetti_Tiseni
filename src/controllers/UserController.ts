@@ -19,7 +19,7 @@ export class UserController{
                 fs.appendFileSync(path.resolve(__dirname, `../../certcnf/${dati.serialNumber}.cnf`),`${field}=${dati[field]}\r\n`);
             }
             fs.appendFileSync(path.resolve(__dirname, `../../certcnf/${dati.serialNumber}.cnf`),dataArray2);
-            const ls = spawn("ls", ["-la"]);
+            /*const ls = spawn("ls", ["-la"]);
                 ls.stdout.on("data", data => {
                     console.log(`stdout: ${data}`);
                 });
@@ -34,7 +34,7 @@ export class UserController{
 
                 ls.on("close", code => {
                     console.log(`child process exited with code ${code}`);
-                });
+                });*/
             response.send("file written")
         }catch(err){
             console.error(err);
