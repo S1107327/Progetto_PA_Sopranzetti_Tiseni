@@ -20,48 +20,49 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
         documents: Association<User, Document>;
     }
 } 
+
 User.init({
-    codice_fiscale: {
-        type: DataTypes.CHAR(16),
-        primaryKey: true
+        codice_fiscale: {
+            type: DataTypes.CHAR(16),
+            primaryKey: true
+        },
+        email_address:{
+            type: DataTypes.STRING(50),
+            unique:true,
+            allowNull:false 
+        },
+        numero_token:{
+            type: DataTypes.INTEGER,
+            allowNull:false 
+        },
+        challenging_string:{
+            type: DataTypes.CHAR(32),
+            allowNull:false 
+        },
+        challenging_code_one:{
+            type: DataTypes.INTEGER,
+            allowNull:true 
+        },
+        challenging_code_two:{
+            type: DataTypes.INTEGER,
+            allowNull:true 
+        },
+        expiration:{
+            type: DataTypes.DATE,
+            allowNull:true
+        }
     },
-    email_address:{
-        type: DataTypes.STRING(50),
-        unique:true,
-        allowNull:false 
-    },
-    numero_token:{
-        type: DataTypes.INTEGER,
-        allowNull:false 
-    },
-    challenging_string:{
-        type: DataTypes.CHAR(32),
-        allowNull:false 
-    },
-    challenging_code_one:{
-        type: DataTypes.INTEGER,
-        allowNull:true 
-    },
-    challenging_code_two:{
-        type: DataTypes.INTEGER,
-        allowNull:true 
-    },
-    expiration:{
-        type: DataTypes.DATE,
-        allowNull:true
-    }
-},
-{
-    sequelize,
-    tableName: 'utenti',
-    // don't add the timestamp attributes (updatedAt, createdAt)
-    timestamps: false,
+    {
+        sequelize,
+        tableName: 'utenti',
+        // don't add the timestamp attributes (updatedAt, createdAt)
+        timestamps: false,
 
-    // If don't want createdAt
-    createdAt: false,
+        // If don't want createdAt
+        createdAt: false,
 
-    // If don't want updatedAt
-    updatedAt: false,
+        // If don't want updatedAt
+        updatedAt: false,
 })
 
 User.hasMany(SignProcess,{
