@@ -4,7 +4,7 @@ CREATE TABLE utenti(
     codice_fiscale CHAR(16) PRIMARY KEY,
     email_address VARCHAR(50) UNIQUE NOT NULL,
     numero_token INT NOT NULL,
-    challenging_string CHAR(32) NOT NULL
+    challenging_string CHAR(32) NOT NULL,
     challenging_code_one INT DEFAULT NULL,
     challenging_code_two INT DEFAULT NULL,
     expiration TIMESTAMP DEFAULT NULL
@@ -13,12 +13,10 @@ CREATE TABLE utenti(
 CREATE TABLE documenti(
     id SERIAL PRIMARY KEY,
     codice_fiscale_richiedente CHAR(16) NOT NULL,
-    uri_firmato VARCHAR(100),
-    uri_non_firmato VARCHAR(100) NOT NULL,
     numero_firmatari INT NOT NULL,
     nome_documento VARCHAR(50) NOT NULL, 
     hash_documento VARCHAR(256) UNIQUE NOT NULL,
-    created_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     stato_firma BOOL NOT NULL,
     FOREIGN KEY (codice_fiscale_richiedente) REFERENCES utenti(codice_fiscale)
 );
@@ -36,4 +34,6 @@ INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_str
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('TSNLNZ99E06E690J', 'demo2@mailinator.com','10', 'ZZdEFgHHIjLkOOPqRaSgUVabcZZbcdEF');
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('GHELFN85G56A271E', 'demo3@mailinator.com','1', 'UiOsGGhifcKlMnODxxAzeRkvbZssDEVF');
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('EFGLOR66T67A341E', 'demo4@mailinator.com','20', 'AFcDevvSlKJJznBQwRtGGHzDSQalhfmt');
-,
+INSERT INTO documenti (codice_fiscale_richiedente, numero_firmatari, nome_documento, hash_documento, stato_firma) VALUES ('MNCDRN82T30D542U', 2,'demo.txt', 'AFcDevvSlKJJznBQwRtGGHzDSQalhfmt', 'false');
+INSERT INTO processifirma('LSPDRN94T30D542U',1,'false');
+INSERT INTO processifirma('TSNLNZ99E06E690J',1,'false');
