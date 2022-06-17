@@ -1,12 +1,12 @@
 
 import { NextFunction } from "express";
-import { repository } from "../database/Models/repository";
+import { readRepository } from "../database/Models/readRepository";
 import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
 import handler from "express-async-handler";
 
 
-const repo:repository = new repository();
+const repo:readRepository = new readRepository();
 
 /**
  * Funzione che controlla se gli utenti firmatari inseriri sono utenti registrati

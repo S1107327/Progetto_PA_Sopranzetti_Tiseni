@@ -35,5 +35,5 @@ INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_str
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('GHELFN85G56A271E', 'demo3@mailinator.com','1', 'UiOsGGhifcKlMnODxxAzeRkvbZssDEVF');
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('EFGLOR66T67A341E', 'demo4@mailinator.com','20', 'AFcDevvSlKJJznBQwRtGGHzDSQalhfmt');
 INSERT INTO documenti (codice_fiscale_richiedente, numero_firmatari, nome_documento, hash_documento, stato_firma) VALUES ('MNCDRN82T30D542U', 2,'demo.txt', 'AFcDevvSlKJJznBQwRtGGHzDSQalhfmt', 'false');
-INSERT INTO processifirma('LSPDRN94T30D542U',1,'false');
-INSERT INTO processifirma('TSNLNZ99E06E690J',1,'false');
+INSERT INTO processifirma(codice_fiscale_firmatario, id_documento, stato) VALUES ('LSPDRN94T30D542U',1,'false');
+INSERT INTO processifirma(codice_fiscale_firmatario, id_documento, stato) VALUES ('TSNLNZ99E06E690J',1,'false');

@@ -14,9 +14,17 @@ export class readRepository implements IReadRepository{
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
         backOff: 1000,
     })
-    async getSignProcessStatus(document_id: number): Promise<boolean|null>{
-        let document = await Document.findByPk(document_id);
-        return (document!==null) ? document.stato_firma : null
+    async getSignProcessStatus(document_id: number): Promise<SignProcess[] |null>{
+        let document = await Document.findByPk(document_id,{
+            include: [{
+                model: SignProcess,
+            }]
+        });
+        console.log(document?.created_at);
+        if (document !== null && document.SignProcesses !== undefined){
+           return document.SignProcesses
+        }
+        return null
     }
     /* DA SPOSTARE*/
     @Retryable({
@@ -44,25 +52,20 @@ export class readRepository implements IReadRepository{
     })
 /* DA SPOSTARE*/
     async checkUserPermission(document_id: number, cf_user: string): Promise<boolean> {
-        let document = await  Document.findOne({
-            where: {
-                id: document_id
-            },
+        let document = await  Document.findByPk(document_id,{
             include: [{
                 model: SignProcess,
                 where: {
                     codice_fiscale_firmatario: cf_user
                 }
             }]
-        })
-        if (document === null){
+        });
+        if (document === null || document.SignProcesses === undefined){
             return false
         }
-        if (cf_user===document.codice_fiscale_richiedente /*|| cf_user===document.SignProcess.codice_fiscale_firmatario*/)
+        if (cf_user===document.codice_fiscale_richiedente || cf_user===document.SignProcesses[0].codice_fiscale_firmatario)
             return true
-
         return false
-
     }
 
     @Retryable({

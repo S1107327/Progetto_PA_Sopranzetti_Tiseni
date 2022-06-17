@@ -1,6 +1,6 @@
 import { SignProcess } from "./signProcessDAO"
 import { User } from "./userDAO"
-import { Association, DataTypes, HasManyAddAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyHasAssociationMixin } from "sequelize";
+import { Association, DataTypes, HasManyAddAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyHasAssociationMixin, NonAttribute } from "sequelize";
 import { sequelize } from "../../connection"
 import { Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 
@@ -11,10 +11,11 @@ export class Document extends Model<InferAttributes<Document>, InferCreationAttr
     declare nome_documento: string;
     declare hash_documento: string;
     declare stato_firma: boolean;
+    declare created_at: CreationOptional<Date>;
+    declare SignProcesses: NonAttribute<SignProcess[]>;
 
     public static associations: {
         signProcesses: Association<Document, SignProcess>;
-        user: Association<Document, User>;
     }
 } 
 
@@ -43,6 +44,10 @@ Document.init({
     stato_firma: {
         type: DataTypes.BOOLEAN,
         allowNull: false
+    },
+    created_at:{
+        type:DataTypes.DATE,
+        allowNull: false
     }
 },{
     sequelize,
@@ -50,12 +55,7 @@ Document.init({
     createdAt: 'created_at',
     updatedAt: false
 })
-/*
-Document.belongsTo(User, {
-    foreignKey: "codice_fiscale_richiedente",
-    targetKey: "codice_fiscale"
-})
-*/
+
 Document.hasMany(SignProcess,{
     foreignKey: 'id_documento'
 })

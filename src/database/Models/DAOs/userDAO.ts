@@ -1,6 +1,6 @@
 import { SignProcess } from "./signProcessDAO"
 import { sequelize } from "../../connection"
-import { Association, DataTypes, HasManyAddAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyHasAssociationMixin } from "sequelize"
+import { Association, DataTypes, HasManyAddAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyHasAssociationMixin, NonAttribute } from "sequelize"
 import { Document } from "./documentDAO"
 import { Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 
@@ -11,16 +11,9 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
     declare challenging_string: string;
     declare challenging_code_one: number;
     declare challenging_code_two: number;
-    declare expiration: EpochTimeStamp;
-    // Declaring model associations
-    /*
-    public getSignProcess!: HasManyGetAssociationsMixin<SignProcess>; 
-    public addSignProcess!: HasManyAddAssociationMixin<SignProcess, [string, number]>;
-    public hasSignProcess!: HasManyHasAssociationMixin<SignProcess, [string, number]>;
-    public countSignProcess!: HasManyCountAssociationsMixin;
-    public createSignProcess!: HasManyCreateAssociationMixin<SignProcess>;
-    public readonly signProcesses?: SignProcess[];
-    */
+    declare expiration: Date;
+    declare Documents: NonAttribute<Document[]>;
+    declare SignProcesses: NonAttribute<SignProcess[]>;
 
     public static associations: {
         signProcesses: Association<User, SignProcess>;
