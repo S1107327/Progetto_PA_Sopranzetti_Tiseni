@@ -8,15 +8,10 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
     declare codice_fiscale: string;
     declare email_address: string;
     declare numero_token: number;
-    declare common_name: string;
-    declare country_name: string;
-    declare state_or_province: string;
-    declare locality: string;
-    declare organization: string;
-    declare organizational_unit: string;
-    declare sn: string;
-    declare challenging_codes: string;
-
+    declare challenging_string: string;
+    declare challenging_code_one: number;
+    declare challenging_code_two: number;
+    declare expiration: EpochTimeStamp;
     // Declaring model associations
     /*
     public getSignProcess!: HasManyGetAssociationsMixin<SignProcess>; 
@@ -34,7 +29,6 @@ export class User extends Model<InferAttributes<User>, InferCreationAttributes<U
 } 
 
 User.init({
-    
         codice_fiscale: {
             type: DataTypes.CHAR(16),
             primaryKey: true
@@ -48,37 +42,21 @@ User.init({
             type: DataTypes.INTEGER,
             allowNull:false 
         },
-        common_name:{
-            type: DataTypes.STRING(50),
-            allowNull:false 
-        },
-        country_name:{
-            type: DataTypes.CHAR(2),
-            allowNull:false 
-        },
-        state_or_province:{
-            type: DataTypes.CHAR(2),
-            allowNull:false 
-        },
-        locality:{
-            type: DataTypes.STRING(50),
-            allowNull:false 
-        },
-        organization:{
-            type: DataTypes.STRING(50),
-            allowNull:false 
-        },
-        organizational_unit:{
-            type: DataTypes.STRING(30),
-            allowNull:false 
-        },
-        sn:{
-            type: DataTypes.STRING(50),
-            allowNull:false 
-        },
-        challenging_codes:{
+        challenging_string:{
             type: DataTypes.CHAR(32),
             allowNull:false 
+        },
+        challenging_code_one:{
+            type: DataTypes.INTEGER,
+            allowNull:true 
+        },
+        challenging_code_two:{
+            type: DataTypes.INTEGER,
+            allowNull:true 
+        },
+        expiration:{
+            type: DataTypes.DATE,
+            allowNull:true
         }
     },
     {
