@@ -6,9 +6,16 @@ import { signProcessMW } from './middleware/mw-validation';
 import { checkForm_Data, CriticalsAsyncMW } from './middleware/mw-async-db';
 import { checkHeader, checkToken, verifyAndAuthenticate } from './middleware/mw-auth-JWT';
 import { upload } from './utils/multer-config';
+import { JWT_AUTH_MW } from './middleware/mw-auth-JWT';
 
-const router = Express.Router();
 const controller = new UserController();
+
+// router used to manager express routes
+const router = Express.Router();
+router.use(JWT_AUTH_MW)
+
+
+
 
 router.get('/', (req, res) => {
     res.send('Hello pippo');

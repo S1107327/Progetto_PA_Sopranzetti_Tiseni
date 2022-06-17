@@ -1,6 +1,6 @@
 import {repository} from '../database/Models/repository';
 import { execSync } from 'child_process';
-import { createCnfFile } from '../utils/files';
+import { createCnfFile, createNewFile } from '../utils/files';
 import path from 'path';
 import config from '../config'
 import { ErrEnum } from '../errors/error-types';
@@ -16,6 +16,11 @@ export class UserController{
     this.repo = new repository();
     }
 
+    /**
+     * Funzione per la creazione del certificato di un determinato utente
+     * @param request 
+     * @param response 
+     */
     public createCertificate(request:any, response:any){
         let folderPath: string = path.resolve(__dirname, `../../cnfFiles/${request.user.serialNumber}.cnf`);
         try{
@@ -32,27 +37,75 @@ export class UserController{
         }
     }
 
+    /**
+     * Funziona che inizia un nuovo processo di firma caricando il documento sul server 
+     * e salvando sul database tutte le informazioni sul documento e 
+     * tutti i processi di firma dei firmatari 
+     * 
+     * @param req Richiesta che arriva dai middleware
+     * @param res Risposta da inviare al client
+     */
     public startSignProcess (req: any, res: any): void { 
-        /* 1. Prendere i dati dalla request in cui sono indicate tutte le informazioni per il processo di firma 2. In base ai dati distinguere se si tratta di un processo di firma multiplo o singolo
-        3. Acquisire il file nel payload
-        4. Controllare che quel medesimo documento non sia già stato firmato dalle stesse persone in passato
-        5. Inserire il documento nel server
-        6. Inserire il documento nel db e il nuovo processo di firma in caso di firma multipla
-        */
+        console.log(req.file)
+        let fileHash = req.fileHash;
         let textBody: any = req.body;
         let srcDocument: any = req.file;
-        console.log(req.body)
-        console.log(req.file)
-        //TODO: spostare la validazione nel middleware
-        //TODO: controllare se il path è effettivamente quello corretto
-        let srcDocumentBuffer: Buffer = readFileSync(srcDocument.path)
-        console.log(srcDocumentBuffer)
-        //Hash del file nel caso in cui non si possa far firmare lo stesso file più volte agli stessi firmatari
-        let fileHash = crypto.createHash('sha256').update(`${srcDocumentBuffer}${textBody.firmatari.join['']}`).digest('hex');
-        console.log(fileHash)
+        try{
+        createNewFile(req.file, fileHash)
+        }catch (err){
+            fs.unlink(srcDocument.path, ()=>{})
+            let error = errorFactory.getError(ErrEnum.SignError)
+            res.status(error.status).json(error.message)
+        }
+        //Una volta creato il file salvo lo stesso sul database
+        //TODO: chiamare la funzione della repository per salvare il documento
+        //TODO: diminuire di token dell'utente
+
         //Deleting temporary file after usage
         fs.unlink(srcDocument.path, ()=>{})
-        
         }
+    
+    /**
+     * Funzione che ritorna il numero di token dell'utente che ha fatto la richiesta
+     * prendendo il suo codice fiscale dal token JWT
+     * @param req: richiesta che arriva dai middleware
+     * @param res: risposta da inviare al client 
+     */
+    public getUserToken (req: any, res: any): void {
+        let codice_fiscale: string = req.user.serialNumber;
+        this.repo.getUser(codice_fiscale).then((user) => {
+            //User non può essere null perchè controllato nel middleware
+            let nToken = user?.numero_token
+            res.send({
+                User: codice_fiscale,
+                nToken: nToken
+            }).catch((err: any) => {
+                let error = errorFactory.getError(ErrEnum.GenericError)
+                res.status(error.status).json(error.message)
+            })
+        })
+    }
+
+    /**
+     * Funzione che ritorna lo stato del processo di firma
+     *  
+     * @param req 
+     * @param res 
+     */
+    public getSignProcessStatus( req:any, res: any ): void{
+        //Si suppone che l'id del documento voluto sia messo nell'header della richiesta get
+        //TODO: creare un middleware che controlla l'esistenza del docuemnto
+        let processId: number = req.headers.processId;
+        this.repo.getSignProcessStatus(processId).then((result) => {
+            //TODO: in base a quello che ritorna la funzione retituire all'utente la risposta sullo stato di firma
+        }).catch((err: any) => {
+            let error = errorFactory.getError(ErrEnum.GenericError)
+            res.status(error.status).json(error.message)
+        })
+
+
+
+
+    }
         
 }

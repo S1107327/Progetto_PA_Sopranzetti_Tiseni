@@ -78,6 +78,18 @@ export class InvalidJWTPayload extends ValidationError implements ErrorMsg{
     }
 }
 
+export class InvalidFormPayload extends ValidationError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.InvalidFormPayload)
+    }
+}
+
+export class InvalidHeaders extends ValidationError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.InvalidHeader)
+    }
+}
+
 export class FileReadingError extends GenericError implements ErrorMsg{
     constructor(){
         super(errorMessages.FileReadingError, 400)
@@ -90,7 +102,14 @@ export class FileAlreadyExistError extends GenericError implements ErrorMsg{
     }
 }
 
+export class CertCreationError extends GenericError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.CertCreationError)
+    }
+}
+
 export enum ErrEnum {
+    GenericError,
     Forbidden,
     NotFound,
     ValidationError,
@@ -101,5 +120,8 @@ export enum ErrEnum {
     UnregisteredUser,
     SignError,
     FileReadingError,
-    FileAlreadyExistError
+    FileAlreadyExistError,
+    InvalidFormPayload,
+    CertCreationError,
+    InvalidHeader
 }

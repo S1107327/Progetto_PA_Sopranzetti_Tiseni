@@ -11,5 +11,8 @@ export enum errorMessages {
     UnregisteredUser = "Error! User isn't registered",
     SignError = "Error! An error occurred during sign process",
     FileReadingError = "Error! There is a problem in the reading file process, it's impossible to handle the request",
-    FileAlreadyExist = "Error! This file already exist in a sign process or it has already been signed by the same signers"
+    FileAlreadyExist = "Error! This file already exist in a sign process or it has already been signed by the same signers",
+    InvalidFormPayload = "Error! Form payload are incorrect",
+    CertCreationError = "Error! An error occured while creating your certificate, please try again",
+    InvalidHeader = "Error! Invalid argumets in request header, please correct them and try again"
 }

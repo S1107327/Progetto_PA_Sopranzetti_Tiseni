@@ -4,6 +4,7 @@ import { ErrEnum } from "../errors/error-types";
 import { errorFactory } from "../errors/error-factory";
 import { repository } from "../database/Models/repository";
 import { checkUserAuthJWT } from "./mw-async-db";
+import { errorHandler } from "./mw-error";
 
 /**
  * Controlla che l'header della richiesta possieda le autorizzazioni
@@ -96,4 +97,4 @@ export function checkJWTPayload (req: any, res: Response, next: NextFunction): v
 
 
 
-export const JWT_AUTH_MW = [checkHeader, checkToken, verifyAndAuthenticate, checkJWTPayload, checkUserAuthJWT]
+export const JWT_AUTH_MW = [checkHeader, checkToken, verifyAndAuthenticate, checkJWTPayload, checkUserAuthJWT, errorHandler]

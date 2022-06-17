@@ -20,7 +20,21 @@ export const checkPayload = (req: Request, res: Response, next: NextFunction): v
 
 //Validazione per la rotta che avvia il processo di firma e carica il documento
 
+/**
+ * Funzione che controlla se nell'header è presente l'id del documento da utilizzare per i processi di firma
+ * e varie altre funzionalità che richiedono l'id del documento
+ * @param req 
+ * @param res 
+ * @param next 
+ */
+export function checkHeader(req: any, res:any, next:NextFunction){
+    if(req.headers.id !== undefined) 
+        next()
+    else
+        next(errorFactory.getError(ErrEnum.InvalidHeader))
+}
 
 export const signProcessMW = [upload.single('document'), checkForm_Data]
+
 
 
