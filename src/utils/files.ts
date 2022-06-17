@@ -8,12 +8,16 @@ export const createCnfFile = (dati: any, folderPath: string) => {
     const dataArray2 = data.toString().split('\n').slice(18,dim).join('\n');
     fs.writeFileSync(folderPath, dataArray);
     let noFields: Array<string> = ["iss", "iat", "exp", "aud", "sub"];
+    let user: any = {};
     for(let field in dati){
         if(!noFields.includes(field)){
             fs.appendFileSync(folderPath,`${field}=${dati[field]}\r\n`);
+            user[`${field}`] = dati[field];
         }
     }
     fs.appendFileSync(folderPath, dataArray2);
+
+    return user;
 }
 
 /**

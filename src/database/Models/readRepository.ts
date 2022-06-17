@@ -8,6 +8,17 @@ import { IReadRepository } from "./readRepositoryInterface";
 
 export class readRepository implements IReadRepository{
 
+    private static instance: readRepository;
+
+    private constructor() {}
+
+    public static getRepo(): readRepository {
+        if(!readRepository.instance){
+            this.instance = new readRepository();
+        }
+        return readRepository.instance;
+    }
+
     /* DA SPOSTARE*/
     @Retryable({
         maxAttempts: 3,

@@ -20,97 +20,103 @@ export class GenericError extends Error implements ErrorMsg {
 
 export class SignError extends GenericError implements ErrorMsg {
     constructor(){
-        super (errorMessages.SignError)
+        super (errorMessages.SignError);
     }
 }
 
 export class Forbidden extends GenericError implements ErrorMsg{
 
     constructor(message?: string) {
-        super(message || errorMessages.Forbidden, 403)
+        super(message || errorMessages.Forbidden, 403);
     }
 }
 
 export class MissingAuthHeader extends Forbidden implements ErrorMsg{
 
     constructor(){
-        super(errorMessages.MissingAuthHeader)
+        super(errorMessages.MissingAuthHeader);
     }
 }
 
 export class JWTVerifyError extends Forbidden implements ErrorMsg{
 
     constructor(){
-        super(errorMessages.JWTVerifyError)
+        super(errorMessages.JWTVerifyError);
     }
 }
 
 export class UnregisteredUser extends Forbidden implements ErrorMsg{
 
     constructor(){
-        super(errorMessages.UnregisteredUser)
+        super(errorMessages.UnregisteredUser);
     }
 }
 
 export class NotFound extends GenericError implements ErrorMsg{
     constructor(message?: string){
-        super(message || errorMessages.NotFound, 404)
+        super(message || errorMessages.NotFound, 404);
     }
 
 }
 
 export class InvalidId extends NotFound implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidId)
+        super(errorMessages.InvalidId);
     }
 }
 
 export class ValidationError extends GenericError implements ErrorMsg{
     constructor(message?: string){
-        super(message || errorMessages.ValidationError, 400)
+        super(message || errorMessages.ValidationError, 400);
     }
 
 }
 
 export class InvalidJSONPayload extends ValidationError implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidJSONPayload)
+        super(errorMessages.InvalidJSONPayload);
     }
 }
 
 export class InvalidJWTPayload extends ValidationError implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidJWTPayload)
+        super(errorMessages.InvalidJWTPayload);
     }
 }
 
 export class InvalidFormPayload extends ValidationError implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidFormPayload)
+        super(errorMessages.InvalidFormPayload);
     }
 }
 
 export class InvalidHeaders extends ValidationError implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidHeader)
+        super(errorMessages.InvalidHeader);
     }
 }
 
 export class FileReadingError extends GenericError implements ErrorMsg{
     constructor(){
-        super(errorMessages.FileReadingError, 400)
+        super(errorMessages.FileReadingError, 400);
     }
 }
 
 export class FileAlreadyExistError extends GenericError implements ErrorMsg{
     constructor(){
-        super(errorMessages.FileAlreadyExist, 400)
+        super(errorMessages.FileAlreadyExist, 400);
     }
 }
 
 export class CertCreationError extends GenericError implements ErrorMsg{
     constructor(){
-        super(errorMessages.CertCreationError)
+        super(errorMessages.CertCreationError);
+    }
+}
+
+export class CertAlreadyExistErr extends GenericError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.CertAlreadyExistErr);
     }
 }
 
@@ -129,6 +135,7 @@ export enum ErrEnum {
     FileAlreadyExistError,
     InvalidFormPayload,
     CertCreationError,
+    CertAlreadyExistErr,
     InvalidHeader,
     InvalidId
 }

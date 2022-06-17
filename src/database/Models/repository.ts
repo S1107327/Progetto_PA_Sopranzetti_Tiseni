@@ -10,7 +10,18 @@ import { Retryable, BackOffPolicy } from "typescript-retry-decorator"
 /** 
  * Classe per la gestione del repository pattern per l'accesso al database
 */
-export class repository implements IRepository {
+export class Repository implements IRepository {
+
+    private static instance: Repository;
+
+    private constructor() {}
+
+    public static getRepo(): Repository {
+        if(!Repository.instance){
+            this.instance = new Repository();
+        }
+        return Repository.instance;
+    }
 
     /**
      * Funzione che si occupa di certificare sul database che è iniziato un nuovo processo di
