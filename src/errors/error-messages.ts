@@ -10,5 +10,6 @@ export enum errorMessages {
     InvalidJWTPayload = "Error! One or more values in JWT payload are malformed",
     UnregisteredUser = "Error! User isn't registered",
     SignError = "Error! An error occurred during sign process",
-    FileReadingError = "Error! There is a problem in the reading file process, it's impossible to handle the request"
+    FileReadingError = "Error! There is a problem in the reading file process, it's impossible to handle the request",
+    FileAlreadyExist = "Error! This file already exist in a sign process or it has already been signed by the same signers"
 }

@@ -84,6 +84,12 @@ export class FileReadingError extends GenericError implements ErrorMsg{
     }
 }
 
+export class FileAlreadyExistError extends GenericError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.FileAlreadyExist, 400)
+    }
+}
+
 export enum ErrEnum {
     Forbidden,
     NotFound,
@@ -94,5 +100,6 @@ export enum ErrEnum {
     InvalidJWTPayload,
     UnregisteredUser,
     SignError,
-    FileReadingError
+    FileReadingError,
+    FileAlreadyExistError
 }
