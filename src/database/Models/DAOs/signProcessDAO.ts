@@ -40,12 +40,3 @@ SignProcess.init({
     // If don't want updatedAt
     updatedAt: false,
 })
-/*
-SignProcess.belongsTo(User, {
-    foreignKey: 'codice_fiscale_firmatario',
-    targetKey: 'codice_fiscale'
-})
-SignProcess.belongsTo(Document, {
-    foreignKey: 'id_documento',
-    targetKey: 'id'
-})*/

@@ -1,11 +1,10 @@
 import { UserController } from './controllers/UserController';
 import Express, { Request, Response } from 'express';
 import { errorHandler, signProcessErrorHandler } from './middleware/mw-error';
-import { repository } from './database/Models/repository';
 import { signProcessMW } from './middleware/mw-validation';
 import { checkHeaderId, checkIfApllicant } from './middleware/mw-async-db';
-import { upload } from './utils/multer-config';
 import { JWT_AUTH_MW } from './middleware/mw-auth-JWT';
+import { readRepository } from './database/Models/readRepository';
 
 const controller = new UserController();
 
@@ -17,10 +16,10 @@ router.get('/', (req, res) => {
     res.send('Hello pippo');
 });
 
-var repo = new repository();
+var repo:readRepository = new readRepository();
 
 router.get('/test', errorHandler, (req: Request, res: Response) => {
-    repo.test().then((result) => {
+    repo.getSignProcessStatus(1).then((result) => {
         res.send(result)
     })
 } )
