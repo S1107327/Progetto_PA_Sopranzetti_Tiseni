@@ -1,13 +1,16 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
 import router from "./route";
+import { appErrorHandler } from './middleware/mw-error';
 
 // App
 const app = express();
 
 // Righe aggiunte per accettare richieste da un client come postman
 app.use(bodyParser.json()); 
+app.use(appErrorHandler)
+
 app.use((req, res, next) => {    
     res.setHeader('Access-Control-Allow-Origin', '*');    
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');    

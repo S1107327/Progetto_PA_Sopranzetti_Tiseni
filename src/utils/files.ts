@@ -21,10 +21,11 @@ export const createCnfFile = (dati: any, folderPath: string) => {
  * @param srcDocument req.file prodotto da multer con tutte le informazioni sul file
  * @param fileHash hash del contenuto del file con i codici fiscali
  */
-export function createNewFile (srcDocument: any , fileHash: string): void{
+export function createNewFile (srcDocument: any , fileHash: string, createdAt: any): void{
     let extArray = srcDocument.mimetype.split("/");
     let extension = extArray[extArray.length - 1];
-    let filePath: string = `/home/node/app/documenti/src/${fileHash}-${Date.now}.${extension}`
+    //TODO: controllare quale è la data del documento, se si vuole usare (caso firme multiple con stessi firmatari) deve corrispondere a quella sul db
+    let filePath: string = `/home/node/app/documenti/src/${fileHash}-${createdAt}.${extension}`
     let srcDocumentBuffer: Buffer = fs.readFileSync(srcDocument.path)
     //TODO: controllare se salvare il buffer va bene
     fs.writeFileSync(filePath, srcDocumentBuffer)

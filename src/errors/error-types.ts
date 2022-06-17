@@ -59,6 +59,12 @@ export class NotFound extends GenericError implements ErrorMsg{
 
 }
 
+export class InvalidId extends NotFound implements ErrorMsg{
+    constructor(){
+        super(errorMessages.InvalidId)
+    }
+}
+
 export class ValidationError extends GenericError implements ErrorMsg{
     constructor(message?: string){
         super(message || errorMessages.ValidationError, 400)
@@ -123,5 +129,6 @@ export enum ErrEnum {
     FileAlreadyExistError,
     InvalidFormPayload,
     CertCreationError,
-    InvalidHeader
+    InvalidHeader,
+    InvalidId
 }

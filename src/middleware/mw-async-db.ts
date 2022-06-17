@@ -1,14 +1,14 @@
 
 import { NextFunction } from "express";
-import { repository } from "../database/Models/repository";
 import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
 import handler from "express-async-handler";
 import crypto from "crypto"
 import { readFileSync } from "fs";
+import { readRepository } from "../database/Models/readRepository";
+import { Document } from "database/Models/DAOs/documentDAO";
 
-
-const repo:repository = new repository();
+const readRepo: readRepository = new readRepository();
 
 /**
  * Funzione che controlla se gli utenti firmatari inseriri sono utenti registrati
@@ -21,7 +21,7 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
     try{
         let signers: Array<string> = req.body.firmatari;
         for (let i = 0; i<signers.length; i++){
-            let result = await repo.getUser(signers[i]);
+            let result = await readRepo.getUser(signers[i]);
             if (result === null){
                 next(errorFactory.getError(ErrEnum.UnregisteredUser))
             }
@@ -45,7 +45,7 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
 
 export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     try{
-        let result = await repo.getUser(req.user.serialNumber)
+        let result = await readRepo.getUser(req.user.serialNumber)
             if(result !== null) 
                 next()
             else
@@ -54,8 +54,6 @@ export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFun
         next(errorFactory.getError(ErrEnum.UnregisteredUser))
     }
 })
-
-export const CriticalsAsyncMW = [checkUserAuthJWT]
 
 /**
  * Funzione che controlla se il documento di cui è stata richiesta la firma già esiste nel database e 
@@ -86,8 +84,38 @@ export const checkIfAlreadySigned = handler(async (req: any, res: any, next: Nex
 })
 */
 
+/**
+ * Funzione che controlla se nell'header è presente l'id del documento da utilizzare per i processi di firma
+ * e varie altre funzionalità che richiedono l'id del documento
+ * @param req 
+ * @param res 
+ * @param next 
+ */
+ export const checkHeaderId = handler(async (req: any, res:any, next:NextFunction): Promise<void> => {
+    if(req.headers.id !== undefined){
+        let document: Document | null = await readRepo.getDocument(req.headers.id);
+        if (document !== null){
+            next()
+        }else{
+            next(errorFactory.getError(ErrEnum.InvalidId))
+        }
+    }
+    else
+        next(errorFactory.getError(ErrEnum.InvalidHeader))
+})
+
 export const checkIfApllicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
-    let documentId:number = req.headers
-//    let isApplicant: boolean = await repo.
+    let documentId:number = req.headers.id
+    let document: Document | null = await readRepo.getDocument(documentId);
+    if (document !== null){
+        if (document.codice_fiscale_richiedente === codice_fiscale){
+            next()
+        }else{
+            next(errorFactory.getError(ErrEnum.Forbidden))
+        }
+    }else{
+        next(errorFactory.getError(ErrEnum.InvalidHeader))
+    }
+
 })

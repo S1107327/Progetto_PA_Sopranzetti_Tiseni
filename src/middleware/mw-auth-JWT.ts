@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import jwt  from "jsonwebtoken";
 import { ErrEnum } from "../errors/error-types";
 import { errorFactory } from "../errors/error-factory";
-import { repository } from "../database/Models/repository";
 import { checkUserAuthJWT } from "./mw-async-db";
 import { errorHandler } from "./mw-error";
 
