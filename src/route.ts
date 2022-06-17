@@ -3,7 +3,9 @@ import Express, { Request, Response } from 'express';
 import { errorHandler, signProcessErrorHandler } from './middleware/mw-error';
 import { repository } from './database/Models/repository';
 import { signProcessMW } from './middleware/mw-validation';
-import { CriticalsAsyncMW } from './middleware/mw-async-db';
+import { checkForm_Data, CriticalsAsyncMW } from './middleware/mw-async-db';
+import { checkHeader, checkToken, verifyAndAuthenticate } from './middleware/mw-auth-JWT';
+import { upload } from './utils/multer-config';
 
 const router = Express.Router();
 const controller = new UserController();
@@ -35,7 +37,7 @@ router.get('/cert/invalidate', CriticalsAsyncMW)
 
 router.post('/file', CriticalsAsyncMW, controller.createCertificate);
 
-router.post('/file/sign/start', CriticalsAsyncMW, signProcessMW, signProcessErrorHandler, controller.startSignProcess)
+router.post('/file/sign/start', signProcessMW, signProcessErrorHandler, controller.startSignProcess)
 
 
 export default router

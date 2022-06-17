@@ -1,4 +1,4 @@
-import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError} from "./error-types"
+import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError} from "./error-types"
 
 
 export const errorFactory = {
@@ -34,6 +34,9 @@ export const errorFactory = {
                 break;
             case ErrEnum.FileReadingError:
                 returnValue = new FileReadingError();
+                break;
+            case ErrEnum.FileAlreadyExistError:
+                returnValue = new FileAlreadyExistError();
                 break;
             default:
                 returnValue = new GenericError();
