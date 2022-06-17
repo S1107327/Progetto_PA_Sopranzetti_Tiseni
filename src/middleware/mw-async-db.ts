@@ -91,9 +91,11 @@ export const checkIfAlreadySigned = handler(async (req: any, res: any, next: Nex
  * @param res 
  * @param next 
  */
+//TODO: cambiare da header a param
  export const checkHeaderId = handler(async (req: any, res:any, next:NextFunction): Promise<void> => {
     if(req.headers.id !== undefined){
         let document: Document | null = await readRepo.getDocument(req.headers.id);
+        console.log(document)
         if (document !== null){
             next()
         }else{
@@ -104,7 +106,8 @@ export const checkIfAlreadySigned = handler(async (req: any, res: any, next: Nex
         next(errorFactory.getError(ErrEnum.InvalidHeader))
 })
 
-export const checkIfApllicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
+//TODO: cambiare da header a param
+export const checkIfApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
     let documentId:number = req.headers.id
     let document: Document | null = await readRepo.getDocument(documentId);

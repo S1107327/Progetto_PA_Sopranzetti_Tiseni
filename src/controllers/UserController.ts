@@ -85,7 +85,7 @@ export class UserController{
             let nToken = user?.numero_token
             res.send({
                 User: codice_fiscale,
-                nToken: nToken
+                Token: nToken
             })
         }).catch((err: any) => {
             let error = errorFactory.getError(ErrEnum.GenericError)

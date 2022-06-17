@@ -2,7 +2,7 @@ import { UserController } from './controllers/UserController';
 import Express, { Request, Response } from 'express';
 import { errorHandler, signProcessErrorHandler } from './middleware/mw-error';
 import { signProcessMW } from './middleware/mw-validation';
-import { checkHeaderId, checkIfApllicant } from './middleware/mw-async-db';
+import { checkHeaderId, checkIfApplicant } from './middleware/mw-async-db';
 import { JWT_AUTH_MW } from './middleware/mw-auth-JWT';
 import { readRepository } from './database/Models/readRepository';
 
@@ -39,7 +39,7 @@ router.post('/file',controller.createCertificate);
 
 router.post('/file/sign/start',signProcessMW, signProcessErrorHandler, controller.startSignProcess)
 
-router.get('/file/sign/status', checkHeaderId, checkIfApllicant, errorHandler, controller.getSignProcessStatus )
+router.get('/file/sign/status', checkHeaderId, checkIfApplicant, errorHandler, controller.getSignProcessStatus )
 
 
 export default router
