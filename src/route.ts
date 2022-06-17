@@ -1,10 +1,11 @@
 import { UserController } from './controllers/UserController';
 import Express, { Request, Response } from 'express';
 import { errorHandler, signProcessErrorHandler } from './middleware/mw-error';
-import { signProcessMW } from './middleware/mw-validation';
-import { checkHeaderId, checkIfApplicant } from './middleware/mw-async-db';
+import { signProcessMW, checkCertificateAlreadyExist } from './middleware/mw-validation';
+import { checkHeaderId, checkIfApllicant } from './middleware/mw-async-db';
 import { JWT_AUTH_MW } from './middleware/mw-auth-JWT';
 import { readRepository } from './database/Models/readRepository';
+
 
 const controller = new UserController();
 
@@ -16,7 +17,7 @@ router.get('/', (req, res) => {
     res.send('Hello pippo');
 });
 
-var repo:readRepository = new readRepository();
+var repo:readRepository = readRepository.getRepo();
 
 router.get('/test', errorHandler, (req: Request, res: Response) => {
     repo.getSignProcessStatus(1).then((result) => {
@@ -25,21 +26,32 @@ router.get('/test', errorHandler, (req: Request, res: Response) => {
 } )
 
 /**
+ * Rotta che permette all'utente di creare un nuovo certificato prelevando i valori dal token JWT */ 
+router.get('/create', checkCertificateAlreadyExist, errorHandler, (req:any, res:any) => {
+    controller.createCertificate(req, res);
+});
+
+/**
  * Rotta che serve per gestire le richieste per il recupero del credito di un utente
  */
-router.get('/user/credit', controller.getUserToken)
+router.get('/credit', (req:any, res:any) => {
+    controller.getUserToken(req, res);
+});
+
+router.get('/file/sign/status', checkHeaderId, checkIfApllicant, errorHandler, (req:any, res:any) => {
+    controller.getSignProcessStatus(req, res);
+});
 
 /**
  * Rotta che serve per gestire le richiesta per invalidare un certificato associato a un utente 
  */
-router.get('/cert/invalidate')
+router.get('/invalidate')
+
+router.post('/file/sign/start',signProcessMW, signProcessErrorHandler, (req:any, res:any) => {
+    controller.startSignProcess(req, res);
+});
 
 
-router.post('/file',controller.createCertificate);
-
-router.post('/file/sign/start',signProcessMW, signProcessErrorHandler, controller.startSignProcess)
-
-router.get('/file/sign/status', checkHeaderId, checkIfApplicant, errorHandler, controller.getSignProcessStatus )
 
 
 export default router

@@ -1,4 +1,4 @@
-import {repository} from '../database/Models/repository';
+import {Repository} from '../database/Models/repository';
 import { execSync } from 'child_process';
 import { createCnfFile, createNewFile } from '../utils/files';
 import path from 'path';
@@ -12,12 +12,11 @@ import crypto from "crypto";
 
 
 export class UserController{
-    repo: repository;
+    repo: Repository;
     readRepo: readRepository;
     constructor(){
-    //TODO: controllare perchè non vengono instanziate
-    this.repo = new repository();
-    this.readRepo = new readRepository();
+        this.repo = Repository.getRepo();
+        this.readRepo = readRepository.getRepo();
     }
 
     /**
@@ -25,19 +24,22 @@ export class UserController{
      * @param request 
      * @param response 
      */
-    public createCertificate(request:any, response:any){
-        let folderPath: string = path.resolve(__dirname, `../../cnfFiles/${request.user.serialNumber}.cnf`);
+    public createCertificate(req:any, res:any){
+        let folderPath: string = path.resolve(__dirname, `../../cnfFiles/${req.user.serialNumber}.cnf`);
         try{
-        createCnfFile(request.user, folderPath);
-        execSync(`openssl req -new -config ${folderPath} -keyout ${request.user.dati.serialNumber}.key -passout pass:${config.PEMPASSPHRASE} -out ${request.user.dati.serialNumber}.csr`,
-            {cwd: path.resolve(__dirname, "../../certificati/")});
-        execSync(`openssl x509 -req -days 365 -in ${request.user.serialNumber}.csr -CA ../config/rootCACert.pem -CAkey ../config/rootCAKey.pem -CAcreateserial -out ${request.user.serialNumber}.crt -extensions user_crt -extfile ${folderPath}`,
-            {cwd: path.resolve(__dirname, "../../certificati/")});
-        response.send("certificate created");
+            let user:any = createCnfFile(req.user, folderPath);
+            execSync(`openssl req -new -config ${folderPath} -keyout ${req.user.serialNumber}.key -passout pass:${config.PEMPASSPHRASE} -out ${req.user.serialNumber}.csr`,
+                {cwd: path.resolve(__dirname, "../../certificati/")});
+            execSync(`openssl x509 -req -days 365 -in ${req.user.serialNumber}.csr -CA ../config/rootCACert.pem -CAkey ../config/rootCAKey.pem -CAcreateserial -out ${req.user.serialNumber}.crt -extensions user_crt -extfile ${folderPath}`,
+                {cwd: path.resolve(__dirname, "../../certificati/")});
+                res.send({
+                    message:`Created certificate for user ${req.user.serialNumber}`,
+                    certificate_datas: user
+                });
         }catch (err) {
             //TODO: in caso di errore cancellare tutti i file che sono stati creati
             let error = errorFactory.getError(ErrEnum.SignError)
-            response.status(error.status).json(error.message)
+            res.status(error.status).json(error.message)
         }
     }
 
@@ -67,7 +69,7 @@ export class UserController{
 
         //TODO: diminuire di token dell'utente
 
-        //Deleting temporary file after usage
+        //Deleting temporary file after usageeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA
         fs.unlink(srcDocument.path, ()=>{})
         }
     
@@ -78,14 +80,13 @@ export class UserController{
      * @param res: risposta da inviare al client 
      */
     public getUserToken (req: any, res: any): void {
-        let readingRepo = new readRepository();
         let codice_fiscale: string = req.user.serialNumber;
-        readingRepo.getUser(codice_fiscale).then((user) => {
+        this.readRepo.getUser(codice_fiscale).then((user) => {
             //User non può essere null perchè controllato nel middleware
             let nToken = user?.numero_token
             res.send({
                 User: codice_fiscale,
-                Token: nToken
+                nToken: nToken
             })
         }).catch((err: any) => {
             let error = errorFactory.getError(ErrEnum.GenericError)

@@ -4,11 +4,11 @@ import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
 import handler from "express-async-handler";
 import crypto from "crypto"
-import { readFileSync } from "fs";
+import { read, readFileSync } from "fs";
 import { readRepository } from "../database/Models/readRepository";
 import { Document } from "database/Models/DAOs/documentDAO";
 
-const readRepo: readRepository = new readRepository();
+const readRepo: readRepository = readRepository.getRepo();
 
 /**
  * Funzione che controlla se gli utenti firmatari inseriri sono utenti registrati
@@ -91,11 +91,9 @@ export const checkIfAlreadySigned = handler(async (req: any, res: any, next: Nex
  * @param res 
  * @param next 
  */
-//TODO: cambiare da header a param
  export const checkHeaderId = handler(async (req: any, res:any, next:NextFunction): Promise<void> => {
     if(req.headers.id !== undefined){
         let document: Document | null = await readRepo.getDocument(req.headers.id);
-        console.log(document)
         if (document !== null){
             next()
         }else{
@@ -106,8 +104,7 @@ export const checkIfAlreadySigned = handler(async (req: any, res: any, next: Nex
         next(errorFactory.getError(ErrEnum.InvalidHeader))
 })
 
-//TODO: cambiare da header a param
-export const checkIfApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
+export const checkIfApllicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
     let documentId:number = req.headers.id
     let document: Document | null = await readRepo.getDocument(documentId);
