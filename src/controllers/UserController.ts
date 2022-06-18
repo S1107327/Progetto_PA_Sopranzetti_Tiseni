@@ -179,6 +179,7 @@ export class UserController{
 
     //Si presuppone che arrivati a questo punto si sia verficato che il processo di firma sia effettivamente cancellabile
     public cancelSignProcess(req: any, res: any): void {
+        //TODO: creare un middleware che controlla se il processo di firma è finito
         let documentId: number = req.params.id
         console.log("REQUEST HEADER")
         console.log(documentId)
