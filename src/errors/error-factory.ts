@@ -1,4 +1,4 @@
-import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams} from "./error-types"
+import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound} from "./error-types"
 
 
 export const errorFactory = {
@@ -52,6 +52,21 @@ export const errorFactory = {
                 break;
             case ErrEnum.InvalidId:
                 returnValue = new InvalidId();
+                break;
+            case ErrEnum.BadChallengingString:
+                returnValue = new BadChallengingString();
+                break;
+            case ErrEnum.ChallengingCodeExpired:
+                returnValue = new ChallengingCodeExpired();
+                break;
+            case ErrEnum.SignerNotAdmitted:
+                returnValue = new SignerNotAdmitted();
+                break;
+            case ErrEnum.SignAlreadyDone:
+                returnValue = new SignAlreadyDone();
+                break;
+            case ErrEnum.CertificateNotFound:
+                returnValue = new CertificateNotFound();
                 break;
             case ErrEnum.GenericError:
                 returnValue = new GenericError();

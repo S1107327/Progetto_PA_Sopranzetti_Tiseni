@@ -5,6 +5,7 @@ import { checkCertificateAlreadyExist } from './middleware/mw-validation';
 import { checkId, checkIfApplicant, checkIfCompleted, signProcessMW } from './middleware/mw-async-db';
 import { JWT_AUTH_MW } from './middleware/mw-auth-JWT';
 import { AdminController } from './controllers/AdminController';
+import * as chain from './middleware/middleware-chain'
 
 const controller = new UserController();
 const adminController = new AdminController();
@@ -51,17 +52,17 @@ router.get('/sign/status/:id', checkId, checkIfApplicant, errorHandler, (req:any
  */
 router.get('/invalidate')
 
-router.post('/sign', (req:any, res:any) => {
-    controller.signDocument(req, res);
-});
-
 router.post('/sign/start',signProcessMW, signProcessErrorHandler, (req:any, res:any) => {
     controller.startSignProcess(req, res);
 });
 
 router.get('/sign/cancel/:id', checkId, checkIfApplicant, checkIfCompleted, errorHandler, (req: any, res: any) => {
     controller.cancelSignProcess(req, res)
-})
+});
+
+router.post('/sign/:id', chain.MWSignDocument,(req:any, res:any) => {
+    controller.signDocument(req, res);
+});
 
 //ADMIN route
 router.post('/admin/refill', (req: any, res: any) => {

@@ -11,7 +11,7 @@ export const checkPayload = (req: Request, res: Response, next: NextFunction): v
     } catch (error) {
         next(errorFactory.getError(ErrEnum.InvalidJSONPayload))
     }
-}
+};
 
 export const checkCertificateAlreadyExist = (req: any, res: Response, next: NextFunction): void => {
     fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
@@ -25,7 +25,21 @@ export const checkCertificateAlreadyExist = (req: any, res: Response, next: Next
             next();
         }
     });
-}
+};
+
+export const checkCertificateExistance = (req: any, res: Response, next: NextFunction): void => {
+    fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
+        if (err) {
+            next(errorFactory.getError(ErrEnum.GenericError));
+        }
+        if(!(files.includes(`${req.user.serialNumber}.crt`))){
+            next(errorFactory.getError(ErrEnum.CertificateNotFound));
+        }
+        else{
+            next();
+        }
+    });
+};
 
 //TODO: pensare alle validazioni da fare quando si sapranno quali sono i payload json
 

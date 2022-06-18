@@ -42,7 +42,7 @@ export class readRepository implements IReadRepository{
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
         backOff: 1000,
     })
-    async getChallengingString(codice_fiscale: string): Promise<string[] | null> {
+    async getChallengingStrings(codice_fiscale: string): Promise<string[] | null> {
         let user = await User.findByPk(codice_fiscale);
         if (user !== null) {
             let challStrings: Array<string> = Array<string>();
@@ -55,27 +55,32 @@ export class readRepository implements IReadRepository{
         return null
     }
 
+    async getChallCodeExp(codice_fiscale: string): Promise<Date | null>{
+        let user = await User.findByPk(codice_fiscale);
+        if(user !== null){
+            return user.expiration;
+        }
+        return null;
+    }
+
     @Retryable({
         maxAttempts: 3,
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
         backOff: 1000,
     })
 /* DA SPOSTARE*/
-    async checkUserPermission(document_id: number, cf_user: string): Promise<boolean> {
-        let document = await  Document.findByPk(document_id,{
-            include: [{
-                model: SignProcess,
-                where: {
-                    codice_fiscale_firmatario: cf_user
+    async getSignerById(document_id: number): Promise<SignProcess[] | null> {
+        let signers = await SignProcess.findAll(
+            {
+                where:{
+                    id_documento: document_id,
                 }
-            }]
-        });
-        if (document === null || document.SignProcesses === undefined){
-            return false
-        }
-        if (cf_user===document.codice_fiscale_richiedente || cf_user===document.SignProcesses[0].codice_fiscale_firmatario)
-            return true
-        return false
+            }
+        );
+        if(signers !== null)
+            return signers;
+        else 
+            return null;
     }
 
     @Retryable({

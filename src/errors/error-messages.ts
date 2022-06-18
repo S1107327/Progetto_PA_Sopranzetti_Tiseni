@@ -1,7 +1,8 @@
 
 export enum errorMessages {
     GenericError = "Error! Server was unable to serve the request",
-    Forbidden = "Error! User isn't authorized to perform this operation",
+    Forbidden = "Error! This operation is forbidden to the current user",
+    Unauthorized = "Error! User isn't authorized to perform this operation",
     NotFound = "Error! Requested resource was not found",
     ValidationError = "Error! Invalid or malformed input",
     MissingAuthHeader = "Error! No authorization header",
@@ -14,7 +15,13 @@ export enum errorMessages {
     FileAlreadyExist = "Error! There is already an active sign process involving this file or file has already been signed by the same signers",
     InvalidFormPayload = "Error! Form payload are incorrect",
     CertCreationError = "Error! An error occured while creating your certificate, please try again",
-    CertAlreadyExistErr = "Error! You have already created a valid certificate. If you want to recreate it please invalid the actual certificate making a GET request to:http://0.0.0.0:8080/invalidate",
+    CertAlreadyExistErr = "Error! You have already created a valid certificate. If you want to recreate it please invalid the actual certificate",
     InvalidParams = "Error! Invalid params passed in the request",
-    InvalidId = "Error! The specified id doesn't exist please try another id"
+    InvalidId = "Error! The specified id doesn't exist please try another id",
+    BadChallengingString = "Error! Provided challenging codes are not correct please retry",
+    ChallengingCodeExpired = "Error! Provided challenging codes are expired. Please request new challenging numbers to sign document",
+    SignerNotAdmitted = "Error! You are not allowed to sign this document. Please specify correct document id",
+    SignAlreadyDone = "Error! You cannot sign again this document",
+    CertificateNotFound = "Error! There's not a certificate associated to current user"
+
 }
