@@ -1,10 +1,9 @@
 import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
 import { NextFunction, Request, Response } from "express";
-import { upload } from '../utils/multer-config';
-import { checkForm_Data } from "./mw-async-db";
 import * as fs from 'fs';
 import path from "path";
+import mime from "mime-types";
 
 export const checkPayload = (req: Request, res: Response, next: NextFunction): void => {
     try {
@@ -32,10 +31,6 @@ export const checkCertificateAlreadyExist = (req: any, res: Response, next: Next
 //TODO: pensare alle validazioni da fare quando si sapranno quali sono i payload json
 
 //Validazione per la rotta che avvia il processo di firma e carica il documento
-
-
-
-export const signProcessMW = [upload.single('document'), checkForm_Data]
 
 
 

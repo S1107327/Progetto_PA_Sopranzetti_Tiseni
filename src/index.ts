@@ -1,4 +1,4 @@
-import express, { NextFunction } from 'express';
+import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
 import router from "./route";

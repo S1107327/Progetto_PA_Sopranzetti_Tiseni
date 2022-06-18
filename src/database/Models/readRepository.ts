@@ -1,7 +1,6 @@
 import { User } from "./DAOs/userDAO";
 import { Document } from "./DAOs/documentDAO";
 import { SignProcess } from "./DAOs/signProcessDAO";
-import { ConnectionError, ConnectionTimedOutError, Sequelize, TimeoutError, Transaction } from "sequelize";
 import { Retryable, BackOffPolicy } from "typescript-retry-decorator"
 import { IReadRepository } from "./readRepositoryInterface";
 

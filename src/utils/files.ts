@@ -1,5 +1,6 @@
 import path from 'path';
 import * as fs from 'fs';
+import mime from 'mime-types'
 
 export const createCnfFile = (dati: any, folderPath: string) => {
     const data = fs.readFileSync(path.resolve(__dirname, "../../config/openssl.cnf"));
@@ -25,9 +26,10 @@ export const createCnfFile = (dati: any, folderPath: string) => {
  * @param srcDocument req.file prodotto da multer con tutte le informazioni sul file
  * @param fileHash hash del contenuto del file con i codici fiscali
  */
-export function createNewFile (srcDocument: any , fileHash: string, createdAt: any, extension: string): string | null {
+export function createNewFile (srcDocument: any , fileHash: string, createdAt: any): string | null {
     //TODO: controllare quale è la data del documento, se si vuole usare (caso firme multiple con stessi firmatari) deve corrispondere a quella sul db
     try{
+        let extension = mime.extension(srcDocument.mimetype);
         let filePath: string = `/home/node/app/documenti/src/${fileHash}-${createdAt}.${extension}`;
         let srcDocumentBuffer: Buffer = fs.readFileSync(srcDocument.path);
         //TODO: controllare se salvare il buffer va bene
@@ -36,7 +38,7 @@ export function createNewFile (srcDocument: any , fileHash: string, createdAt: a
     }catch(err){
         return null;
     }finally{
-        fs.unlink(srcDocument.path, ()=>{})
+        deleteFile(srcDocument.path);
     }
 }
 

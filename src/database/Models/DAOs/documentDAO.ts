@@ -22,6 +22,7 @@ export class Document extends Model<InferAttributes<Document>, InferCreationAttr
 Document.init({
     id: {
         type: DataTypes.INTEGER,
+        autoIncrement:true,
         primaryKey: true
     },
     codice_fiscale_richiedente: {
