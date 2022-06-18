@@ -120,14 +120,13 @@ export class Repository implements IRepository {
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
         backOff: 1000,
     })
-    async refillUserToke(user_email: string, adding_token: number): Promise<number> {
-        let user = await User.increment({
+    async refillUserToken(user_email: string, adding_token: number): Promise<void> {
+        let user = await User.update({
             numero_token: adding_token
         },
         {
             where: { email_address: user_email}
         })
-        return user.numero_token
     }
     @Retryable({
         maxAttempts: 3,
