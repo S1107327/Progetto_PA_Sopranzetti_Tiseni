@@ -65,24 +65,25 @@ export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFun
  * 
  */
 
-/*
-export const checkIfAlreadySigned = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
+
+export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     try {
         let textBody: any = req.body;
         let srcDocument: any = req.file;
-        let srcDocumentBuffer: Buffer = readFileSync(srcDocument.path)
+        let srcDocumentBuffer: Buffer = readFileSync(srcDocument.path);
         let fileHash = crypto.createHash('sha256').update(`${srcDocumentBuffer}${textBody.firmatari.join['']}`).digest('hex');
-        req.fileHash = fileHash
-        let result = await repo.getDocument(fileHash)
+        req.fileHash = fileHash;
+        let result: Document | null = await readRepo.getDocumentByHash(fileHash);
         if (result === null)
-            next()
-        if (result !== null)
-            next(errorFactory.getError(ErrEnum.FileAlreadyExistError))
+            next();
+        if (result !== null){
+                next(errorFactory.getError(ErrEnum.FileAlreadyExistError));
+        }
     } catch (error) {
-        next(errorFactory.getError(ErrEnum.NotFound))
+        next(errorFactory.getError(ErrEnum.GenericError))
     }
 })
-*/
+
 
 /**
  * Funzione che controlla se nell'header è presente l'id del documento da utilizzare per i processi di firma
@@ -104,7 +105,7 @@ export const checkIfAlreadySigned = handler(async (req: any, res: any, next: Nex
         next(errorFactory.getError(ErrEnum.InvalidHeader))
 })
 
-export const checkIfApllicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
+export const checkIfApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
     let documentId:number = req.headers.id
     let document: Document | null = await readRepo.getDocument(documentId);
