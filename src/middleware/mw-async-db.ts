@@ -92,9 +92,9 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
  * @param res 
  * @param next 
  */
- export const checkHeaderId = handler(async (req: any, res:any, next:NextFunction): Promise<void> => {
-    if(req.headers.id !== undefined){
-        let document: Document | null = await readRepo.getDocument(req.headers.id);
+ export const checkId = handler(async (req: any, res:any, next:NextFunction): Promise<void> => {
+    if(req.params.id !== undefined && Number.isInteger(Number(req.params.id)) && req.params.id > 0){
+        let document: Document | null = await readRepo.getDocument(req.params.id);
         if (document !== null){
             next()
         }else{
@@ -102,12 +102,12 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
         }
     }
     else
-        next(errorFactory.getError(ErrEnum.InvalidHeader))
+        next(errorFactory.getError(ErrEnum.InvalidParams))
 })
 
 export const checkIfApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
-    let documentId:number = req.headers.id
+    let documentId:number = req.params.id
     let document: Document | null = await readRepo.getDocument(documentId);
     if (document !== null){
         if (document.codice_fiscale_richiedente === codice_fiscale){
@@ -116,7 +116,7 @@ export const checkIfApplicant = handler(async (req: any, res: any, next: NextFun
             next(errorFactory.getError(ErrEnum.Forbidden))
         }
     }else{
-        next(errorFactory.getError(ErrEnum.InvalidHeader))
+        next(errorFactory.getError(ErrEnum.InvalidParams))
     }
 
 })

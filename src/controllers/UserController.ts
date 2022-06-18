@@ -8,6 +8,8 @@ import {errorFactory} from '../errors/error-factory'
 import { readRepository } from '../database/Models/readRepository';
 import fs, { read, readFileSync } from 'fs';
 import crypto from "crypto";
+import { SignProcess } from 'database/Models/DAOs/signProcessDAO';
+import { response } from 'express';
 
 
 
@@ -107,18 +109,32 @@ export class UserController{
      * @param res 
      */
     public getSignProcessStatus( req:any, res: any ): void{
-        let processId: number = req.headers.processId;
-        this.readRepo.getSignProcessStatus(processId).then((result) => {
-            //TODO: in base a quello che ritorna la funzione retituire all'utente la risposta sullo stato di firma
-            if (result)
-                res.send({Process_satus: "Completely signed"})
-            else
-                res.send({Process_status: "Still in progress"})
+        let processId: number = req.params.id
+        this.readRepo.getSignProcessStatus(processId).then((signProcesses: Array<SignProcess> | null) => {
+            if (signProcesses !== null){
+                let responseObj: Array<object> = []
+                signProcesses.forEach(process => {
+                    if (process.stato) {
+                        var stato_firma = "Firma del documento eseguita"
+                    }else{
+                        var stato_firma = "Firma del documento non ancora eseguita"
+                    }
+                    let obj = {
+                        Codice_fiscale: process.codice_fiscale_firmatario,
+                        Stato_firma: stato_firma
+                    }
+                    responseObj.push(obj)
+                });
+                res.send(responseObj)
+            }
+            else{
+                let error = errorFactory.getError(ErrEnum.GenericError)
+                res.status(error.status).json(error.message)
+            }
         }).catch((err: any) => {
             let error = errorFactory.getError(ErrEnum.GenericError)
             res.status(error.status).json(error.message)
         })
-
     }
 
     public getSignedDocument(req: any, res: any): void {

@@ -15,6 +15,6 @@ export enum errorMessages {
     InvalidFormPayload = "Error! Form payload are incorrect",
     CertCreationError = "Error! An error occured while creating your certificate, please try again",
     CertAlreadyExistErr = "Error! You have already created a valid certificate. If you want to recreate it please invalid the actual certificate making a GET request to:http://0.0.0.0:8080/invalidate",
-    InvalidHeader = "Error! Invalid arguments in request header, please correct them and try again",
+    InvalidParams = "Error! Invalid params passed in the request",
     InvalidId = "Error! The specified id doesn't exist please try another id"
 }

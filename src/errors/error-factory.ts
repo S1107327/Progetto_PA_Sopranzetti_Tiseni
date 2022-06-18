@@ -1,4 +1,4 @@
-import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidHeaders, InvalidId, CertAlreadyExistErr} from "./error-types"
+import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams} from "./error-types"
 
 
 export const errorFactory = {
@@ -47,8 +47,8 @@ export const errorFactory = {
             case ErrEnum.CertAlreadyExistErr:
                 returnValue = new CertAlreadyExistErr();
                 break;
-            case ErrEnum.InvalidHeader:
-                returnValue = new InvalidHeaders();
+            case ErrEnum.InvalidParams:
+                returnValue = new InvalidParams();
                 break;
             case ErrEnum.InvalidId:
                 returnValue = new InvalidId();

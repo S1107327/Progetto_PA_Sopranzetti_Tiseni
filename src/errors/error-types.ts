@@ -90,9 +90,9 @@ export class InvalidFormPayload extends ValidationError implements ErrorMsg{
     }
 }
 
-export class InvalidHeaders extends ValidationError implements ErrorMsg{
+export class InvalidParams extends ValidationError implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidHeader);
+        super(errorMessages.InvalidParams);
     }
 }
 
@@ -136,6 +136,6 @@ export enum ErrEnum {
     InvalidFormPayload,
     CertCreationError,
     CertAlreadyExistErr,
-    InvalidHeader,
+    InvalidParams,
     InvalidId
 }
