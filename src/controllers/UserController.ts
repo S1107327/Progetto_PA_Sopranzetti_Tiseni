@@ -56,26 +56,28 @@ export class UserController{
      * @param res Risposta da inviare al client
      */
     public startSignProcess (req: any, res: any): void { 
-        console.log(req.file)
-        let fileHash = req.fileHash;
-        let textBody: any = req.body;
+        let fileHash: string = req.fileHash;
         let srcDocument: any = req.file;
-        try{
-            //TODO: chiamare la funzione della repository per salvare il documento
-            //TODO: prendere la data di creazione direttamente dal db
-            let createdAt= Date.now()
-            createNewFile(req.file, fileHash, createdAt)
-        }catch (err){
-            fs.unlink(srcDocument.path, ()=>{})
-            let error = errorFactory.getError(ErrEnum.SignError)
-            res.status(error.status).json(error.message)
-        }
-
-        //TODO: diminuire di token dell'utente
-
-        //Deleting temporary file after usageeyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA
-        fs.unlink(srcDocument.path, ()=>{})
-        }
+        let extArray: Array<string> = srcDocument.mimetype.split("/");
+        let extension: string = extArray[extArray.length - 1];
+        let completeName: string = `${srcDocument.originalname}.${extension}`;
+        this.repo.startSignProcess(completeName, fileHash, req.user.serialNumber, req.body.firmatari)
+        .then((document) => {
+            let newPath: string | null = createNewFile(req.file, fileHash, document.created_at, extension);
+            if (newPath !== null){
+                res.send({
+                    Success: `Sign Process correctly started for file ${completeName}`,
+                    Sign_Process_Id: `To retrieve document or the sign process status use this id: ${document.id}. Please keep it with care.`});
+            }else{
+                document.destroy
+                let error = errorFactory.getError(ErrEnum.SignError);
+                res.status(error.status).json(error.message);
+            }
+        }).catch((err) => {
+            let error = errorFactory.getError(ErrEnum.SignError);
+            res.status(error.status).json(error.message);
+        })
+    }
     
     /**
      * Funzione che ritorna il numero di token dell'utente che ha fatto la richiesta

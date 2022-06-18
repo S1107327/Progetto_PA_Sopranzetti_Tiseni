@@ -25,9 +25,7 @@ export const createCnfFile = (dati: any, folderPath: string) => {
  * @param srcDocument req.file prodotto da multer con tutte le informazioni sul file
  * @param fileHash hash del contenuto del file con i codici fiscali
  */
-export function createNewFile (srcDocument: any , fileHash: string, createdAt: any): string | null {
-    let extArray = srcDocument.mimetype.split("/");
-    let extension = extArray[extArray.length - 1];
+export function createNewFile (srcDocument: any , fileHash: string, createdAt: any, extension: string): string | null {
     //TODO: controllare quale è la data del documento, se si vuole usare (caso firme multiple con stessi firmatari) deve corrispondere a quella sul db
     try{
         let filePath: string = `/home/node/app/documenti/src/${fileHash}-${createdAt}.${extension}`;
@@ -37,6 +35,8 @@ export function createNewFile (srcDocument: any , fileHash: string, createdAt: a
         return filePath;
     }catch(err){
         return null;
+    }finally{
+        fs.unlink(srcDocument.path, ()=>{})
     }
 }
 

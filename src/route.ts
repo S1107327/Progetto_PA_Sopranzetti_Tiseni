@@ -2,7 +2,7 @@ import { UserController } from './controllers/UserController';
 import Express, { Request, Response } from 'express';
 import { errorHandler, signProcessErrorHandler } from './middleware/mw-error';
 import { signProcessMW, checkCertificateAlreadyExist } from './middleware/mw-validation';
-import { checkHeaderId, checkIfApllicant } from './middleware/mw-async-db';
+import { checkHeaderId, checkIfApplicant } from './middleware/mw-async-db';
 import { JWT_AUTH_MW } from './middleware/mw-auth-JWT';
 import { readRepository } from './database/Models/readRepository';
 
@@ -38,7 +38,7 @@ router.get('/credit', (req:any, res:any) => {
     controller.getUserToken(req, res);
 });
 
-router.get('/file/sign/status', checkHeaderId, checkIfApllicant, errorHandler, (req:any, res:any) => {
+router.get('/file/sign/status', checkHeaderId, checkIfApplicant, errorHandler, (req:any, res:any) => {
     controller.getSignProcessStatus(req, res);
 });
 
