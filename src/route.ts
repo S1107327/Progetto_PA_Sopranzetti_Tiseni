@@ -4,6 +4,7 @@ import { errorHandler, signProcessErrorHandler } from './middleware/mw-error';
 import { checkCertificateAlreadyExist } from './middleware/mw-validation';
 import { checkId, checkIfApplicant, checkIfCompleted, signProcessMW } from './middleware/mw-async-db';
 import { JWT_AUTH_MW } from './middleware/mw-auth-JWT';
+import * as chain from './middleware/middleware-chain'
 
 const controller = new UserController();
 
@@ -49,16 +50,16 @@ router.get('/sign/status/:id', checkId, checkIfApplicant, errorHandler, (req:any
  */
 router.get('/invalidate')
 
-router.post('/sign', (req:any, res:any) => {
-    controller.signDocument(req, res);
-});
-
 router.post('/sign/start',signProcessMW, signProcessErrorHandler, (req:any, res:any) => {
     controller.startSignProcess(req, res);
 });
 
 router.get('/sign/cancel/:id', checkId, checkIfApplicant, checkIfCompleted, errorHandler, (req: any, res: any) => {
     controller.cancelSignProcess(req, res)
-})
+});
+
+router.post('/sign/:id', chain.MWSignDocument,(req:any, res:any) => {
+    controller.signDocument(req, res);
+});
 
 export default router

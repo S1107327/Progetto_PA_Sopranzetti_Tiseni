@@ -87,6 +87,11 @@ export class Repository implements IRepository {
             }
         });
         if(firmatari.length <= 1){
+            await Document.update({stato_firma: true},{
+                where:{
+                    id: document_id
+                }
+            })
             return true;
         }else{
             return false;

@@ -134,15 +134,37 @@ export class UserController{
     }
 
     public getChallengingNumbers(req: any, res: any): void{
-        let codes: Array<number> = Array<number>();
-        codes.push(Math.floor(Math.random() * 16)+1);
-        codes.push(Math.floor(Math.random() * 16)+1);
-        this.repo.setChallengingCodes(req.user.serialNumber, codes, 
-                                        new Date(Date.now()+60000));
-        res.send(`Send your codes associated to ${codes[0]} and ${codes[1]} to following link\n http://${config.HOST}:${config.PORT}/sign\nPlease specify numbers as shown in the manual`);
+        let code_one: number = Math.floor(Math.random() * 16)
+        let code_two: number;
+        do{
+           code_two = Math.floor(Math.random() * 16);
+        }while(code_one === code_two);
+        this.repo.setChallengingCodes(req.user.serialNumber, [code_one, code_two], 
+                                        new Date(Date.now()+300000));
+        res.send(`Send your codes associated to ${code_one} and ${code_two} to following link\n http://${config.HOST}:${config.PORT}/sign\nPlease specify numbers as shown in the manual`);
     }
 
     public signDocument(req: any, res:any){
+        this.repo.signDocument(req.params.id, req.user.serialNumber).then((last: Boolean) => {
+            if(last){
+                this.readRepo.getDocument(req.params.id).then((document:Document | null) => {
+                    let ext = path.extname(document!.nome_documento)
+                    let command: string = `openssl cms -sign -in ./src/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext} -out ./signed/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext}.p7m -nodetach -cades -outform DER -stream -binary -passin pass:${config.PEMPASSPHRASE}`
+                    this.readRepo.getSignerById(req.params.id).then((signers: SignProcess[] | null) => {
+                        signers!.forEach((signer) => {
+                            command += ` -signer ../certificati/${signer.codice_fiscale_firmatario}.crt -inkey ../certificati/${signer.codice_fiscale_firmatario}.key`
+                        });
+                        try{
+                            execSync(command, {cwd: "/home/node/app/documenti"});
+                            res.send(`File correctly signed by user ${req.user.serialNumber}`);
+                        }catch(err){
+                            let error = errorFactory.getError(ErrEnum.SignError);
+                            res.status(error.status).json(error.message)
+                        }
+                    });
+                });
+            }
+        });
 
     }
 

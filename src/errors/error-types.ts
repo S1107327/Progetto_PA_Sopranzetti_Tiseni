@@ -30,6 +30,12 @@ export class Forbidden extends GenericError implements ErrorMsg{
         super(message || errorMessages.Forbidden, 403);
     }
 }
+export class Unauthorized extends GenericError implements ErrorMsg{
+
+    constructor(message?: string) {
+        super(message || errorMessages.Unauthorized, 401);
+    }
+}
 
 export class MissingAuthHeader extends Forbidden implements ErrorMsg{
 
@@ -98,13 +104,13 @@ export class InvalidParams extends ValidationError implements ErrorMsg{
 
 export class FileReadingError extends GenericError implements ErrorMsg{
     constructor(){
-        super(errorMessages.FileReadingError, 400);
+        super(errorMessages.FileReadingError);
     }
 }
 
-export class FileAlreadyExistError extends GenericError implements ErrorMsg{
+export class FileAlreadyExistError extends Forbidden implements ErrorMsg{
     constructor(){
-        super(errorMessages.FileAlreadyExist, 400);
+        super(errorMessages.FileAlreadyExist);
     }
 }
 
@@ -114,11 +120,44 @@ export class CertCreationError extends GenericError implements ErrorMsg{
     }
 }
 
-export class CertAlreadyExistErr extends GenericError implements ErrorMsg{
+export class CertAlreadyExistErr extends Forbidden implements ErrorMsg{
     constructor(){
         super(errorMessages.CertAlreadyExistErr);
     }
 }
+
+export class BadChallengingString extends Unauthorized implements ErrorMsg{
+    constructor() {
+        super(errorMessages.BadChallengingString);
+    }
+}
+
+export class ChallengingCodeExpired extends Unauthorized implements ErrorMsg{
+
+    constructor() {
+        super(errorMessages.ChallengingCodeExpired);
+    }
+}
+
+export class SignerNotAdmitted extends Forbidden implements ErrorMsg{
+    constructor() {
+        super(errorMessages.SignerNotAdmitted);
+    }
+}
+
+export class SignAlreadyDone extends Forbidden implements ErrorMsg{
+    constructor() {
+        super(errorMessages.SignAlreadyDone);
+    }
+}
+
+export class CertificateNotFound extends NotFound implements ErrorMsg{
+    constructor() {
+        super(errorMessages.CertificateNotFound);
+    }
+}
+
+
 
 export enum ErrEnum {
     GenericError,
@@ -137,5 +176,10 @@ export enum ErrEnum {
     CertCreationError,
     CertAlreadyExistErr,
     InvalidParams,
-    InvalidId
+    InvalidId,
+    BadChallengingString,
+    ChallengingCodeExpired,
+    SignAlreadyDone,
+    SignerNotAdmitted,
+    CertificateNotFound
 }
