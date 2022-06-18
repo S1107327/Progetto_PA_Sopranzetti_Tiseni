@@ -9,6 +9,8 @@ const app = express();
 
 // Righe aggiunte per accettare richieste da un client come postman
 app.use(bodyParser.json()); 
+
+//gestisce il caso di payload malformattato
 app.use(appErrorHandler)
 
 app.use((req, res, next) => {    
