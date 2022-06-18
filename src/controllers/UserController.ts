@@ -1,6 +1,6 @@
 import {Repository} from '../database/Models/repository';
 import { execSync } from 'child_process';
-import { createCnfFile, createNewFile } from '../utils/files';
+import { createCnfFile, createNewFile, deleteFile } from '../utils/files';
 import path from 'path';
 import config from '../config'
 import { ErrEnum } from '../errors/error-types';
@@ -25,20 +25,24 @@ export class UserController{
      * @param response 
      */
     public createCertificate(req:any, res:any){
-        let folderPath: string = path.resolve(__dirname, `../../cnfFiles/${req.user.serialNumber}.cnf`);
+        let cnfPath: string = path.resolve(__dirname, `../../cnfFiles/${req.user.serialNumber}.cnf`);
+        let certificatePath: string = path.resolve(__dirname, "../../certificati/");
         try{
-            let user:any = createCnfFile(req.user, folderPath);
-            execSync(`openssl req -new -config ${folderPath} -keyout ${req.user.serialNumber}.key -passout pass:${config.PEMPASSPHRASE} -out ${req.user.serialNumber}.csr`,
-                {cwd: path.resolve(__dirname, "../../certificati/")});
-            execSync(`openssl x509 -req -days 365 -in ${req.user.serialNumber}.csr -CA ../config/rootCACert.pem -CAkey ../config/rootCAKey.pem -CAcreateserial -out ${req.user.serialNumber}.crt -extensions user_crt -extfile ${folderPath}`,
-                {cwd: path.resolve(__dirname, "../../certificati/")});
+            let user:any = createCnfFile(req.user, cnfPath);
+            execSync(`openssl req -new -config ${cnfPath} -keyout ${req.user.serialNumber}.key -passout pass:${config.PEMPASSPHRASE} -out ${req.user.serialNumber}.csr`,
+                {cwd: certificatePath});
+            execSync(`openssl x509 -req -days 365 -in ${req.user.serialNumber}.csr -CA ../config/rootCACert.pem -CAkey ../config/rootCAKey.pem -CAcreateserial -out ${req.user.serialNumber}.crt -extensions user_crt -extfile ${cnfPath}`,
+                {cwd: certificatePath});
                 res.send({
                     message:`Created certificate for user ${req.user.serialNumber}`,
                     certificate_datas: user
                 });
         }catch (err) {
-            //TODO: in caso di errore cancellare tutti i file che sono stati creati
-            let error = errorFactory.getError(ErrEnum.SignError)
+            deleteFile(cnfPath);
+            deleteFile(certificatePath+"/"+req.user.serialNumber+".key");
+            deleteFile(certificatePath+"/"+req.user.serialNumber+".csr");
+            deleteFile(certificatePath+"/"+req.user.serialNumber+".crt");
+            let error = errorFactory.getError(ErrEnum.CertCreationError)
             res.status(error.status).json(error.message)
         }
     }
