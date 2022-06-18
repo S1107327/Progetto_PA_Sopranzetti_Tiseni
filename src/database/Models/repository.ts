@@ -39,7 +39,7 @@ export class Repository implements IRepository {
         backOff: 1000,
     })
     async startSignProcess(document_name: string, document_hash: string, 
-        codice_fiscale_richiedente: string, firmatari: String[]): Promise<number> {
+        codice_fiscale_richiedente: string, firmatari: String[]): Promise<Document> {
         let newDocument = await Document.create({
             nome_documento: document_name,
             hash_documento: document_hash,
@@ -54,7 +54,7 @@ export class Repository implements IRepository {
                 stato: false
             });
         }
-        return newDocument.id;
+        return newDocument;
     }
      /**
      * Funzione che peremette a una qualsiasi firmatario coinvolto in un processo di firma 
