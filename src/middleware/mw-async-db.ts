@@ -96,6 +96,7 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
  */
  export const checkId = handler(async (req: any, res:any, next:NextFunction): Promise<void> => {
     if(req.params.id !== undefined && Number.isInteger(Number(req.params.id)) && req.params.id > 0){
+        req.params.id = Number(req.params.id)
         let document: Document | null = await readRepo.getDocument(req.params.id);
         if (document !== null){
             next()

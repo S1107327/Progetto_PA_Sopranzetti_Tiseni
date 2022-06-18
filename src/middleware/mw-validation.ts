@@ -3,7 +3,6 @@ import { ErrEnum } from "../errors/error-types";
 import { NextFunction, Request, Response } from "express";
 import * as fs from 'fs';
 import path from "path";
-import mime from "mime-types";
 
 export const checkPayload = (req: Request, res: Response, next: NextFunction): void => {
     try {
