@@ -7,6 +7,7 @@ import { ErrEnum } from '../errors/error-types';
 import {errorFactory} from '../errors/error-factory'
 import { readRepository } from '../database/Models/readRepository';
 import { SignProcess } from 'database/Models/DAOs/signProcessDAO';
+import { Document } from 'database/Models/DAOs/documentDAO';
 
 
 
@@ -59,11 +60,11 @@ export class UserController{
         let srcDocument: any = req.file;
         this.repo.startSignProcess(srcDocument.originalname, fileHash, req.user.serialNumber, req.body.firmatari)
         .then((document) => {
-            let newPath: string | null = createNewFile(req.file, fileHash, document.created_at);
+            let newPath: string | null = createNewFile(req.file, fileHash, Date.parse(document.created_at.toString()));
             if (newPath !== null){
                 res.send({
                     Success: `Sign Process correctly started for file ${srcDocument.originalname}`,
-                    Sign_Process_Id: `To retrieve document or the sign process status use this id: ${document.id}. Please keep it with care.`});
+                    Sign_Process_Id: `To retrieve the document or the sign process status use this id: ${document.id}. Please keep it with care.`});
             }else{
                 this.repo.cancelSignProcess(document.id);
                 let error = errorFactory.getError(ErrEnum.SignError);
@@ -153,5 +154,32 @@ export class UserController{
             //TODO: da completare
         })
     }
-        
+
+    //Si presuppone che arrivati a questo punto si sia verficato che il processo di firma sia effettivamente cancellabile
+    public cancelSignProcess(req: any, res: any): void {
+        let documentId: number = req.params.id
+        console.log("REQUEST HEADER")
+        console.log(documentId)
+        this.readRepo.getDocument(documentId).then((document:Document | null) => {
+            console.log("CONTROLLER")
+            console.log(document)
+            this.repo.cancelSignProcess(documentId).then(() => {
+                if (document !== null){
+                    let ext: string = path.extname(document.nome_documento)
+                    let filePath: string =  `/home/node/app/documenti/src/${document.hash_documento}-${Date.parse(document.created_at.toString())}${ext}`
+                    deleteFile(filePath)
+                    res.json("Sign Process has been correctly cancelled")
+                }else{
+                    let error = errorFactory.getError(ErrEnum.InvalidId)
+                    res.status(error.status).res.json(error.message)
+                }
+            }).catch((err) =>  {
+                let error = errorFactory.getError(ErrEnum.GenericError)
+                res.status(error.status).res.json(error.message)
+            })
+        }).catch((err) => {
+            let error = errorFactory.getError(ErrEnum.GenericError)
+            res.status(error.status).res.json(error.message)
+        })
+    } 
 }
