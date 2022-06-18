@@ -4,9 +4,10 @@ import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
 import handler from "express-async-handler";
 import crypto from "crypto"
-import { read, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { readRepository } from "../database/Models/readRepository";
-import { Document } from "database/Models/DAOs/documentDAO";
+import { Document } from "../database/Models/DAOs/documentDAO";
+import { upload } from "../utils/multer-config";
 
 const readRepo: readRepository = readRepository.getRepo();
 
@@ -20,6 +21,7 @@ const readRepo: readRepository = readRepository.getRepo();
 export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunction): Promise<void> => {
     try{
         let signers: Array<string> = req.body.firmatari;
+        console.log(req.body.firmatari);
         for (let i = 0; i<signers.length; i++){
             let result = await readRepo.getUser(signers[i]);
             if (result === null){
@@ -32,7 +34,7 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
     }catch (err){
         next(errorFactory.getError(ErrEnum.InvalidFormPayload));
     }
-})
+});
 
 /**
  * Funzione che controlla se i dati nel payload del token JWT sono conformi ai dati
@@ -45,15 +47,15 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
 
 export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     try{
-        let result = await readRepo.getUser(req.user.serialNumber)
+        let result = await readRepo.getUser(req.user.serialNumber);
             if(result !== null) 
-                next()
+                next();
             else
-                next(errorFactory.getError(ErrEnum.UnregisteredUser))
+                next(errorFactory.getError(ErrEnum.UnregisteredUser));
     }catch (err){
-        next(errorFactory.getError(ErrEnum.UnregisteredUser))
+        next(errorFactory.getError(ErrEnum.UnregisteredUser));
     }
-})
+});
 
 /**
  * Funzione che controlla se il documento di cui è stata richiesta la firma già esiste nel database e 
@@ -82,7 +84,7 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
     } catch (error) {
         next(errorFactory.getError(ErrEnum.GenericError))
     }
-})
+});
 
 
 /**
@@ -103,7 +105,7 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
     }
     else
         next(errorFactory.getError(ErrEnum.InvalidHeader))
-})
+});
 
 export const checkIfApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
@@ -119,4 +121,15 @@ export const checkIfApplicant = handler(async (req: any, res: any, next: NextFun
         next(errorFactory.getError(ErrEnum.InvalidHeader))
     }
 
-})
+});
+
+export const checkChallString = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
+    let challstrings: string[] | null = await readRepo.getChallengingString(req.user.serialNumber);
+    if(challstrings !== null){
+        if(challstrings.length === req.body.codes.length){
+            for
+        }
+    }
+});
+
+export const signProcessMW = [upload.single('document'), checkForm_Data, checkIfAlreadyExistOrSigned];

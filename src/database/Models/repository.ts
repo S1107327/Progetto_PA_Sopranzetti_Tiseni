@@ -3,8 +3,9 @@ import { User } from "./DAOs/userDAO";
 import { Document } from "./DAOs/documentDAO";
 import { SignProcess } from "./DAOs/signProcessDAO";
 import { sequelize } from "../connection"
-import { ConnectionError, ConnectionTimedOutError, Sequelize, TimeoutError, Transaction } from "sequelize";
+import { Transaction } from "sequelize";
 import { Retryable, BackOffPolicy } from "typescript-retry-decorator"
+import { setUncaughtExceptionCaptureCallback } from "process";
 
 // TODO: gestire eventuali errori
 /** 
@@ -39,21 +40,24 @@ export class Repository implements IRepository {
         backOff: 1000,
     })
     async startSignProcess(document_name: string, document_hash: string, 
-        codice_fiscale_richiedente: string, firmatari: String[]): Promise<Document> {
-        let newDocument = await Document.create({
-            nome_documento: document_name,
-            hash_documento: document_hash,
-            numero_firmatari: firmatari.length,
-            stato_firma: false,
-            codice_fiscale_richiedente: codice_fiscale_richiedente
-        });
-        for(let firmatario in firmatari){
-            await SignProcess.create({
-                codice_fiscale_firmatario: firmatario,
-                id_documento: newDocument.id,
-                stato: false
-            });
-        }
+        codice_fiscale_richiedente: string, firmatari: string[]): Promise<Document> {
+            let newDocument:Document = await sequelize.transaction(async (t: Transaction)=>{
+                let newDocument = await Document.create({
+                    nome_documento: document_name,
+                    hash_documento: document_hash,
+                    numero_firmatari: firmatari.length,
+                    stato_firma: false,
+                    codice_fiscale_richiedente: codice_fiscale_richiedente
+                }, {transaction: t});
+            for(let firmatario in firmatari){
+                await SignProcess.create({
+                    codice_fiscale_firmatario: firmatari[firmatario],
+                    id_documento: newDocument.id,
+                    stato: false
+                }, {transaction:t});
+            }
+            return newDocument;
+        });        
         return newDocument;
     }
      /**
@@ -96,17 +100,19 @@ export class Repository implements IRepository {
     })
     async cancelSignProcess(document_id: number) {
         await sequelize.transaction(async (t: Transaction)=>{
-            await Document.destroy({
-                where: {
-                    id: document_id
-                }
-            }),{transaction: t}
             await SignProcess.destroy({
                 where: {
                     id_documento: document_id
-                }
-            }),{transaction: t}
-        })
+                },
+                transaction:t
+            });
+            await Document.destroy({
+                where: {
+                    id: document_id
+                },
+                transaction:t
+            });
+        });
     }
 
     @Retryable({
@@ -135,6 +141,22 @@ export class Repository implements IRepository {
         {
             where: { codice_fiscale: codice_fiscale}
         })
+    }
+    @Retryable({
+        maxAttempts: 3,
+        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+        backOff: 1000,
+    })
+    async setChallengingCodes(firmatario: string, codes: Array<number>, expiration: Date){
+        await User.update({
+            challenging_code_one: codes[0],
+            challenging_code_two: codes[1],
+            expiration: expiration
+        },{
+            where: {
+                codice_fiscale:firmatario
+            }
+        });
     }
 
 /* DA TOGLIERE*/

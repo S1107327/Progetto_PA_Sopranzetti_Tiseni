@@ -6,8 +6,6 @@ import config from '../config'
 import { ErrEnum } from '../errors/error-types';
 import {errorFactory} from '../errors/error-factory'
 import { readRepository } from '../database/Models/readRepository';
-import fs, { read, readFileSync } from 'fs';
-import crypto from "crypto";
 
 
 
@@ -58,22 +56,20 @@ export class UserController{
     public startSignProcess (req: any, res: any): void { 
         let fileHash: string = req.fileHash;
         let srcDocument: any = req.file;
-        let extArray: Array<string> = srcDocument.mimetype.split("/");
-        let extension: string = extArray[extArray.length - 1];
-        let completeName: string = `${srcDocument.originalname}.${extension}`;
-        this.repo.startSignProcess(completeName, fileHash, req.user.serialNumber, req.body.firmatari)
+        this.repo.startSignProcess(srcDocument.originalname, fileHash, req.user.serialNumber, req.body.firmatari)
         .then((document) => {
-            let newPath: string | null = createNewFile(req.file, fileHash, document.created_at, extension);
+            let newPath: string | null = createNewFile(req.file, fileHash, document.created_at);
             if (newPath !== null){
                 res.send({
-                    Success: `Sign Process correctly started for file ${completeName}`,
+                    Success: `Sign Process correctly started for file ${srcDocument.originalname}`,
                     Sign_Process_Id: `To retrieve document or the sign process status use this id: ${document.id}. Please keep it with care.`});
             }else{
-                document.destroy
+                this.repo.cancelSignProcess(document.id);
                 let error = errorFactory.getError(ErrEnum.SignError);
                 res.status(error.status).json(error.message);
             }
         }).catch((err) => {
+            deleteFile(srcDocument.path);
             let error = errorFactory.getError(ErrEnum.SignError);
             res.status(error.status).json(error.message);
         })
@@ -118,6 +114,19 @@ export class UserController{
             let error = errorFactory.getError(ErrEnum.GenericError)
             res.status(error.status).json(error.message)
         })
+
+    }
+
+    public getChallengingNumbers(req: any, res: any): void{
+        let codes: Array<number> = Array<number>();
+        codes.push(Math.floor(Math.random() * 16)+1);
+        codes.push(Math.floor(Math.random() * 16)+1);
+        this.repo.setChallengingCodes(req.user.serialNumber, codes, 
+                                        new Date(Date.now()+60000));
+        res.send(`Send your codes associated to ${codes[0]} and ${codes[1]} to following link\n http://${config.HOST}:${config.PORT}/sign\nPlease specify numbers as shown in the manual`);
+    }
+
+    public signDocument(req: any, res:any){
 
     }
 

@@ -11,4 +11,6 @@ export interface IRepository {
     cancelSignProcess(document_id: number): void 
     //ricarica i token di un determinato utente con una certa mail e restituisce il numero di token 
     refillUserToke(user_email: string, adding_token: number): Promise<number>
+    // aggiorna i challenging code di un utente e la loro data di scadenza
+    setChallengingCodes(codice_fiscale: string, codes: Array<number>, expiration: Date): void
 }
