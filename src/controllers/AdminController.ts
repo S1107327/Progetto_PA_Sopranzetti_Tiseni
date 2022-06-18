@@ -1,7 +1,7 @@
-import { readRepository } from "database/Models/readRepository";
-import { Repository } from "database/Models/repository";
-import { errorFactory } from "errors/error-factory";
-import { ErrEnum } from "errors/error-types";
+import { readRepository } from "../database/Models/readRepository";
+import { Repository } from "../database/Models/repository";
+import { errorFactory } from "../errors/error-factory";
+import { ErrEnum } from "../errors/error-types";
 
 export class AdminController {
     repo: Repository;
