@@ -171,9 +171,11 @@ export class UserController{
     public getSignedDocument(req: any, res: any): void {
         let documentId: number = req.headers.id
         this.readRepo.getDocument(documentId).then((document) => {
-            let hashName = document?.hash_documento
-            let createAt = document?.created_at
-            //TODO: da completare
+            let hashName = document!.hash_documento
+            let extension = path.extname(document!.nome_documento)
+            let createAt = Date.parse(document!.created_at.toString())
+            let filePath: string = `/home/node/app/documenti/${hashName}-${createAt}${extension}.p7m`
+            res.download(filePath)
         })
     }
 

@@ -48,7 +48,7 @@ router.post('/sign/start',chain.SIGN_PROCESS_MW, (req:any, res:any) => {
     controller.startSignProcess(req, res);
 });
 
-router.get('/sign/cancel/:id', chain.PROC_STATUS_MW, (req: any, res: any) => {
+router.get('/sign/cancel/:id', chain.CANC_PROCESS_MW, (req: any, res: any) => {
     controller.cancelSignProcess(req, res)
 });
 
