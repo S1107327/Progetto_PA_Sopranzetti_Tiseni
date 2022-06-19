@@ -36,89 +36,116 @@ export class readRepository implements IReadRepository{
         }
         return null
     }
+
     /* DA SPOSTARE*/
     @Retryable({
-        maxAttempts: 3,
-        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
-        backOff: 1000,
+      maxAttempts: 3,
+      backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+      backOff: 1000,
     })
-    async getChallengingStrings(codice_fiscale: string): Promise<string[] | null> {
-        let user = await User.findByPk(codice_fiscale);
-        if (user !== null) {
-            let challStrings: Array<string> = Array<string>();
-            challStrings.push(user.challenging_string.slice(user.challenging_code_one*2, 
-                                                            user.challenging_code_one*2 + 2));
-            challStrings.push(user.challenging_string.slice(user.challenging_code_two*2, 
-                                                            user.challenging_code_two*2 + 2));
-            return challStrings
-        }
-        return null
+    async getTokenToBeConsumed(codice_fiscale: string): Promise<number> {
+      let document = await Document.findAll({
+        where: {
+          codice_fiscale_richiedente: codice_fiscale,
+        },
+        include: [
+          {
+            model: SignProcess,
+          },
+        ],
+      });
+      if (document !== null) {
+        return document
+          .map((element) => element.SignProcesses.length)
+          .reduce((previous, current) => previous + current, 0);
+      } else {
+        return 0;
+      }
     }
 
-    async getChallCodeExp(codice_fiscale: string): Promise<Date | null>{
-        let user = await User.findByPk(codice_fiscale);
-        if(user !== null){
-            return user.expiration;
-        }
-        return null;
-    }
+      /* DA SPOSTARE*/
+      @Retryable({
+          maxAttempts: 3,
+          backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+          backOff: 1000,
+      })
+      async getChallengingStrings(codice_fiscale: string): Promise<string[] | null> {
+          let user = await User.findByPk(codice_fiscale);
+          if (user !== null) {
+              let challStrings: Array<string> = Array<string>();
+              challStrings.push(user.challenging_string.slice(user.challenging_code_one * 2,
+                user.challenging_code_one * 2 + 2));
+              challStrings.push(user.challenging_string.slice(user.challenging_code_two * 2,
+                user.challenging_code_two * 2 + 2));
+              return challStrings
+          }
+          return null
+      }
 
-    @Retryable({
-        maxAttempts: 3,
-        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
-        backOff: 1000,
-    })
-/* DA SPOSTARE*/
-    async getSignerById(document_id: number): Promise<SignProcess[] | null> {
-        let signers = await SignProcess.findAll(
-            {
-                where:{
-                    id_documento: document_id,
-                }
-            }
-        );
-        if(signers !== null)
-            return signers;
-        else 
-            return null;
-    }
+      async getChallCodeExp(codice_fiscale: string): Promise<Date | null>{
+          let user = await User.findByPk(codice_fiscale);
+          if(user !== null){
+              return user.expiration;
+          }
+          return null;
+      }
 
-    @Retryable({
-        maxAttempts: 3,
-        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
-        backOff: 1000,
-    })
-    async getUser(cf_user: string): Promise<User | null>{
-        return await User.findByPk(cf_user);
-    }
+      @Retryable({
+          maxAttempts: 3,
+          backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+          backOff: 1000,
+      })
+    /* DA SPOSTARE*/
+      async getSignerById(document_id: number): Promise<SignProcess[] | null> {
+          let signers = await SignProcess.findAll(
+              {
+                  where:{
+                      id_documento: document_id,
+                  }
+              }
+          );
+          if(signers !== null)
+              return signers;
+          else 
+              return null;
+      }
 
-    @Retryable({
-        maxAttempts: 3,
-        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
-        backOff: 1000,
-    })
-    async getUserByEmail (email:string ): Promise<User | null>{
-        return await User.findOne({
-            where: {
-                email_address: email
-            }
-        })
-    }
+      @Retryable({
+          maxAttempts: 3,
+          backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+          backOff: 1000,
+      })
+      async getUser(cf_user: string): Promise<User | null>{
+          return await User.findByPk(cf_user);
+      }
 
-    @Retryable({
-        maxAttempts: 3,
-        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
-        backOff: 1000,
-    })
-    async getDocument(document_id: number): Promise<Document | null>{
-        return await Document.findByPk(document_id);
-    }
+      @Retryable({
+          maxAttempts: 3,
+          backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+          backOff: 1000,
+      })
+      async getUserByEmail (email:string ): Promise<User | null>{
+          return await User.findOne({
+              where: {
+                  email_address: email
+              }
+          })
+      }
 
-    async getDocumentByHash(hash: string): Promise<Document | null>{
-        return await Document.findOne({
-            where: {
-                hash_documento: hash
-            }
-        });
-    }
+      @Retryable({
+          maxAttempts: 3,
+          backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+          backOff: 1000,
+      })
+      async getDocument(document_id: number): Promise<Document | null>{
+          return await Document.findByPk(document_id);
+      }
+
+      async getDocumentByHash(hash: string): Promise<Document | null>{
+          return await Document.findOne({
+              where: {
+                  hash_documento: hash
+              }
+          });
+      }
 }

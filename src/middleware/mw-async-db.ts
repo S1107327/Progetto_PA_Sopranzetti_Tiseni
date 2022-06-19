@@ -165,8 +165,6 @@ export const checkSigner = handler(async (req:any, res:any, next:NextFunction): 
 export const checkChallString = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let challstrings: string[] | null = await readRepo.getChallengingStrings(req.user.serialNumber);
     if(challstrings !== null){
-        console.log(challstrings);
-        console.log(req.body.codes);
         if(challstrings.length === req.body.codes.length && 
             challstrings.every((val, i) => val === req.body.codes[i])){
             next();
