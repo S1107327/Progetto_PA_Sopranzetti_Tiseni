@@ -17,21 +17,22 @@ const readRepo: readRepository = readRepository.getRepo();
  * @param res 
  * @param next 
  */
-
 export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunction): Promise<void> => {
     try{
-        if(req.file === undefined)
-            next(errorFactory.getError(ErrEnum.InvalidFormPayload))
-        let signers: Array<string> = req.body.firmatari;
-        for (let i = 0; i<signers.length; i++){
-            let result = await readRepo.getUser(signers[i]);
-            if (result === null){
-                next(errorFactory.getError(ErrEnum.UnregisteredUser))
+        if(req.file !== undefined && req.body.firmatari.lenght === new Set(req.body.firmatari).size){
+            let signers: Array<string> = req.body.firmatari;
+            for (let i = 0; i<signers.length; i++){
+                let result = await readRepo.getUser(signers[i]);
+                if (result === null){
+                    next(errorFactory.getError(ErrEnum.UnregisteredUser))
+                }
+                else if (i === signers.length-1 && result != null){
+                    next()
+                }
             }
-            else if (i === signers.length-1 && result != null){
-                next()
-            }
-        }
+    }else{
+        next(errorFactory.getError(ErrEnum.InvalidFormPayload));
+    }
     }catch (err){
         next(errorFactory.getError(ErrEnum.InvalidFormPayload));
     }
@@ -76,9 +77,9 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
     let srcDocument: any = req.file;
     let srcDocumentBuffer: Buffer = readFileSync(srcDocument.path);
     let fileHash = crypto.createHash('sha256').update(`${srcDocumentBuffer}${textBody.firmatari.join('')}`).digest('hex');
+    console.log(textBody.firmatari.join(''))
     req.fileHash = fileHash;
     let result: Document | null = await readRepo.getDocumentByHash(fileHash);
-    console.log(result)
     if (result === null)
         next();
     if (result !== null){
