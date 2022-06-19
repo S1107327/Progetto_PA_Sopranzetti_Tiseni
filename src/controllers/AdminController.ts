@@ -16,7 +16,7 @@ export class AdminController {
         let nToken: number = req.body.nToken;
         console.log("NEL CONTROLLER")
         this.repo.refillUserToken(userEmail, nToken).then(() => {
-            res.json(`Token added to user ${userEmail}, il nuovo numero di token è: ${nToken}`)
+            res.json(`Token added to user ${userEmail}, new token number is: ${nToken}`)
         }).catch((err) => {
             let error = errorFactory.getError(ErrEnum.GenericError)
             res.status(error.status).json(error.message)

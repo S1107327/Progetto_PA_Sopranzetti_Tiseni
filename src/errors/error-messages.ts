@@ -6,14 +6,14 @@ export enum errorMessages {
     NotFound = "Error! Requested resource was not found",
     ValidationError = "Error! Invalid or malformed input",
     MissingAuthHeader = "Error! No authorization header",
-    InvalidJSONPayload = "Error! JSON payload is not correctly formatted or you are trying to put a JSON body in a get request",
+    InvalidJSONPayload = "Error! JSON payload is not correctly formatted",
     JWTVerifyError = "Error! JWT verification failed",
     InvalidJWTPayload = "Error! One or more values in JWT payload are malformed",
     UnregisteredUser = "Error! User isn't registered",
     SignError = "Error! An error occurred during sign process",
     FileReadingError = "Error! There is a problem in the reading file process, it's impossible to handle the request",
     FileAlreadyExist = "Error! There is already an active sign process involving this file or file has already been signed by the same signers",
-    InvalidFormPayload = "Error! Form payload are incorrect",
+    InvalidFormPayload = "Error! Form payload is incorrect",
     CertCreationError = "Error! An error occured while creating your certificate, please try again",
     CertAlreadyExistErr = "Error! You have already created a valid certificate. If you want to recreate it please invalid the actual certificate",
     InvalidParams = "Error! Invalid params passed in the request",
@@ -27,5 +27,7 @@ export enum errorMessages {
     InvalidUserEmail = "Error! User with given email doesn't exist, please try another email",
     DocumentAlreadySigned = "Error! Sign process is completed and it can't be deleted now",
     DocumentNotSigned = "Error! The specified document has not been signed yet",
-    NotEnoughToken = "Error! You don't have enough token to perform this operation"
+    NotEnoughToken = "Error! You don't have enough token to perform this operation",
+    NoChallCodes = "Error! No challenging codes are provided or the JSON body isn't correctly formatted, please try again. Note: you must define an array called 'codes' with two string element at the first level of the JSON body.",
+    CannotCancel = "Error! You cannot cancel a terminated sign process"
 }

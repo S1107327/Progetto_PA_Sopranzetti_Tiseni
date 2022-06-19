@@ -12,14 +12,19 @@ export function appErrorHandler (err: any, req:any, res:any, next: NextFunction)
     }
 }
 
-
 export function multerErrorHandler (err: any, req: any, res: Response, next: NextFunction):void {
-    if (err instanceof multer.MulterError)
+    if (err instanceof multer.MulterError){
         next(errorFactory.getError(ErrEnum.FileReadingError));
+    }
     else
         next(err)
 }
+
 export const errorHandler = (err: any, req: any, res: Response, next: NextFunction) => {
+    if(err.status === undefined){
+        let error = errorFactory.getError(ErrEnum.GenericError);
+        res.status(error.status).send({"error": err.message})
+    }
     res.status(err.status).send({"error": err.message});
 }
 

@@ -1,4 +1,4 @@
-import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken} from "./error-types"
+import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken, NoChallCodes, CannotCancel} from "./error-types"
 
 
 export const errorFactory = {
@@ -79,10 +79,16 @@ export const errorFactory = {
                 break;
             case ErrEnum.DocumentNotSigned:
                 returnValue = new DocumentNotSigned();
-            break;
+                break;
             case ErrEnum.NotEnoughToken:
                 returnValue = new NotEnoughToken();
-            break;
+                break;
+            case ErrEnum.NoChallCodes:
+                returnValue = new NoChallCodes();
+                break;
+            case ErrEnum.CannotCancel:
+                returnValue = new CannotCancel();
+                break;
             case ErrEnum.GenericError:
                 returnValue = new GenericError();
                 break;

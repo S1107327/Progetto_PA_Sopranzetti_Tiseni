@@ -114,6 +114,12 @@ export class InvalidParams extends ValidationError implements ErrorMsg{
     }
 }
 
+export class NoChallCodes extends ValidationError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.NoChallCodes)
+    }
+}
+
 export class FileReadingError extends GenericError implements ErrorMsg{
     constructor(){
         super(errorMessages.FileReadingError);
@@ -181,6 +187,12 @@ export class SignAlreadyDone extends Forbidden implements ErrorMsg{
     }
 }
 
+export class CannotCancel extends Forbidden implements ErrorMsg{
+    constructor() {
+        super(errorMessages.CannotCancel);
+    }
+}
+
 export class CertificateNotFound extends NotFound implements ErrorMsg{
     constructor() {
         super(errorMessages.CertificateNotFound);
@@ -216,5 +228,7 @@ export enum ErrEnum {
     InvalidEmail,
     DocumentAlreadySigned,
     DocumentNotSigned,
-    NotEnoughToken
+    NotEnoughToken,
+    NoChallCodes,
+    CannotCancel
 }

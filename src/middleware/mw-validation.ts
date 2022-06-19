@@ -28,7 +28,6 @@ export const checkCertificateAlreadyExist = (req: any, res: Response, next: Next
 };
 
 export const checkCertificateNotExists = (req: any, res: Response, next: NextFunction): void => {
-    console.log(req.user)
     fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
         if (err) {
             next(errorFactory.getError(ErrEnum.GenericError));
@@ -71,7 +70,17 @@ export const checkTokenNumber = (req: any, res: Response, next: NextFunction): v
     if(req.body.nToken !== undefined && Number.isInteger(Number(req.body.nToken)) && req.body.nToken > 0){
         next();
     }else{
-        next(errorFactory.getError(ErrEnum.InvalidTokenNumber))
+        next(errorFactory.getError(ErrEnum.InvalidTokenNumber));
     }
 }
+
+export const checkChallJSONBody = (req: any, res: Response, next: NextFunction): void => {
+    console.log(req.body.codes)
+    if(req.body.codes !== undefined && Array.isArray(req.body.codes) && req.body.codes.length === 2)
+        next();
+    else
+        next(errorFactory.getError(ErrEnum.NoChallCodes));
+}
+
+
 
