@@ -190,4 +190,17 @@ export const checkIfCompleted = handler(async (req: any, res: any, next: NextFun
     }
 });
 
+
+export const checkIfUserEmailExist = handler(async (req:any, res:any, next: NextFunction): Promise<void> => {
+    let email = req.body.email;
+    console.log("MIDDLEWARE")
+    let user = await readRepo.getUserByEmail(email);
+    if (user !== null){
+        next();
+    }
+    else{
+        next(errorFactory.getError(ErrEnum.InvalidEmail));
+    }
+})
+
 export const signProcessMW = [upload.single('document'), checkForm_Data, checkIfAlreadyExistOrSigned];

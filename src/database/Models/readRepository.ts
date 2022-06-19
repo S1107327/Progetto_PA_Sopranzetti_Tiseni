@@ -91,6 +91,20 @@ export class readRepository implements IReadRepository{
     async getUser(cf_user: string): Promise<User | null>{
         return await User.findByPk(cf_user);
     }
+
+    @Retryable({
+        maxAttempts: 3,
+        backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
+        backOff: 1000,
+    })
+    async getUserByEmail (email:string ): Promise<User | null>{
+        return await User.findOne({
+            where: {
+                email_address: email
+            }
+        })
+    }
+
     @Retryable({
         maxAttempts: 3,
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
@@ -99,6 +113,7 @@ export class readRepository implements IReadRepository{
     async getDocument(document_id: number): Promise<Document | null>{
         return await Document.findByPk(document_id);
     }
+
     async getDocumentByHash(hash: string): Promise<Document | null>{
         return await Document.findOne({
             where: {

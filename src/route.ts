@@ -57,7 +57,7 @@ router.post('/sign/:id', chain.SIGN_DOCUMENT_MW,(req:any, res:any) => {
 });
 
 //ADMIN route
-router.post('/admin/refill', (req: any, res: any) => {
+router.post('/admin/refill', chain.ADMIN_MW, (req: any, res: any) => {
     adminController.refillUserToken(req, res)
 })
 

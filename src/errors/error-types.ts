@@ -71,6 +71,12 @@ export class InvalidId extends NotFound implements ErrorMsg{
     }
 }
 
+export class InvalidEmail extends NotFound implements ErrorMsg{
+    constructor(){
+        super(errorMessages.InvalidUserEmail)
+    }
+}
+
 export class ValidationError extends GenericError implements ErrorMsg{
     constructor(message?: string){
         super(message || errorMessages.ValidationError, 400);
@@ -93,6 +99,12 @@ export class InvalidJWTPayload extends ValidationError implements ErrorMsg{
 export class InvalidFormPayload extends ValidationError implements ErrorMsg{
     constructor(){
         super(errorMessages.InvalidFormPayload);
+    }
+}
+
+export class InvalidTokenNumber extends ValidationError implements ErrorMsg{
+    constructor(){
+        super(errorMessages.InvalidTokenNumber)
     }
 }
 
@@ -181,5 +193,7 @@ export enum ErrEnum {
     ChallengingCodeExpired,
     SignAlreadyDone,
     SignerNotAdmitted,
-    CertificateNotFound
+    CertificateNotFound,
+    InvalidTokenNumber,
+    InvalidEmail
 }

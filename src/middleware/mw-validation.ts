@@ -41,9 +41,22 @@ export const checkCertificateExistance = (req: any, res: Response, next: NextFun
     });
 };
 
-//TODO: pensare alle validazioni da fare quando si sapranno quali sono i payload json
+export const checkUserEmail = (req: any, res: Response, next: NextFunction): void => {
+    let email: string = req.body.email;
+    const emailAddressRg: RegExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    let emailAddress: boolean = emailAddressRg.test(email);
+    if(emailAddress){
+        next();
+    }else{
+        next(errorFactory.getError(ErrEnum.ValidationError));
+    }
+}
 
-//Validazione per la rotta che avvia il processo di firma e carica il documento
-
-
+export const checkTokenNumber = (req: any, res: Response, next: NextFunction): void => {
+    if(req.body.nToken !== undefined && Number.isInteger(Number(req.body.nToken)) && req.body.nToken > 0){
+        next();
+    }else{
+        next(errorFactory.getError(ErrEnum.InvalidTokenNumber))
+    }
+}
 

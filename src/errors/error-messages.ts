@@ -22,6 +22,8 @@ export enum errorMessages {
     ChallengingCodeExpired = "Error! Provided challenging codes are expired. Please request new challenging numbers to sign document",
     SignerNotAdmitted = "Error! You are not allowed to sign this document. Please specify correct document id",
     SignAlreadyDone = "Error! You cannot sign again this document",
-    CertificateNotFound = "Error! There's not a certificate associated to current user"
+    CertificateNotFound = "Error! There's not a certificate associated to current user",
+    InvalidTokenNumber = "Error! No token number provided or it is an invalid value. Note: token number must be a positive integer",
+    InvalidUserEmail = "Error! User with given email doesn't exist, please try another email"
 
 }
