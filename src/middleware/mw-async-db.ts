@@ -7,7 +7,6 @@ import crypto from "crypto"
 import { readFileSync } from "fs";
 import { readRepository } from "../database/Models/readRepository";
 import { Document } from "../database/Models/DAOs/documentDAO";
-import { upload } from "../utils/multer-config";
 import { SignProcess } from "../database/Models/DAOs/signProcessDAO";
 
 const readRepo: readRepository = readRepository.getRepo();
@@ -103,6 +102,27 @@ export const checkIfApplicant = handler(async (req: any, res: any, next: NextFun
 
 });
 
+export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
+    let codice_fiscale: string = req.user.serialNumber;
+    let documentId:number = req.params.id;
+    let document: Document | null = await readRepo.getDocument(documentId);
+    let signers: SignProcess[] | null = await readRepo.getSignerById(documentId);
+    if (document !== null && signers !== null){
+        let filtered: SignProcess[] = signers.filter((elem) => elem.codice_fiscale_firmatario === codice_fiscale);
+        if (document.codice_fiscale_richiedente === codice_fiscale){
+            next();
+        }else if(filtered.length === 1 && filtered[0].codice_fiscale_firmatario === codice_fiscale){
+            next();
+        }
+        else{
+            next(errorFactory.getError(ErrEnum.Forbidden))
+        }
+    }else{
+        next(errorFactory.getError(ErrEnum.InvalidParams))
+    }
+
+});
+
 
 /**
  * Funzione che controlla se nell'header è presente l'id del documento da utilizzare per i processi di firma
@@ -128,8 +148,8 @@ export const checkIfApplicant = handler(async (req: any, res: any, next: NextFun
 export const checkSigner = handler(async (req:any, res:any, next:NextFunction): Promise<void> => {
     let signers: SignProcess[] | null = await readRepo.getSignerById(req.params.id);
     if(signers !== null){
-        let signer: SignProcess[] = signers?.filter(signer => signer.codice_fiscale_firmatario === req.user.serialNumber);
-        if(signer.length >= 1){
+        let signer: SignProcess[] = signers!.filter(signer => signer.codice_fiscale_firmatario === req.user.serialNumber);
+        if(signer.length === 1){
             if(!signer[0].stato){
                 next();
             }else{
@@ -179,7 +199,7 @@ export const checkIfCompleted = handler(async (req: any, res: any, next: NextFun
         let document: Document | null = await readRepo.getDocument(signProcessId);
         if (document !== null && document.stato_firma){
             //TODO: cambiare errore con uno più specifico
-            next(errorFactory.getError(ErrEnum.GenericError));
+            next(errorFactory.getError(ErrEnum.CertAlreadyExistErr));
         } else if (document !== null){
             next()
         } else {
@@ -193,7 +213,6 @@ export const checkIfCompleted = handler(async (req: any, res: any, next: NextFun
 
 export const checkIfUserEmailExist = handler(async (req:any, res:any, next: NextFunction): Promise<void> => {
     let email = req.body.email;
-    console.log("MIDDLEWARE")
     let user = await readRepo.getUserByEmail(email);
     if (user !== null){
         next();
@@ -202,5 +221,3 @@ export const checkIfUserEmailExist = handler(async (req:any, res:any, next: Next
         next(errorFactory.getError(ErrEnum.InvalidEmail));
     }
 })
-
-export const signProcessMW = [upload.single('document'), checkForm_Data, checkIfAlreadyExistOrSigned];

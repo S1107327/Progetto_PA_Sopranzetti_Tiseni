@@ -169,25 +169,26 @@ export class UserController{
     }
 
     public getSignedDocument(req: any, res: any): void {
-        let documentId: number = req.headers.id
+        let documentId: number = req.params.id
         this.readRepo.getDocument(documentId).then((document) => {
             let hashName = document!.hash_documento
             let extension = path.extname(document!.nome_documento)
             let createAt = Date.parse(document!.created_at.toString())
-            let filePath: string = `/home/node/app/documenti/${hashName}-${createAt}${extension}.p7m`
-            res.download(filePath)
+            let filePath: string = `/home/node/app/documenti/signed/${hashName}-${createAt}${extension}.p7m`
+            let filename: string = `${document!.nome_documento}.p7m`
+            res.download(filePath, filename, (err: any) => {
+                if(err){
+                    let error = errorFactory.getError(ErrEnum.GenericError);
+                    res.status(error.status).json(error.message);
+                }
+            });
         })
     }
 
     //Si presuppone che arrivati a questo punto si sia verficato che il processo di firma sia effettivamente cancellabile
     public cancelSignProcess(req: any, res: any): void {
-        //TODO: creare un middleware che controlla se il processo di firma è finito
         let documentId: number = req.params.id
-        console.log("REQUEST HEADER")
-        console.log(documentId)
         this.readRepo.getDocument(documentId).then((document:Document | null) => {
-            console.log("CONTROLLER")
-            console.log(document)
             this.repo.cancelSignProcess(documentId).then(() => {
                 if (document !== null){
                     let ext: string = path.extname(document.nome_documento)

@@ -23,4 +23,6 @@ export const CANC_PROCESS_MW = [DBMW.checkId, DBMW.checkIfApplicant, DBMW.checkI
 export const SIGN_DOCUMENT_MW = [DBMW.checkId, VALIDMW.checkCertificateExistance, 
                                 DBMW.checkSigner, DBMW.checkExpiration, DBMW.checkChallString, ERRMW.errorHandler];
 
+export const DOWNLOAD_DOC_MW = [DBMW.checkId, DBMW.checkIfSignerOrApplicant, DBMW.checkIfCompleted, ERRMW.errorHandler]
+
 export const ADMIN_MW = [VALIDMW.checkUserEmail, DBMW.checkIfUserEmailExist, VALIDMW.checkTokenNumber, ERRMW.errorHandler]                               
