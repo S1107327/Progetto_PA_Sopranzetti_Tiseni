@@ -72,12 +72,12 @@ export class readRepository implements IReadRepository{
       async getChallengingStrings(codice_fiscale: string): Promise<string[] | null> {
           let user = await User.findByPk(codice_fiscale);
           if (user !== null) {
-              let challStrings: Array<string> = Array<string>();
-              challStrings.push(user.challenging_string.slice(user.challenging_code_one * 2,
+            let challStrings: Array<string> = Array<string>();
+            challStrings.push(user.challenging_string.slice(user.challenging_code_one * 2,
                 user.challenging_code_one * 2 + 2));
-              challStrings.push(user.challenging_string.slice(user.challenging_code_two * 2,
+            challStrings.push(user.challenging_string.slice(user.challenging_code_two * 2,
                 user.challenging_code_two * 2 + 2));
-              return challStrings
+            return challStrings
           }
           return null
       }
