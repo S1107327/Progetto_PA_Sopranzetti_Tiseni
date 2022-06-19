@@ -22,9 +22,9 @@ router.get('/create', chain.CERT_CREATION_MW, (req:any, res:any) => {
     controller.createCertificate(req, res);
 });
 
-router.get('/sign/getchallnumbers', chain.ERR_HANDL_MW, (req: any, res: any) => {
-    controller.getChallengingNumbers(req, res);
-});
+router.get('/invalidate', chain.CERT_INVALIDATION_MW, (req: any, res: any) => {
+    controller.invalidateCertificate(req, res)
+} )
 
 /**
  * Rotta che serve per gestire le richieste per il recupero del credito di un utente
@@ -33,29 +33,8 @@ router.get('/credit', chain.ERR_HANDL_MW, (req:any, res:any) => {
     controller.getUserToken(req, res);
 });
 
-router.get('/sign/status/:id', chain.PROC_STATUS_MW, (req:any, res:any) => {
-    controller.getSignProcessStatus(req, res);
-});
-
 router.get('/download/:id', chain.DOWNLOAD_DOC_MW, (req:any, res:any) => {
     controller.getSignedDocument(req, res);
-});
-
-/**
- * Rotta che serve per gestire le richiesta per invalidare un certificato associato a un utente 
- */
-router.get('/invalidate')
-
-router.post('/sign/start',chain.SIGN_PROCESS_MW, (req:any, res:any) => {
-    controller.startSignProcess(req, res);
-});
-
-router.get('/sign/cancel/:id', chain.CANC_PROCESS_MW, (req: any, res: any) => {
-    controller.cancelSignProcess(req, res)
-});
-
-router.post('/sign/:id', chain.SIGN_DOCUMENT_MW,(req:any, res:any) => {
-    controller.signDocument(req, res);
 });
 
 //ADMIN route

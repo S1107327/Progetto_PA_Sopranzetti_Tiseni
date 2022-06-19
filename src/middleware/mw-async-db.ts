@@ -21,7 +21,6 @@ const readRepo: readRepository = readRepository.getRepo();
 export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunction): Promise<void> => {
     try{
         let signers: Array<string> = req.body.firmatari;
-        console.log(req.body.firmatari);
         for (let i = 0; i<signers.length; i++){
             let result = await readRepo.getUser(signers[i]);
             if (result === null){
@@ -189,6 +188,7 @@ export const checkExpiration = handler(async (req: any, res: any, next: NextFunc
             next(errorFactory.getError(ErrEnum.ChallengingCodeExpired));
         }
     }else{
+        //TODO: controllare questo middleware perchè se non si inseriscono i chall number nel body da un generic error
         next(errorFactory.getError(ErrEnum.GenericError));
     }
 });
@@ -199,8 +199,7 @@ export const checkIfCompleted = handler(async (req: any, res: any, next: NextFun
         console.log(req.params.id)
         let document: Document | null = await readRepo.getDocument(signProcessId);
         if (document !== null && document.stato_firma){
-            //TODO: cambiare errore con uno più specifico
-            next(errorFactory.getError(ErrEnum.CertAlreadyExistErr));
+            next(errorFactory.getError(ErrEnum.SignAlreadyDone));
         } else if (document !== null){
             next()
         } else {
@@ -220,5 +219,34 @@ export const checkIfUserEmailExist = handler(async (req:any, res:any, next: Next
     }
     else{
         next(errorFactory.getError(ErrEnum.InvalidEmail));
+    }
+})
+
+
+export const checkIfSigned = handler(async (req: any, res: any, next: NextFunction) => {
+    try{
+        let signProcessId = req.params.id;
+        console.log(req.params.id)
+        let document: Document | null = await readRepo.getDocument(signProcessId);
+        if (document !== null && document.stato_firma){
+            next()
+        } else if (document !== null){
+            next(errorFactory.getError(ErrEnum.DocumentNotSigned));
+        } else {
+            next(errorFactory.getError(ErrEnum.InvalidId));
+        }
+    }catch{
+        next(errorFactory.getError(ErrEnum.GenericError));
+    }
+});
+
+export const checkTokenQty = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
+    //TODO: controllare domanda su trello
+    let user = await readRepo.getUser(req.user.serialNumber);
+    let signers_number = req.body.firmatari.length;
+    if (user!.numero_token >= signers_number){
+        next();
+    }else{
+        next(errorFactory.getError(ErrEnum.NotEnoughToken))
     }
 })

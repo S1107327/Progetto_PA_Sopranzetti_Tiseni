@@ -1,4 +1,4 @@
-import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail} from "./error-types"
+import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken} from "./error-types"
 
 
 export const errorFactory = {
@@ -74,6 +74,15 @@ export const errorFactory = {
             case ErrEnum.InvalidEmail:
                 returnValue = new InvalidEmail();
                 break;
+            case ErrEnum.DocumentAlreadySigned:
+                returnValue = new DocumentAlreadySigned();
+                break;
+            case ErrEnum.DocumentNotSigned:
+                returnValue = new DocumentNotSigned();
+            break;
+            case ErrEnum.NotEnoughToken:
+                returnValue = new NotEnoughToken();
+            break;
             case ErrEnum.GenericError:
                 returnValue = new GenericError();
                 break;

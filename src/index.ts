@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
 import router from "./route";
+import signRouter from "./route-sign"
 import { appErrorHandler } from './middleware/mw-error';
 
 // App
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', router);
+app.use('/sign', signRouter)
 
 
 app.listen(config.PORT);

@@ -27,6 +27,21 @@ export const checkCertificateAlreadyExist = (req: any, res: Response, next: Next
     });
 };
 
+export const checkCertificateNotExists = (req: any, res: Response, next: NextFunction): void => {
+    console.log(req.user)
+    fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
+        if (err) {
+            next(errorFactory.getError(ErrEnum.GenericError));
+        }
+        if(files.includes(`${req.user.serialNumber}.crt`)){
+            next();
+        }
+        else{
+            next(errorFactory.getError(ErrEnum.CertificateNotFound));
+        }
+    });
+};
+
 export const checkCertificateExistance = (req: any, res: Response, next: NextFunction): void => {
     fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
         if (err) {

@@ -256,4 +256,15 @@ export class UserController{
             res.status(error.status).res.json(error.message);
         });
     } 
+
+    public invalidateCertificate ( req: any, res: any,): void {
+        //Prima versione di invalidazione del certificato dove si cancella tutto
+        let cnfPath: string = path.resolve(__dirname, `../../cnfFiles/${req.user.serialNumber}.cnf`);
+        let certificatePath: string = path.resolve(__dirname, "../../certificati/");
+        deleteFile(cnfPath);
+        deleteFile(certificatePath+"/"+req.user.serialNumber+".key");
+        deleteFile(certificatePath+"/"+req.user.serialNumber+".csr");
+        deleteFile(certificatePath+"/"+req.user.serialNumber+".crt");
+        res.json("Certificate has been correctly invalidated")
+    }
 }

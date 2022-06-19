@@ -138,6 +138,18 @@ export class CertAlreadyExistErr extends Forbidden implements ErrorMsg{
     }
 }
 
+export class DocumentAlreadySigned extends Forbidden implements ErrorMsg{
+    constructor(){
+        super(errorMessages.DocumentAlreadySigned)
+    }
+}
+
+export class DocumentNotSigned extends Forbidden implements ErrorMsg{
+    constructor(){
+        super(errorMessages.DocumentNotSigned)
+    }
+}
+
 export class BadChallengingString extends Unauthorized implements ErrorMsg{
     constructor() {
         super(errorMessages.BadChallengingString);
@@ -148,6 +160,12 @@ export class ChallengingCodeExpired extends Unauthorized implements ErrorMsg{
 
     constructor() {
         super(errorMessages.ChallengingCodeExpired);
+    }
+}
+
+export class NotEnoughToken extends Unauthorized implements ErrorMsg{
+    constructor(){
+        super(errorMessages.NotEnoughToken)
     }
 }
 
@@ -195,5 +213,8 @@ export enum ErrEnum {
     SignerNotAdmitted,
     CertificateNotFound,
     InvalidTokenNumber,
-    InvalidEmail
+    InvalidEmail,
+    DocumentAlreadySigned,
+    DocumentNotSigned,
+    NotEnoughToken
 }
