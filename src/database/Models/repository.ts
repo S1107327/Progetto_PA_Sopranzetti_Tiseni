@@ -5,9 +5,7 @@ import { SignProcess } from "./DAOs/signProcessDAO";
 import { sequelize } from "../connection"
 import { Transaction } from "sequelize";
 import { Retryable, BackOffPolicy } from "typescript-retry-decorator"
-import { setUncaughtExceptionCaptureCallback } from "process";
 
-// TODO: gestire eventuali errori
 /** 
  * Classe per la gestione del repository pattern per l'accesso al database
 */
