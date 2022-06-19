@@ -32,7 +32,6 @@ export function createNewFile (srcDocument: any , fileHash: string, createdAt: a
         let extension = mime.extension(srcDocument.mimetype);
         let filePath: string = `/home/node/app/documenti/src/${fileHash}-${createdAt}.${extension}`;
         let srcDocumentBuffer: Buffer = fs.readFileSync(srcDocument.path);
-        //TODO: controllare se salvare il buffer va bene
         fs.writeFileSync(filePath, srcDocumentBuffer);
         return filePath;
     }catch(err){

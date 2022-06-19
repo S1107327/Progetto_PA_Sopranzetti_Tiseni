@@ -149,7 +149,7 @@ export const checkSigner = handler(async (req:any, res:any, next:NextFunction): 
     let signers: SignProcess[] | null = await readRepo.getSignerById(req.params.id);
     if(signers !== null){
         let signer: SignProcess[] = signers!.filter(signer => signer.codice_fiscale_firmatario === req.user.serialNumber);
-        if(signer.length === 1){
+        if(signer.length === 1 && signer[0].codice_fiscale_firmatario === req.user.serialNumber){
             if(!signer[0].stato){
                 next();
             }else{
@@ -159,7 +159,7 @@ export const checkSigner = handler(async (req:any, res:any, next:NextFunction): 
             next(errorFactory.getError(ErrEnum.SignerNotAdmitted));
         }
     }else{
-        next(errorFactory.getError(ErrEnum.InvalidFormPayload));
+        next(errorFactory.getError(ErrEnum.InvalidParams));
     }
 });
 
@@ -196,6 +196,7 @@ export const checkExpiration = handler(async (req: any, res: any, next: NextFunc
 export const checkIfCompleted = handler(async (req: any, res: any, next: NextFunction) => {
     try{
         let signProcessId = req.params.id;
+        console.log(req.params.id)
         let document: Document | null = await readRepo.getDocument(signProcessId);
         if (document !== null && document.stato_firma){
             //TODO: cambiare errore con uno più specifico
