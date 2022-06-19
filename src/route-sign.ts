@@ -1,8 +1,8 @@
-import { UserController } from './controllers/UserController';
 import Express from 'express';
 import * as chain from './middleware/middleware-chain'
+import { SignController } from './controllers/SignController';
 
-const controller = new UserController();
+const controller = new SignController();
 const signRouter = Express.Router();
 
 signRouter.use(chain.JWT_AUTH_MW)
