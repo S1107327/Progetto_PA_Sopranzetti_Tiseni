@@ -4,6 +4,13 @@ import { Controller } from "./Controller";
 
 export class AdminController extends Controller{
 
+    /**
+     * Funzione utilizzata dalla rotta admin per cambiare il numero di token disponibili ad un utente identificato
+     * tramita la sua email
+     * 
+     * @param {any} req La richiesta che parte dal client e viene validata dai middleware precedenti
+     * @param {any} res La risposta da inviare al client
+     */
     public refillUserToken (req: any, res: any): void {
         let userEmail: string = req.body.email;
         let nToken: number = req.body.nToken;

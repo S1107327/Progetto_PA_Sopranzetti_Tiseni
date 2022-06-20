@@ -7,9 +7,9 @@ import { errorFactory } from "../errors/error-factory";
 /**
  * Controlla che l'header della richiesta possieda le autorizzazioni
  * 
- * @param req: contiene la richiesta arrivata dal client
- * @param res: contiene la risposta del sercer
- * @param next: funzione che contiene il riferimento al prossimo middleware
+ * @param {any} req: contiene la richiesta arrivata dal client
+ * @param {response} res: contiene la risposta del sercer
+ * @param {NextFunction} next: funzione che contiene il riferimento al prossimo middleware
  */
 export const checkHeader = (req:any, res: Response, next: NextFunction): void => {
     const autheader = req.headers.authorization;
@@ -20,9 +20,9 @@ export const checkHeader = (req:any, res: Response, next: NextFunction): void =>
 /**
  * Funzione che controlla che siano presenti le autorizzazioni nell'header e recupera il token da esso
  * 
- * @param req: contiene la richiesta arrivata dal client
- * @param res: contiene la risposta del sercer
- * @param next: funzione che contiene il riferimento al prossimo middleware
+ * @param {any} req: contiene la richiesta arrivata dal client
+ * @param {Response} res: contiene la risposta del sercer
+ * @param {NextFunction} next: funzione che contiene il riferimento al prossimo middleware
  */
 export const checkToken = (req: any,res: Response ,next: NextFunction): void  => {
     const bearerHeader = req.headers.authorization;
@@ -39,9 +39,9 @@ export const checkToken = (req: any,res: Response ,next: NextFunction): void  =>
 /**
  * Funzione che verifica l'autenticazione tramite token JWT
  * 
- * @param req: contiene la richiesta arrivata dal client
- * @param res: contiene la risposta del sercer
- * @param next: funzione che contiene il riferimento al prossimo middleware
+ * @param {any} req: contiene la richiesta arrivata dal client
+ * @param {Response} res: contiene la risposta del sercer
+ * @param {NextFunction} next: funzione che contiene il riferimento al prossimo middleware
  */
 export const verifyAndAuthenticate = (req:any, res: Response, next: NextFunction): void => {
     try{
@@ -62,9 +62,9 @@ export const verifyAndAuthenticate = (req:any, res: Response, next: NextFunction
 /**
  * Funzione che controlla la formattazione nei campi del payload del JWT
  * 
- * @param req 
- * @param res 
- * @param next 
+ * @param {any} req: contiene la richiesta arrivata dal client
+ * @param {Response} res: contiene la risposta del sercer
+ * @param {NextFunction} next: funzione che contiene il riferimento al prossimo middleware
  */
 export function checkJWTPayload (req: any, res: Response, next: NextFunction): void {
     const variableLengthRg: RegExp = /^[a-zA-Z" "]+$/;

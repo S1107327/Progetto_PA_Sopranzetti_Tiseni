@@ -9,7 +9,7 @@ export interface IReadRepository {
   getChallengingStrings(codice_fiscale: string): Promise<string[] | null>;
   // recupera la scadenza dei due challenging code
   getChallCodeExp(codice_fiscale: string): Promise<Date | null>;
-  // controlla se un utente è un firmatario
+  // recupera tutti i firmatari associati a un particolare documento
   getSignerById(document_id: number): Promise<SignProcess[] | null>;
   // ritorna un utente collegato a quel codice fiscale
   getUser(cf_user: string): Promise<User | null>;

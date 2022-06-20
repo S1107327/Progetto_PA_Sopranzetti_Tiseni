@@ -55,13 +55,8 @@ User.init({
     {
         sequelize,
         tableName: 'utenti',
-        // don't add the timestamp attributes (updatedAt, createdAt)
         timestamps: false,
-
-        // If don't want createdAt
         createdAt: false,
-
-        // If don't want updatedAt
         updatedAt: false,
 })
 

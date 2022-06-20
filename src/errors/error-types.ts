@@ -25,34 +25,29 @@ export class SignError extends GenericError implements ErrorMsg {
 }
 
 export class Forbidden extends GenericError implements ErrorMsg{
-
     constructor(message?: string) {
         super(message || errorMessages.Forbidden, 403);
     }
 }
 export class Unauthorized extends GenericError implements ErrorMsg{
-
     constructor(message?: string) {
         super(message || errorMessages.Unauthorized, 401);
     }
 }
 
 export class MissingAuthHeader extends Forbidden implements ErrorMsg{
-
     constructor(){
         super(errorMessages.MissingAuthHeader);
     }
 }
 
 export class JWTVerifyError extends Forbidden implements ErrorMsg{
-
     constructor(){
         super(errorMessages.JWTVerifyError);
     }
 }
 
 export class UnregisteredUser extends Forbidden implements ErrorMsg{
-
     constructor(){
         super(errorMessages.UnregisteredUser);
     }
@@ -163,7 +158,6 @@ export class BadChallengingString extends Unauthorized implements ErrorMsg{
 }
 
 export class ChallengingCodeExpired extends Unauthorized implements ErrorMsg{
-
     constructor() {
         super(errorMessages.ChallengingCodeExpired);
     }

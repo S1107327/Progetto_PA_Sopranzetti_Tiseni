@@ -26,11 +26,11 @@ export class Repository implements IRepository {
      * Funzione che si occupa di certificare sul database che è iniziato un nuovo processo di
      * firma di un documento, con i relativi firmatari. Ritorna al chiamante l'id del processo 
      * di firma
-     * @param document_name nome del documento
-     * @param document_hash hash del contenuto del documento e dei suoi firmatari
-     * @param codice_fiscale_richiedente codice fiscale del richiedente del processo di firma
-     * @param firmatari array contenente i codici fiscali di tutti i firmatari
-     * @returns Promise<number>
+     * @param {string} document_name nome del documento
+     * @param {string} document_hash hash del contenuto del documento e dei suoi firmatari
+     * @param {string} codice_fiscale_richiedente codice fiscale del richiedente del processo di firma
+     * @param {Array<string>} firmatari array contenente i codici fiscali di tutti i firmatari
+     * @returns {Promise<Document>} Documento associato al nuovo processo di firma
      */
     @Retryable({
         maxAttempts: 3,
@@ -62,9 +62,9 @@ export class Repository implements IRepository {
     * Funzione che peremette a una qualsiasi firmatario coinvolto in un processo di firma 
     * di apporre la firma sul documento. Ritorna true se la firma apposta ha concluso il 
     * processo di firma e false altrimenti.
-    * @param document_id id del documento e del processo di firma
-    * @param codice_fiscale codice fiscale del firmatario che deve apporre la firma
-    * @returns Promise<boolean>
+    * @param {number} document_id id del documento e del processo di firma
+    * @param {string} codice_fiscale codice fiscale del firmatario che deve apporre la firma
+    * @returns Promise<boolean> booleano che indica se è stata apposta l'ultima firma al documento
     */
     @Retryable({
         maxAttempts: 3,
@@ -96,6 +96,10 @@ export class Repository implements IRepository {
         }
     }
 
+    /**
+     * Annulla il processo di firma associato a un documento
+     * @param {number} document_id id del documento
+     */
     @Retryable({
         maxAttempts: 3,
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
@@ -118,6 +122,13 @@ export class Repository implements IRepository {
         });
     }
 
+    /**
+     * Cambia il numero di token associati a un particolare utente identificato
+     * dalla sua email
+     * @param {string} user_email email dell'utente 
+     * @param {number} adding_token nuovo numero di token dell'utente
+     * @returns {Promise<void>}
+     */
     @Retryable({
         maxAttempts: 3,
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
@@ -131,6 +142,12 @@ export class Repository implements IRepository {
                 where: { email_address: user_email }
             })
     }
+
+    /**
+     * Consuma i token di un utente
+     * @param {string} codice_fiscale codice fiscale dell'utente
+     * @param {number} token_number numero di token da scalare all'utente
+     */
     @Retryable({
         maxAttempts: 3,
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
@@ -144,6 +161,13 @@ export class Repository implements IRepository {
                 where: { codice_fiscale: codice_fiscale }
             })
     }
+
+    /**
+     * Aggiorna i challenging code di un utente e la loro data di scadenza
+     * @param {string} firmatario codice fiscale dell'utente del quale si aggiornano i challenging codes
+     * @param {Array<number} codes nuovi challenging codes associati all'utente
+     * @param {Date} expiration nuova data di scadenza dei challenging codes
+     */
     @Retryable({
         maxAttempts: 3,
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,

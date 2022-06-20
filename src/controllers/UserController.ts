@@ -39,7 +39,12 @@ export class UserController extends Controller{
             res.status(error.status).json(error.message)
         }
     }
-    //TODO: fare documentazione
+    /**
+     * Invalida un certificato associato ad un utente cancellando: il file .key, il file .csr, il file .crt
+     * e il file di confidurazione .cnf
+     * @param {any} req la richiesta che arriva dai middleware che l'hanno validata in precedenza
+     * @param {any} res la risposta da inviare al client
+     */
     public invalidateCertificate ( req: any, res: any,): void {
         //Prima versione di invalidazione del certificato dove si cancella tutto
         let cnfPath: string = path.resolve(__dirname, `../../cnfFiles/${req.user.serialNumber}.cnf`);

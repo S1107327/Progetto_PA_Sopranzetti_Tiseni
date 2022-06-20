@@ -4,6 +4,12 @@ import { NextFunction, Request, Response } from "express";
 import * as fs from 'fs';
 import path from "path";
 
+/**
+ * Middleware che controlla la corretta formattazione del payload JSON
+ * @param {any} req 
+ * @param {Response} res 
+ * @param {NextFunction} next 
+ */
 export const checkPayload = (req: Request, res: Response, next: NextFunction): void => {
     try {
         req.body = JSON.parse(req.body)
@@ -13,6 +19,13 @@ export const checkPayload = (req: Request, res: Response, next: NextFunction): v
     }
 };
 
+/**
+ * Middleware che controlla se un certificato associato a un determinato utente già esiste, il middleware manda avanti 
+ * la catena di esecuzione dei middleware se il certificato non esiste
+ * @param {any} req 
+ * @param {Response} res 
+ * @param {NextFunction} next 
+ */
 export const checkCertificateAlreadyExist = (req: any, res: Response, next: NextFunction): void => {
     fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
         if (err) {
@@ -27,6 +40,13 @@ export const checkCertificateAlreadyExist = (req: any, res: Response, next: Next
     });
 };
 
+/**
+ * Middleware che controlla se un certificato associato a un determinato utente già esiste, il middleware manda avanti 
+ * la catena di esecuzione dei middleware se il certificato esiste
+ * @param {any} req 
+ * @param {Response} res 
+ * @param {NextFunction} next 
+ */
 export const checkCertificateNotExists = (req: any, res: Response, next: NextFunction): void => {
     fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
         if (err) {
@@ -41,20 +61,12 @@ export const checkCertificateNotExists = (req: any, res: Response, next: NextFun
     });
 };
 
-export const checkCertificateExistance = (req: any, res: Response, next: NextFunction): void => {
-    fs.readdir(path.resolve(__dirname, `../../certificati`), function (err, files) {
-        if (err) {
-            next(errorFactory.getError(ErrEnum.GenericError));
-        }
-        if(!(files.includes(`${req.user.serialNumber}.crt`))){
-            next(errorFactory.getError(ErrEnum.CertificateNotFound));
-        }
-        else{
-            next();
-        }
-    });
-};
-
+/**
+ * Middleware che controlla se l'email specificata nel body della richiesta sia una mail valida
+ * @param {any} req 
+ * @param {Response} res 
+ * @param {NextFunction} next 
+ */
 export const checkUserEmail = (req: any, res: Response, next: NextFunction): void => {
     let email: string = req.body.email;
     const emailAddressRg: RegExp = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -66,6 +78,13 @@ export const checkUserEmail = (req: any, res: Response, next: NextFunction): voi
     }
 }
 
+/**
+ * Middleware che controlla se il numero di token specificati nel body della richiesta sia un numero valido,
+ * ovvero un intero positivo maggiore di 0
+ * @param {any} req 
+ * @param {Response} res 
+ * @param {NextFunction} next 
+ */
 export const checkTokenNumber = (req: any, res: Response, next: NextFunction): void => {
     if(req.body.nToken !== undefined && Number.isInteger(Number(req.body.nToken)) && req.body.nToken > 0){
         next();
@@ -74,8 +93,14 @@ export const checkTokenNumber = (req: any, res: Response, next: NextFunction): v
     }
 }
 
+/**
+ * Middleware che controlla se il payload JSON per l'inserimento dei challenging codes sia correttamente
+ * formattato
+ * @param {any} req 
+ * @param {Response} res 
+ * @param {NextFunction} next 
+ */
 export const checkChallJSONBody = (req: any, res: Response, next: NextFunction): void => {
-    console.log(req.body.codes)
     if(req.body.codes !== undefined && Array.isArray(req.body.codes) && req.body.codes.length === 2)
         next();
     else

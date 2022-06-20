@@ -12,10 +12,12 @@ import { SignProcess } from "../database/Models/DAOs/signProcessDAO";
 const readRepo: readRepository = readRepository.getRepo();
 
 /**
- * Funzione che controlla se gli utenti firmatari inseriri sono utenti registrati
- * @param req 
- * @param res 
- * @param next 
+ * Funzione che controlla se gli utenti firmatari inseriti sono utenti registrati,
+ * sono diversi e che si sia inserito almeno un file.
+ * 
+ * @param {any} req 
+ * @param {any} res 
+ * @param {NextFunction} next 
  */
 export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunction): Promise<void> => {
     try{
@@ -40,11 +42,12 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
 
 /**
  * Funzione che controlla se i dati nel payload del token JWT sono conformi ai dati
- * degli utenti nel database
+ * degli utenti nel database, in particolare, si controlla se esiste un utente nel database
+ * con lo stesso codice fiscale, o serilNumber, di quello che sta sul token JWT
  * 
- * @param req 
- * @param res 
- * @param next 
+ * @param {any} req 
+ * @param {any} res 
+ * @param {NextFunction} next 
  */
 
 export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
@@ -61,15 +64,13 @@ export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFun
 
 /**
  * Funzione che controlla se il documento di cui è stata richiesta la firma già esiste nel database e 
- * quindi è stato firmato dagli stessi firmatari in passato, perciò non può più essere firmato
+ * quindi è stato firmato dagli stessi firmatari in passato, perciò non può più essere firmato di nuovo
  * 
- * @param req 
- * @param res 
- * @param next 
+ * @param {any} req 
+ * @param {any} res 
+ * @param {any} next 
  * 
  */
-
-
 export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     //Non serve un generic error perché se c'è un qualsiasi errore diverso da quelli previsti (ad esempio durante la lettura) viene resistuito un errore
     //di tipo genericError di default dalla factory
@@ -87,6 +88,13 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
     }
 });
 
+/**
+ * Controlla se l'utente aveva richiesto la firma del documento specificato nei parametri della richiesta
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkIfApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
     let documentId:number = req.params.id
@@ -99,6 +107,14 @@ export const checkIfApplicant = handler(async (req: any, res: any, next: NextFun
     }
 });
 
+/**
+ * Controlla se l'utente è il richiedente del processo di firma o uno dei firmatari partecipanti al processo
+ * rispetto a un certo documento il cui id è specificato nei parametri della richiesta
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let codice_fiscale: string = req.user.serialNumber;
     let documentId:number = req.params.id;
@@ -118,10 +134,11 @@ export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next:
 
 /**
  * Funzione che controlla se nell'header è presente l'id del documento da utilizzare per i processi di firma
- * e varie altre funzionalità che richiedono l'id del documento
- * @param req 
- * @param res 
- * @param next 
+ * e varie altre funzionalità che richiedono l'id del documento.
+ * 
+ * @param {any} req 
+ * @param {any} res 
+ * @param {NextFunction} next 
  */
  export const checkId = handler(async (req: any, res:any, next:NextFunction): Promise<void> => {
     if(req.params.id !== undefined && Number.isInteger(Number(req.params.id)) && req.params.id > 0){
@@ -137,6 +154,14 @@ export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next:
         next(errorFactory.getError(ErrEnum.InvalidParams));
 });
 
+/**
+ * Controlla se l'utente che sta facendo la richiesta è tra i firmatari di un certo documento il cui id è 
+ * specificato nei parametri della richiesta.
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkSigner = handler(async (req:any, res:any, next:NextFunction): Promise<void> => {
     let signers: SignProcess[] | null = await readRepo.getSignerById(req.params.id);
     //Signers non può essere null perché in checkId si controlla che il documento esiste e secondo checkForm_Data non si può creare 
@@ -153,6 +178,13 @@ export const checkSigner = handler(async (req:any, res:any, next:NextFunction): 
     }
 });
 
+/**
+ * Controlla se le challenging string fornite dall'utente sono congruenti con quelle previste 
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkChallString = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let challstrings: string[] | null = await readRepo.getChallengingStrings(req.user.serialNumber);
     if(challstrings!.length === req.body.codes.length && 
@@ -163,6 +195,13 @@ export const checkChallString = handler(async (req: any, res: any, next: NextFun
     }
 });
 
+/**
+ * Controlla se i challenging code associati a un particolare utente sono scaduti
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkExpiration = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     let exp: Date | null = await readRepo.getChallCodeExp(req.user.serialNumber);
     if(exp !== null){
@@ -178,6 +217,13 @@ export const checkExpiration = handler(async (req: any, res: any, next: NextFunc
     }
 });
 
+/**
+ * Controlla che il processo di firma di un particolare documento non sia stato già completato
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkIfCompleted = handler(async (req: any, res: any, next: NextFunction) => {
         let signProcessId = req.params.id;
         let document: Document | null = await readRepo.getDocument(signProcessId);
@@ -189,6 +235,13 @@ export const checkIfCompleted = handler(async (req: any, res: any, next: NextFun
 });
 
 
+/**
+ * Controlla se esiste un utente associato a una pericolare email specificata nel body della richiesta
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkIfUserEmailExist = handler(async (req:any, res:any, next: NextFunction): Promise<void> => {
     let email = req.body.email;
     let user = await readRepo.getUserByEmail(email);
@@ -201,6 +254,13 @@ export const checkIfUserEmailExist = handler(async (req:any, res:any, next: Next
 })
 
 
+/**
+ * Controlla che il processo di firma di un particolare documento sia già stato completato
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkIfSigned = handler(async (req: any, res: any, next: NextFunction) => {
     let signProcessId = req.params.id;
     let document: Document | null = await readRepo.getDocument(signProcessId);
@@ -210,6 +270,13 @@ export const checkIfSigned = handler(async (req: any, res: any, next: NextFuncti
         next(errorFactory.getError(ErrEnum.DocumentNotSigned));
 });
 
+/**
+ * Controlla se l'utente che sta facendo la richiesta abbia sufficienti token per farla
+ * 
+ * @param {any} req
+ * @param {any} res
+ * @param {NextFunction} next
+ */
 export const checkTokenQty = handler(async (req: any, res: any, next: NextFunction): Promise<void> => {
     //user non può essere null perchè controllato durante l'autenticazione con JWT
     let user = await readRepo.getUser(req.user.serialNumber);
