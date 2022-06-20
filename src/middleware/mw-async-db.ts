@@ -36,13 +36,11 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
             for (let i = 0; i<signers.length && error === null; i++){
                 let result = await readRepo.getUser(signers[i]);
                 if (result === null){
-                    console.log("ERRORE")
                     error=errorFactory.getError(ErrEnum.UnregisteredUser) 
                     next(error)
                 }
             }
             if (error === null){
-                console.log("NEXT")
                 next()   
             }   
         }else{

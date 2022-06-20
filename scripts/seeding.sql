@@ -31,7 +31,7 @@ CREATE TABLE processifirma(
 );
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('MNCDRN82T30D542U', 'demo@mailinator.com','100', 'abcdefghijklmnopqrstuvwxyzABCDEF');
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('LSPDRN94T30D542U', 'demo1@mailinator.com','100', 'aZcEeBghijKlmNopQrstuVwAyzabbccd');
-INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('TSNLNZ99E06E690J', 'demo2@mailinator.com','10', 'ZZdEFgHHIjLkOOPqRaSgUVabcZZbcdEF');
+INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('TSNLNZ99E06E690J', 'demo2@mailinator.com','1', 'ZZdEFgHHIjLkOOPqRaSgUVabcZZbcdEF');
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('GHELFN85G56A271E', 'demo3@mailinator.com','1', 'UiOsGGhifcKlMnODxxAzeRkvbZssDEVF');
 INSERT INTO utenti (codice_fiscale, email_address, numero_token, challenging_string) VALUES ('EFGLOR66T67A341E', 'demo4@mailinator.com','20', 'AFcDevvSlKJJznBQwRtGGHzDSQalhfmt');
 /*INSERT INTO documenti (codice_fiscale_richiedente, numero_firmatari, nome_documento, hash_documento, stato_firma) VALUES ('MNCDRN82T30D542U', 2,'demo.txt', 'AFcDevvSlKJJznBQwRtGGHzDSQalhfmt', 'false');
