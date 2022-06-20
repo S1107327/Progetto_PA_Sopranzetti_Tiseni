@@ -36,11 +36,13 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
             for (let i = 0; i<signers.length && error === null; i++){
                 let result = await readRepo.getUser(signers[i]);
                 if (result === null){
+                    console.log("ERRORE")
                     error=errorFactory.getError(ErrEnum.UnregisteredUser) 
                     next(error)
                 }
             }
             if (error === null){
+                console.log("NEXT")
                 next()   
             }   
         }else{
@@ -225,8 +227,7 @@ export const checkExpiration = handler(async (req: any, res: any, next: NextFunc
             next(errorFactory.getError(ErrEnum.ChallengingCodeExpired));
         }
     }else{
-        //TODO: Cambiare errore: l'errore si ha solo quando l'utente non ha mai chiesto challenging code prima
-        next(errorFactory.getError(ErrEnum.GenericError));
+        next(errorFactory.getError(ErrEnum.ChallCodesNotRequested));
     }
 });
 

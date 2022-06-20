@@ -193,6 +193,12 @@ export class CannotCancel extends Forbidden implements ErrorMsg{
     }
 }
 
+export class ChallCodesNotRequested extends Forbidden implements ErrorMsg{
+    constructor(){
+        super(errorMessages.ChallCodesNotRequested)
+    }
+}
+
 export class CertificateNotFound extends NotFound implements ErrorMsg{
     constructor() {
         super(errorMessages.CertificateNotFound);
@@ -231,5 +237,6 @@ export enum ErrEnum {
     DocumentNotSigned,
     NotEnoughToken,
     NoChallCodes,
-    CannotCancel
+    CannotCancel,
+    ChallCodesNotRequested
 }

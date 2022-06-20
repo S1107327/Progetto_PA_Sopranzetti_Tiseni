@@ -30,5 +30,6 @@ export enum errorMessages {
     DocumentNotSigned = "Error! The specified document has not been signed yet",
     NotEnoughToken = "Error! You don't have enough token to perform this operation",
     NoChallCodes = "Error! No challenging codes are provided or the JSON body isn't correctly formatted, please try again. Note: you must define an array called 'codes' with two string element at the first level of the JSON body.",
-    CannotCancel = "Error! You cannot cancel a terminated sign process"
+    CannotCancel = "Error! You cannot cancel a terminated sign process",
+    ChallCodesNotRequested = "Error! You can not sign a document before requesting challenging codes"
 }
