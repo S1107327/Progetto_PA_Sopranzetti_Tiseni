@@ -60,6 +60,12 @@ export class NotFound extends GenericError implements ErrorMsg{
 
 }
 
+export class RouteNotFound extends NotFound implements ErrorMsg{
+    constructor(){
+        super(errorMessages.RouteNotFound);
+    }
+}
+
 export class InvalidId extends NotFound implements ErrorMsg{
     constructor(){
         super(errorMessages.InvalidId);
@@ -200,6 +206,7 @@ export enum ErrEnum {
     Forbidden,
     NotFound,
     ValidationError,
+    RouteNotFound,
     MissingAuthHeader,
     InvalidJSONPayload,
     JWTVerifyError,

@@ -4,6 +4,7 @@ export enum errorMessages {
     Forbidden = "Error! This operation is forbidden to the current user",
     Unauthorized = "Error! User isn't authorized to perform this operation",
     NotFound = "Error! Requested resource was not found",
+    RouteNotFound = "Error! Route not found or incorrect http method used",
     ValidationError = "Error! Invalid or malformed input",
     MissingAuthHeader = "Error! No authorization header",
     InvalidJSONPayload = "Error! JSON payload is not correctly formatted",

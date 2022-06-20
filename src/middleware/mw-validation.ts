@@ -5,6 +5,16 @@ import * as fs from 'fs';
 import path from "path";
 
 /**
+ * Middleware che controlla l'esistenza della rotta desisderata'
+ * @param {any} req 
+ * @param {Response} res 
+ * @param {NextFunction} next 
+ */
+export const RouteNotFound = (req: Request, res: Response, next: NextFunction): void => {
+    next(errorFactory.getError(ErrEnum.RouteNotFound));
+}
+
+/**
  * Middleware che controlla la corretta formattazione del payload JSON
  * @param {any} req 
  * @param {Response} res 
@@ -20,8 +30,9 @@ export const checkPayload = (req: Request, res: Response, next: NextFunction): v
 };
 
 /**
- * Middleware che controlla se un certificato associato a un determinato utente già esiste, il middleware manda avanti 
- * la catena di esecuzione dei middleware se il certificato non esiste
+ * Middleware che controlla se un certificato associato a un determinato utente già esiste, 
+ * il middleware manda avanti la catena di esecuzione dei middleware se il certificato 
+ * non esiste
  * @param {any} req 
  * @param {Response} res 
  * @param {NextFunction} next 
@@ -41,8 +52,8 @@ export const checkCertificateAlreadyExist = (req: any, res: Response, next: Next
 };
 
 /**
- * Middleware che controlla se un certificato associato a un determinato utente già esiste, il middleware manda avanti 
- * la catena di esecuzione dei middleware se il certificato esiste
+ * Middleware che controlla se un certificato associato a un determinato utente già esiste,
+ * il middleware manda avanti la catena di esecuzione dei middleware se il certificato esiste
  * @param {any} req 
  * @param {Response} res 
  * @param {NextFunction} next 
@@ -79,8 +90,8 @@ export const checkUserEmail = (req: any, res: Response, next: NextFunction): voi
 }
 
 /**
- * Middleware che controlla se il numero di token specificati nel body della richiesta sia un numero valido,
- * ovvero un intero positivo maggiore di 0
+ * Middleware che controlla se il numero di token specificati nel body della richiesta sia un 
+ * numero valido, ovvero un intero positivo
  * @param {any} req 
  * @param {Response} res 
  * @param {NextFunction} next 
@@ -94,8 +105,8 @@ export const checkTokenNumber = (req: any, res: Response, next: NextFunction): v
 }
 
 /**
- * Middleware che controlla se il payload JSON per l'inserimento dei challenging codes sia correttamente
- * formattato
+ * Middleware che controlla se il payload JSON per l'inserimento dei challenging codes sia 
+ * correttamente formattato
  * @param {any} req 
  * @param {Response} res 
  * @param {NextFunction} next 

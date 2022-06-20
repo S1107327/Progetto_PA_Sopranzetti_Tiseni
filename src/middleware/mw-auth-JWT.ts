@@ -18,7 +18,7 @@ export const checkHeader = (req:any, res: Response, next: NextFunction): void =>
 
 
 /**
- * Funzione che controlla che siano presenti le autorizzazioni nell'header e recupera il token da esso
+ * Controlla che siano presenti le autorizzazioni nell'header e recupera il token da esso
  * 
  * @param {any} req: contiene la richiesta arrivata dal client
  * @param {Response} res: contiene la risposta del sercer
@@ -37,7 +37,7 @@ export const checkToken = (req: any,res: Response ,next: NextFunction): void  =>
 
 
 /**
- * Funzione che verifica l'autenticazione tramite token JWT
+ * Verifica l'autenticazione tramite token JWT
  * 
  * @param {any} req: contiene la richiesta arrivata dal client
  * @param {Response} res: contiene la risposta del sercer
@@ -60,7 +60,7 @@ export const verifyAndAuthenticate = (req:any, res: Response, next: NextFunction
 }
 
 /**
- * Funzione che controlla la formattazione nei campi del payload del JWT
+ * Controlla la formattazione nei campi del payload del JWT
  * 
  * @param {any} req: contiene la richiesta arrivata dal client
  * @param {Response} res: contiene la risposta del sercer

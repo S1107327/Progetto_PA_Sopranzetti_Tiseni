@@ -4,7 +4,8 @@ import { NextFunction, Response } from "express";
 import multer from "multer";
 
 /**
- * Middleware che gestisce gli errori che possono essere generati da un payload JSON mal formattato
+ * Middleware che gestisce gli errori che possono essere generati da un payload JSON 
+ * mal formattato
  * @param {any} err 
  * @param {any} req 
  * @param {any} res 
@@ -35,7 +36,8 @@ export function multerErrorHandler (err: any, req: any, res: Response, next: Nex
 }
 
 /**
- * Middleware che gestisce gli errori che si possono verificare in tutti i middleware precedenti della catena
+ * Middleware che gestisce gli errori che si possono verificare in tutti i middleware 
+ * precedenti della catena
  * @param {any} err 
  * @param {any} req 
  * @param {Response} res 

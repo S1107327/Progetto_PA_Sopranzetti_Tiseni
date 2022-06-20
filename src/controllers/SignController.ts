@@ -5,6 +5,7 @@ import { Controller } from "./Controller";
 import { SignProcess } from "../database/Models/DAOs/signProcessDAO";
 import { Document } from "../database/Models/DAOs/documentDAO";
 import { execSync } from "child_process";
+import * as openssl from '../utils/commands';
 import config from "../config";
 import path from "path";
 
@@ -113,14 +114,13 @@ export class SignController extends Controller{
         this.repo.signDocument(req.params.id, req.user.serialNumber).then((last: Boolean) => {
             if(last){
                 this.readRepo.getDocument(req.params.id).then((document:Document | null) => {
-                    let ext = path.extname(document!.nome_documento)
-                    let command: string = `openssl cms -sign -in ./src/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext} -out ./signed/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext}.p7m -nodetach -cades -outform DER -stream -binary -passin pass:${config.PEMPASSPHRASE}`
+                    let command: string = openssl.opensslSignBase(document!);
                     this.readRepo.getSignerById(req.params.id).then((signers: SignProcess[] | null) => {
                         signers!.forEach((signer) => {
-                            command += ` -signer ../certificati/${signer.codice_fiscale_firmatario}.crt -inkey ../certificati/${signer.codice_fiscale_firmatario}.key`
+                            command += openssl.opensslAddSigner(signer.codice_fiscale_firmatario);
                         });
                         try{
-                            execSync(command, {cwd: "/home/node/app/documenti"});
+                            execSync(command, {cwd: openssl.documentFolder});
                             this.repo.consumeToken(document!.codice_fiscale_richiedente,signers!.length)
                             res.send(`File correctly signed by user ${req.user.serialNumber}`);
                         }catch(err){
@@ -150,7 +150,7 @@ export class SignController extends Controller{
             this.repo.cancelSignProcess(documentId).then(() => {
                 if (document !== null){
                     let ext: string = path.extname(document.nome_documento)
-                    let filePath: string =  `/home/node/app/documenti/src/${document.hash_documento}-${Date.parse(document.created_at.toString())}${ext}`;
+                    let filePath: string =  `${openssl.documentFolder}/src/${document.hash_documento}-${Date.parse(document.created_at.toString())}${ext}`;
                     deleteFile(filePath);
                     res.json("Sign Process has been correctly cancelled");
                 }else{

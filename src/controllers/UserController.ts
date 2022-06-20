@@ -1,7 +1,6 @@
-import { execSync } from 'child_process';
 import { createCnfFile, deleteFile } from '../utils/files';
 import path from 'path';
-import config from '../config'
+import * as openssl from '../utils/commands';
 import { ErrEnum } from '../errors/error-types';
 import {errorFactory} from '../errors/error-factory'
 import { Controller } from './Controller';
@@ -18,41 +17,36 @@ export class UserController extends Controller{
      * @param {any} res Risposta da inviare al client
      */
     public createCertificate(req:any, res:any){
-        let cnfPath: string = path.resolve(__dirname, `../../cnfFiles/${req.user.serialNumber}.cnf`);
-        let certificatePath: string = path.resolve(__dirname, "../../certificati/");
+        let cnfPath: string = openssl.getCnfPath(req.user.serialNumber);
         try{
             let user:any = createCnfFile(req.user, cnfPath);
-            execSync(`openssl req -new -config ${cnfPath} -keyout ${req.user.serialNumber}.key -passout pass:${config.PEMPASSPHRASE} -out ${req.user.serialNumber}.csr`,
-                {cwd: certificatePath});
-            execSync(`openssl x509 -req -days 365 -in ${req.user.serialNumber}.csr -CA ../config/rootCACert.pem -CAkey ../config/rootCAKey.pem -CAcreateserial -out ${req.user.serialNumber}.crt -extensions user_crt -extfile ${cnfPath}`,
-                {cwd: certificatePath});
+            openssl.opensslCreateCertificate(req.user.serialNumber, cnfPath);
                 res.send({
                     message:`Created certificate for user ${req.user.serialNumber}`,
                     certificate_datas: user
                 });
         }catch (err) {
             deleteFile(cnfPath);
-            deleteFile(certificatePath+"/"+req.user.serialNumber+".key");
-            deleteFile(certificatePath+"/"+req.user.serialNumber+".csr");
-            deleteFile(certificatePath+"/"+req.user.serialNumber+".crt");
+            deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".key");
+            deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".csr");
+            deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".crt");
             let error = errorFactory.getError(ErrEnum.CertCreationError)
             res.status(error.status).json(error.message)
         }
     }
     /**
-     * Invalida un certificato associato ad un utente cancellando: il file .key, il file .csr, il file .crt
-     * e il file di confidurazione .cnf
+     * Invalida un certificato associato ad un utente cancellando: il file .key, il file .csr,
+     * il file .crt e il file di confidurazione .cnf
      * @param {any} req la richiesta che arriva dai middleware che l'hanno validata in precedenza
      * @param {any} res la risposta da inviare al client
      */
     public invalidateCertificate ( req: any, res: any,): void {
         //Prima versione di invalidazione del certificato dove si cancella tutto
-        let cnfPath: string = path.resolve(__dirname, `../../cnfFiles/${req.user.serialNumber}.cnf`);
-        let certificatePath: string = path.resolve(__dirname, "../../certificati/");
+        let cnfPath: string = openssl.getCnfPath(req.user.serialNumber);
         deleteFile(cnfPath);
-        deleteFile(certificatePath+"/"+req.user.serialNumber+".key");
-        deleteFile(certificatePath+"/"+req.user.serialNumber+".csr");
-        deleteFile(certificatePath+"/"+req.user.serialNumber+".crt");
+        deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".key");
+        deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".csr");
+        deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".crt");
         res.json("Certificate has been correctly invalidated")
     }
     
