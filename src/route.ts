@@ -17,11 +17,15 @@ router.get('/', (req, res) => {
 });
 
 /**
- * Rotta che permette all'utente di creare un nuovo certificato prelevando i valori dal token JWT */ 
+ * Rotta che permette all'utente di creare un nuovo certificato prelevando i valori dal token JWT 
+ */ 
 router.get('/create', chain.CERT_CREATION_MW, (req:any, res:any) => {
     controller.createCertificate(req, res);
 });
 
+/**
+ * Rotta che permette di invalidare un certificato associato ad un utente.
+ */
 router.get('/invalidate', chain.CERT_INVALIDATION_MW, (req: any, res: any) => {
     controller.invalidateCertificate(req, res)
 } )
@@ -33,11 +37,16 @@ router.get('/credit', chain.ERR_HANDL_MW, (req:any, res:any) => {
     controller.getUserToken(req, res);
 });
 
+/**
+ * Rotta che consente di scaricare un particolare documento indicandone l'id nella rotta
+ */
 router.get('/download/:id', chain.DOWNLOAD_DOC_MW, (req:any, res:any) => {
     controller.getSignedDocument(req, res);
 });
 
-//ADMIN route
+/**
+ * Rotta che consente all'admin di modficare il credito di un utente.
+ */
 router.post('/admin/refill', chain.ADMIN_MW, (req: any, res: any) => {
     adminController.refillUserToken(req, res)
 });
