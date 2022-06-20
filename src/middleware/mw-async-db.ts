@@ -63,8 +63,9 @@ export const checkUserAuthJWT = handler(async (req: any, res: any, next: NextFun
 });
 
 /**
- * Funzione che controlla se il documento di cui è stata richiesta la firma già esiste nel database e 
- * quindi è stato firmato dagli stessi firmatari in passato, perciò non può più essere firmato di nuovo
+ * Funzione che controlla se il documento di cui è stata richiesta la firma già esiste nel 
+ * database e quindi è stato firmato dagli stessi firmatari in passato, perciò non può più 
+ * essere firmato di nuovo
  * 
  * @param {any} req 
  * @param {any} res 
@@ -89,7 +90,8 @@ export const checkIfAlreadyExistOrSigned = handler(async (req: any, res: any, ne
 });
 
 /**
- * Controlla se l'utente aveva richiesto la firma del documento specificato nei parametri della richiesta
+ * Controlla se l'utente aveva richiesto la firma del documento specificato nei parametri 
+ * della richiesta
  * 
  * @param {any} req
  * @param {any} res
@@ -108,8 +110,9 @@ export const checkIfApplicant = handler(async (req: any, res: any, next: NextFun
 });
 
 /**
- * Controlla se l'utente è il richiedente del processo di firma o uno dei firmatari partecipanti al processo
- * rispetto a un certo documento il cui id è specificato nei parametri della richiesta
+ * Controlla se l'utente è il richiedente del processo di firma o uno dei firmatari 
+ * partecipanti al processo rispetto a un certo documento il cui id è specificato nei 
+ * parametri della richiesta
  * 
  * @param {any} req
  * @param {any} res
@@ -133,8 +136,8 @@ export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next:
 
 
 /**
- * Funzione che controlla se nell'header è presente l'id del documento da utilizzare per i processi di firma
- * e varie altre funzionalità che richiedono l'id del documento.
+ * Funzione che controlla se nell'header è presente l'id del documento da utilizzare 
+ * per i processi di firma e varie altre funzionalità che richiedono l'id del documento.
  * 
  * @param {any} req 
  * @param {any} res 
@@ -155,8 +158,8 @@ export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next:
 });
 
 /**
- * Controlla se l'utente che sta facendo la richiesta è tra i firmatari di un certo documento il cui id è 
- * specificato nei parametri della richiesta.
+ * Controlla se l'utente che sta facendo la richiesta è tra i firmatari di un certo documento 
+ * il cui id è specificato nei parametri della richiesta.
  * 
  * @param {any} req
  * @param {any} res

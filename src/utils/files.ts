@@ -1,8 +1,16 @@
 import path from 'path';
 import * as fs from 'fs';
+import * as openssl from './commands'
 import mime from 'mime-types'
 
-export const createCnfFile = (dati: any, folderPath: string) => {
+/**
+ * Crea un nuovo file di configurazione associato a un utente, per la creazione dei 
+ * certificati
+ * @param {any} dati dati dell'utente da inserire all'interno del file di configurazione
+ * @param {string} folderPath path alla cartella in cui inserire il file di configurazione
+ * @returns {any} un oggetto creato ad hoc con tutti i dati nel certificato
+ */
+export const createCnfFile = (dati: any, folderPath: string): any => {
     const data = fs.readFileSync(path.resolve(__dirname, "../../config/openssl.cnf"));
     const dataArray = data.toString().split('\n').slice(0,9).join('\n');
     let dim = data.toString().split('\n').length;
@@ -22,15 +30,17 @@ export const createCnfFile = (dati: any, folderPath: string) => {
 }
 
 /**
- * Funzione che crea un nuovo file sull cartella documenti/src/
+ * Crea un nuovo file nella cartella che contine i documenti sorgenti, da firmare, e in
+ * caso di errori annulla il processo
  * @param srcDocument req.file prodotto da multer con tutte le informazioni sul file
  * @param fileHash hash del contenuto del file con i codici fiscali
+ * @returns {string | null} il path al file creato
  */
 export function createNewFile (srcDocument: any , fileHash: string, createdAt: any): string | null {
     //TODO: controllare quale è la data del documento, se si vuole usare (caso firme multiple con stessi firmatari) deve corrispondere a quella sul db
     try{
         let extension = mime.extension(srcDocument.mimetype);
-        let filePath: string = `/home/node/app/documenti/src/${fileHash}-${createdAt}.${extension}`;
+        let filePath: string = `${openssl.documentFolder}/src/${fileHash}-${createdAt}.${extension}`;
         let srcDocumentBuffer: Buffer = fs.readFileSync(srcDocument.path);
         fs.writeFileSync(filePath, srcDocumentBuffer);
         return filePath;
@@ -40,6 +50,11 @@ export function createNewFile (srcDocument: any , fileHash: string, createdAt: a
         deleteFile(srcDocument.path);
     }
 }
+
+/**
+ * Cancella il file corrispondente al path passato come parametro
+ * @param {string} filepath path al file da cancellare
+ */
 
 export function deleteFile(filepath: string): void{
     fs.unlink(filepath, (err) => {
