@@ -4,10 +4,16 @@ import * as AJWT from './mw-auth-JWT';
 import * as ERRMW from './mw-error';
 import * as VALIDMW from './mw-validation'
 
+/**
+ * Variabili che contengono le catene di middleware da usare nelle varie rotte
+ */
+
 export const JWT_AUTH_MW = [AJWT.checkHeader, AJWT.checkToken, AJWT.verifyAndAuthenticate, 
-                                AJWT.checkJWTPayload, DBMW.checkUserAuthJWT, ERRMW.errorHandler];
+                                AJWT.checkJWTPayload, DBMW.checkUserAuthJWT];
 
 export const ERR_HANDL_MW = ERRMW.errorHandler;
+
+export const GENERIC_MW = [VALIDMW.RouteNotFound, ERRMW.errorHandler];
 
 export const CERT_CREATION_MW = [VALIDMW.checkCertificateAlreadyExist, ERRMW.errorHandler];
 
