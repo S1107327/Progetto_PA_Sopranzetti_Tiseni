@@ -93,7 +93,7 @@ export class SignController extends Controller{
            code_two = Math.floor(Math.random() * 16);
         }while(code_one === code_two);
         this.repo.setChallengingCodes(req.user.serialNumber, [code_one, code_two], 
-                                        new Date(Date.now()+300000))
+                                        new Date(Date.now()+120000))
         .catch((err) => {
             let error = errorFactory.getError(ErrEnum.GenericError)
             res.status(error.status).json(error.message)
