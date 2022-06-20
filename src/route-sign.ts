@@ -38,7 +38,7 @@ signRouter.get('/cancel/:id', chain.CANC_PROCESS_MW, (req: any, res: any) => {
 });
 
 /**
- * Rotta che consente di firmare un determinato documento indicandone l'id nella rotta
+ * Rotta che consente di firmare un determinato documento indicandone l'id nel
  */
 signRouter.post('/:id', chain.SIGN_DOCUMENT_MW,(req:any, res:any) => {
     controller.signDocument(req, res);
