@@ -1,4 +1,4 @@
-import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken, NoChallCodes, CannotCancel, RouteNotFound, ChallCodesNotRequested} from "./error-types"
+import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken, NoChallCodes, CannotCancel, RouteNotFound, ChallCodesNotRequested, JWTExpired, WrongAuthHeader} from "./error-types"
 
 
 export const errorFactory = {
@@ -20,6 +20,9 @@ export const errorFactory = {
             case ErrEnum.MissingAuthHeader:
                 returnValue = new MissingAuthHeader();
                 break;
+            case ErrEnum.WrongAuthHeader:
+                returnValue = new WrongAuthHeader();
+                break;
             case ErrEnum.InvalidJSONPayload:
                 returnValue = new InvalidJSONPayload();
                 break;
@@ -28,6 +31,9 @@ export const errorFactory = {
                 break;
             case ErrEnum.InvalidJWTPayload:
                 returnValue = new InvalidJWTPayload();
+                break;
+            case ErrEnum.JWTExpired:
+                returnValue = new JWTExpired();
                 break;
             case ErrEnum.UnregisteredUser:
                 returnValue = new UnregisteredUser();

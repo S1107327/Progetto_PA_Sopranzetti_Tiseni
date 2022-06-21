@@ -41,9 +41,21 @@ export class MissingAuthHeader extends Forbidden implements ErrorMsg{
     }
 }
 
+export class WrongAuthHeader extends Forbidden implements ErrorMsg{
+    constructor(){
+        super(errorMessages.WrongAuthHeader);
+    }
+}
+
 export class JWTVerifyError extends Forbidden implements ErrorMsg{
     constructor(){
         super(errorMessages.JWTVerifyError);
+    }
+}
+
+export class JWTExpired extends Forbidden implements ErrorMsg{
+    constructor(){
+        super(errorMessages.JWTExpired);
     }
 }
 
@@ -214,9 +226,11 @@ export enum ErrEnum {
     ValidationError,
     RouteNotFound,
     MissingAuthHeader,
+    WrongAuthHeader,
     InvalidJSONPayload,
     JWTVerifyError,
     InvalidJWTPayload,
+    JWTExpired,
     UnregisteredUser,
     SignError,
     FileReadingError,
