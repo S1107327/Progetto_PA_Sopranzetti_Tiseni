@@ -3,6 +3,7 @@ import { Document } from "./DAOs/documentDAO";
 import { SignProcess } from "./DAOs/signProcessDAO";
 import { Retryable, BackOffPolicy } from "typescript-retry-decorator"
 import { IReadRepository } from "./readRepositoryInterface";
+import { Op } from "sequelize";
 
 
 export class readRepository implements IReadRepository{
@@ -19,12 +20,14 @@ export class readRepository implements IReadRepository{
     }
 
     /**
-     * Ritorna lo stato di un processo di firma di un particolare documento. 
-     * In particolare viene ritornato lo stato di firma per ogni firmatario che partecipa
-     * al processo di firma 
-     * @param {number} document_id Id del documento del quale si vuole sapere lo stato del processo di firma
-     * @returns {Promise<Array<SignProcess> | null>} lista dello stato della firma di tutti i partecipanti al processo
-     *                                      oppure null nel caso in cui non ci sia alcun documento con l'id specificato
+     * Restituisce lo stato di firma di un determinato documento, descrivendo nel dettaglio
+     * chi sono i firmatari e chi di loro deve ancora apporre la firma e chi invece lo ha già
+     * fatto
+     * @param {number} document_id Id del documento del cui si vuole verificare lo stato 
+     * del processo di firma
+     * @returns {Promise<Array<SignProcess> | null>} lista dei partecipanti al processo di firma 
+     * con relativo stato per ognuno oppure null nel caso in cui non ci sia alcun documento 
+     * con l'id specificato
      */
     @Retryable({
         maxAttempts: 3,
@@ -45,10 +48,10 @@ export class readRepository implements IReadRepository{
     }
 
     /**
-     * Recupera i token che possibilmente l'utente potrà consumare in futuro sulla base dei
+     * Restituisce il numero di token che l'utente può spendere attualmente considerando i 
      * processi di firma che quell'utente ha avviato
      * @param {string} codice_fiscale codice fiscale identificativo di un utente
-     * @returns {Promise<number>} numero di token che l'utente potrebbe consumare in futuro
+     * @returns {Promise<number>} numero di token che l'utente può consumare
      */
     @Retryable({
       maxAttempts: 3,
@@ -76,10 +79,10 @@ export class readRepository implements IReadRepository{
     }
 
       /**
-       * Recura le challenging string per un utente che lo richiede
+       * Recupera le challenging string associate ai challenging code impostati nel backend
        * @param {string} codice_fiscale identificativo dell'utente
-       * @returns {Promise<Array<String> | null>} Lista delle challenging string o null nel caso in cui il codice fiscale
-       *                                 non appartenga a nessun utente
+       * @returns {Promise<Array<String> | null>} Lista delle challenging string o null 
+       * nel caso in cui il codice fiscale non appartenga a nessun utente
        */
       @Retryable({
           maxAttempts: 3,
@@ -102,7 +105,8 @@ export class readRepository implements IReadRepository{
       /**
        * Ritorna la data di scadenza dei challenging codes associati a un utente
        * @param {string} codice_fiscale identificativo del particolare utente
-       * @returns {Promise<Date | null>} data di scadenza dei codici o null se l'utente non esiste nel db
+       * @returns {Promise<Date | null>} data di scadenza dei codici o null se l'utente 
+       * non esiste nel database
        */
       @Retryable({
           maxAttempts: 3,
@@ -120,8 +124,8 @@ export class readRepository implements IReadRepository{
       /**
        * Recupera tutti i firmatari associati a un particolare documento
        * @param {number} document_id id del documento
-       * @returns {Promise<Array<SignProcess> | null>} lista dei processi di firma associati al documento o
-       *                                      null se il documento non esiste
+       * @returns {Promise<Array<SignProcess> | null>} lista dei firmatari associati al 
+       * documento o null se il documento non esiste
        */
       @Retryable({
           maxAttempts: 3,
@@ -143,7 +147,7 @@ export class readRepository implements IReadRepository{
       }
 
       /**
-       * Ritorna tutti i dati di un utente sulla base del codice fiscale
+       * Ritorna tutti i dati di un utente 
        * @param {string} cf_user codice fiscale dell'utente
        * @returns {Promise<User | null>} dati dell'utente o null se esso non esiste
        */
@@ -177,7 +181,8 @@ export class readRepository implements IReadRepository{
       /**
        * Ritorna tutti i dati di un documento sulla base del suo id
        * @param {number} document_id id del documento
-       * @returns {Promise<Document | null>} istanza del documento o null se non esiste un documento con quel id
+       * @returns {Promise<Document | null>} istanza del documento o null se non esiste 
+       * un documento con l'id passato
        */
       @Retryable({
           maxAttempts: 3,
@@ -204,5 +209,28 @@ export class readRepository implements IReadRepository{
                   hash_documento: hash
               }
           });
+      }
+
+      /**
+       * Controlla se tutti i firmatari presenti in una richiesta sono utenti registrati
+       * 
+       * @param {string[]} signers lista dei codici fiscali dei firmatari
+       * @returns {Promise<boolean>} true se i firmatari sono tutti utenti registrati
+       * false altrimenti
+       */
+      async checkSigners(signers: string[]): Promise<boolean>{
+        let checked_signer:User[] = await User.findAll({
+            where:{
+                codice_fiscale:{
+                    [Op.in]: signers
+                }
+            }
+        });
+        if(checked_signer.length === signers.length){
+            return true;
+        }
+        else{
+            return false;
+        }
       }
 }
