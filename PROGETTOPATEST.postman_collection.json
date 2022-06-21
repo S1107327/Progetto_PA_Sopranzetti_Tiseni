@@ -8,6 +8,24 @@
 	"item": [
 		{
 			"name": "RouteNotFound",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Route not found or incorrect http method used\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -30,6 +48,23 @@
 		},
 		{
 			"name": "IncorrectHTTPMethod",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Route not found or incorrect http method used\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -52,6 +87,22 @@
 		},
 		{
 			"name": "root",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    pm.expect(pm.response.text()).include('Benvenuto nel sistema di firma Sopranzetti-Tiseni ver 1.0');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -74,7 +125,81 @@
 		},
 		{
 			"name": "noAuthToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! No authorization header\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://0.0.0.0:8080/credit",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"credit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "IncorrectTokenType",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).to.eql(\"Error! You must provide a Bearer Token to authenticate correctly\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "prova",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "prova",
+							"type": "string"
+						}
+					]
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -96,6 +221,23 @@
 		},
 		{
 			"name": "JWTVerFailed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! JWT verification failed\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -128,6 +270,23 @@
 		},
 		{
 			"name": "JWTPayloadNotComplete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! One or more values in JWT payload are malformed\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
@@ -160,13 +319,137 @@
 		},
 		{
 			"name": "JWTPayloadIncorrect",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! One or more values in JWT payload are malformed\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJVdGVudGUgRmFrZSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTkEiLCJsb2NhbGl0eU5hbWUiOiJDYXN0ZWxsYW1tYXJlIGRpIFN0YWJpYSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJNYWZpYSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6IlVUTlRGSzk0VDMwRDU0MlUiLCJzZXJpYWxOdW1iZXIiOiJVVE5URks5NFQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiRmFrZSJ9.n4a8dWatrBGAXlAVmI_YrJLxzLihHYe2PiobTeapNIo",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJVdGVudGUgRmFrZSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJDYXN0ZWxsYW1tYXJlIGRpIFN0YWJpYSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZWh1b2hmd3Vpw7Jud2ZpdWhwIiwic2VyaWFsTnVtYmVyIjoiVVROVEZLODJUNTBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IkZha2UiLCJyb2xlIjoidXNlciJ9.IOVSw_lajN2Ap_r3k8olgMHOMdQ7TwdYH-gjEIUyTGQ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://0.0.0.0:8080/credit",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"credit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "JWTPayloadIncorrectRole",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! One or more values in JWT payload are malformed\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTg5ODksImV4cCI6MTY4NzM1NDk4OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJwdXBwYSJ9.ntCCZH9m0jYB_FPOPtVHJfG2Ml9VMag6drACkFLuxqk",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://0.0.0.0:8080/credit",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"credit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "JWTExpired",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! JWT verification failed\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTg5ODksImV4cCI6MTY1NTgxOTM0OSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.D75G8R_Uw1eFs5vBWAVufg0wNzRg3VVASUUcFoXfz3U",
 							"type": "string"
 						}
 					]
@@ -192,13 +475,30 @@
 		},
 		{
 			"name": "UserNotRegistered",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! User isn't registered\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJVdGVudGUgRmFrZSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTkEiLCJsb2NhbGl0eU5hbWUiOiJDYXN0ZWxsYW1tYXJlIGRpIFN0YWJpYSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJNYWZpYSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImZha2VlbWFpbEBtYWlsaW5hdG9yLmNvbSIsInNlcmlhbE51bWJlciI6IlVUTlRGSzk0VDMwRDU0MlUiLCJkblF1YWxpZmllciI6IjIwMTc1MDA3NjkzIiwiU04iOiJGYWtlIn0.Jkgo2ZexyvaksO6_K8D5XDpp0xGUC-VahE6LA9twjW8",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJVdGVudGUgRmFrZSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJDYXN0ZWxsYW1tYXJlIGRpIFN0YWJpYSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZmFrZWVtYWlsQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiVVROVEZLODJUNTBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IkZha2UiLCJyb2xlIjoidXNlciJ9.QU_rKXM0Ion3fDpTILWBdJAYWfPny3aZERR_hpbK6gw",
 							"type": "string"
 						}
 					]
@@ -224,13 +524,31 @@
 		},
 		{
 			"name": "CreditReq",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Body\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.User).eql(\"MNCDRN82T30D542U\");",
+							"    pm.expect(jsonData.nToken).eql(100)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -256,13 +574,30 @@
 		},
 		{
 			"name": "InvalidateCertNOTExist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! There's not a certificate associated to current user\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -288,13 +623,54 @@
 		},
 		{
 			"name": "CreateCert",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    let user = {",
+							"        \"commonName\":\"Adriano Mancini\",",
+							"        \"countryName\":\"IT\",",
+							"        \"stateOrProvinceName\":\"FM\",",
+							"        \"localityName\":\"Fermo\",",
+							"        \"organizationName\":\"ACME\",",
+							"        \"organizationalUnitName\":\"IT\",",
+							"        \"emailAddress\":\"demo@mailinator.com\",",
+							"        \"serialNumber\":\"MNCDRN82T30D542U\",",
+							"        \"dnQualifier\":\"20175007693\",",
+							"        \"SN\":\"Mancini\" ",
+							"    }",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).eql(\"Created certificate for user MNCDRN82T30D542U\");",
+							"    for(let field in jsonData.certificate_datas){",
+							"        pm.expect(jsonData.certificate_datas[field]).eql(user[field]);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -320,13 +696,30 @@
 		},
 		{
 			"name": "CreateCertFail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! You have already created a valid certificate. If you want to recreate it please invalid the actual certificate\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -352,13 +745,24 @@
 		},
 		{
 			"name": "CreateCer Tiseni",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -384,13 +788,30 @@
 		},
 		{
 			"name": "StartFileNotFound",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Form payload is incorrect\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -437,13 +858,30 @@
 		},
 		{
 			"name": "KeyError",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 500\", function () {",
+							"    pm.response.to.have.status(500);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! There is a problem in the reading file process, it's impossible to handle the request\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -456,7 +894,7 @@
 						{
 							"key": "file",
 							"type": "file",
-							"src": "/home/lorenzo/utenti.txt"
+							"src": "Diario_degli_esperimenti.pdf"
 						}
 					]
 				},
@@ -480,13 +918,30 @@
 		},
 		{
 			"name": "RepeatedSigner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Form payload is incorrect\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -499,7 +954,7 @@
 						{
 							"key": "document",
 							"type": "file",
-							"src": "/home/lorenzo/utenti.txt"
+							"src": "Diario_degli_esperimenti.pdf"
 						},
 						{
 							"key": "firmatari[0]",
@@ -538,13 +993,30 @@
 		},
 		{
 			"name": "NotRegisteredSigner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! One or more signers are not registered\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -557,7 +1029,7 @@
 						{
 							"key": "document",
 							"type": "file",
-							"src": "/home/lorenzo/progettoPA/Progetto_PA_Sopranzetti_Tiseni/d03cbf35_202206_PA_G01.docx"
+							"src": "Diario_degli_esperimenti.pdf"
 						},
 						{
 							"key": "firmatari[0]",
@@ -591,13 +1063,30 @@
 		},
 		{
 			"name": "NotEnoughToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! You don't have enough token to perform this operation\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -610,7 +1099,7 @@
 						{
 							"key": "document",
 							"type": "file",
-							"src": "/home/lorenzo/challcodeMiei.txt"
+							"src": "Diario_degli_esperimenti.pdf"
 						},
 						{
 							"key": "firmatari[0]",
@@ -644,13 +1133,40 @@
 		},
 		{
 			"name": "StartSignProcess",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.Success).eql(\"Sign Process correctly started for file Diario_degli_esperimenti.pdf\");",
+							"    pm.expect(jsonData.Sign_Process_Id).eql(\"To retrieve the document or the sign process status use this id: 1. Please keep it with care.\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -663,7 +1179,7 @@
 						{
 							"key": "document",
 							"type": "file",
-							"src": "/home/lorenzo/Downloads/Diario_degli_esperimenti.pdf"
+							"src": "Diario_degli_esperimenti.pdf"
 						},
 						{
 							"key": "firmatari[0]",
@@ -702,13 +1218,30 @@
 		},
 		{
 			"name": "SameSignerSameDocument",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! There is already an active sign process involving this file or file has already been signed by the same signers\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -721,7 +1254,7 @@
 						{
 							"key": "document",
 							"type": "file",
-							"src": "/home/lorenzo/Downloads/Diario_degli_esperimenti.pdf"
+							"src": "Diario_degli_esperimenti.pdf"
 						},
 						{
 							"key": "firmatari[0]",
@@ -759,14 +1292,82 @@
 			"response": []
 		},
 		{
-			"name": "IDNotFoundCancel",
+			"name": "InvalidIDFormat",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Invalid params passed in the request\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://0.0.0.0:8080/sign/cancel/cuicebibieu",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"sign",
+						"cancel",
+						"cuicebibieu"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "IDNotFoundCancel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! The specified id doesn't exist please try another id\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -794,13 +1395,31 @@
 		},
 		{
 			"name": "CancelNotApplicant",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! This operation is forbidden to the current user\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -828,13 +1447,39 @@
 		},
 		{
 			"name": "SignIncorrectBody",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! No challenging codes are provided or the JSON body isn't correctly formatted, please try again. Note: you must define an array called 'codes' with two string element at the first level of the JSON body.\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -870,13 +1515,30 @@
 		},
 		{
 			"name": "NOTRequestedCodes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! You can not sign a document before requesting challenging codes\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -912,13 +1574,34 @@
 		},
 		{
 			"name": "ChallSopranzetti",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function(){",
+							"    let challNumbersStr = pm.response.text().match(/\\d+/g);",
+							"    let challNumbers = challNumbersStr.map((elem) => +elem);",
+							"    pm.expect(challNumbers[0]).gte(0);",
+							"    pm.expect(challNumbers[0]).lte(15);",
+							"    pm.expect(challNumbers[1]).gte(0);",
+							"    pm.expect(challNumbers[1]).lte(15);",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -945,13 +1628,31 @@
 		},
 		{
 			"name": "SignCertificateNotExist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! There's not a certificate associated to current user\");",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -987,13 +1688,24 @@
 		},
 		{
 			"name": "CreateCer Sopranzetti",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1025,7 +1737,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIn0.cYlUqSjB6UrjGJo0mQStu7qv7diBTO_Zei8Nhxjntlw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -1057,7 +1769,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIn0.cYlUqSjB6UrjGJo0mQStu7qv7diBTO_Zei8Nhxjntlw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -1084,13 +1796,30 @@
 		},
 		{
 			"name": "CheckSigner",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! You are not allowed to sign this document. Please specify correct document id\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIn0.cYlUqSjB6UrjGJo0mQStu7qv7diBTO_Zei8Nhxjntlw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -1126,13 +1855,39 @@
 		},
 		{
 			"name": "SignChallCodeExpired",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(() => {return}, 121000);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Provided challenging codes are expired. Please request new challenging numbers to sign document\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1168,13 +1923,35 @@
 		},
 		{
 			"name": "ChallSopranzetti Again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let challNumbers = pm.response.text().match(/\\d+/g).map((elem) => +elem);",
+							"pm.environment.set(\"chall1Sopranzetti\", challNumbers[0]);",
+							"pm.environment.set(\"chall2Sopranzetti\", challNumbers[1]);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1201,13 +1978,30 @@
 		},
 		{
 			"name": "SignChallCodeWrong",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Provided challenging codes are not correct please retry\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1216,7 +2010,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"codes\":[\n        \"mN\",\n        \"cd\"\n    ]\n}",
+					"raw": "{\n    \"codes\":[\n        \"Nm\",\n        \"dc\"\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1243,13 +2037,47 @@
 		},
 		{
 			"name": "SignSopranzetti",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let one = pm.environment.get(\"chall1Sopranzetti\");",
+							"let two = pm.environment.get(\"chall2Sopranzetti\");",
+							"let challstring = \"aZcEeBghijKlmNopQrstuVwAyzabbccd\"",
+							"let body = {",
+							"    \"codes\":[",
+							"        challstring.slice(one*2, one*2 + 2),",
+							"        challstring.slice(two*2, two*2 + 2)",
+							"    ]",
+							"}",
+							"pm.variables.set('body', JSON.stringify(body));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    pm.expect(pm.response.text()).include('File correctly signed by user LSPDRN94T30D542U');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1258,7 +2086,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"codes\":[\n        \"gh\",\n        \"bc\"\n    ]\n}",
+					"raw": "{{body}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1285,13 +2113,48 @@
 		},
 		{
 			"name": "SignSopranzettiNotAgain",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let one = pm.environment.get(\"chall1Sopranzetti\");",
+							"let two = pm.environment.get(\"chall2Sopranzetti\");",
+							"let challstring = \"aZcEeBghijKlmNopQrstuVwAyzabbccd\"",
+							"let body = {",
+							"    \"codes\":[",
+							"        challstring.slice(one*2, one*2 + 2),",
+							"        challstring.slice(two*2, two*2 + 2)",
+							"    ]",
+							"}",
+							"pm.variables.set('body', JSON.stringify(body));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! You cannot sign again this document\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1300,7 +2163,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"codes\":[\n        \"gh\",\n        \"bc\"\n    ]\n}",
+					"raw": "{{body}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1327,13 +2190,35 @@
 		},
 		{
 			"name": "ChallMancini",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let challNumbers = pm.response.text().match(/\\d+/g).map((elem) => +elem);",
+							"pm.environment.set(\"chall1Mancini\", challNumbers[0]);",
+							"pm.environment.set(\"chall2Mancini\", challNumbers[1]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -1360,13 +2245,47 @@
 		},
 		{
 			"name": "SignMancini",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let one = pm.environment.get(\"chall1Mancini\");",
+							"let two = pm.environment.get(\"chall2Mancini\");",
+							"let challstring = \"abcdefghijklmnopqrstuvwxyzABCDEF\"",
+							"let body = {",
+							"    \"codes\":[",
+							"        challstring.slice(one*2, one*2 + 2),",
+							"        challstring.slice(two*2, two*2 + 2)",
+							"    ]",
+							"}",
+							"pm.variables.set('body', JSON.stringify(body));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    pm.expect(pm.response.text()).include('File correctly signed by user MNCDRN82T30D542U');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -1375,7 +2294,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"codes\":[\n        \"EF\",\n        \"wx\"\n    ]\n}",
+					"raw": "{{body}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1402,13 +2321,35 @@
 		},
 		{
 			"name": "ChallTiseni",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let challNumbers = pm.response.text().match(/\\d+/g).map((elem) => +elem);",
+							"pm.environment.set(\"chall1Tiseni\", challNumbers[0]);",
+							"pm.environment.set(\"chall2Tiseni\", challNumbers[1]);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -1435,13 +2376,47 @@
 		},
 		{
 			"name": "SignTiseni",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let one = pm.environment.get(\"chall1Tiseni\");",
+							"let two = pm.environment.get(\"chall2Tiseni\");",
+							"let challstring = \"ZZdEFgHHIjLkOOPqRaSgUVabcZZbcdEF\"",
+							"let body = {",
+							"    \"codes\":[",
+							"        challstring.slice(one*2, one*2 + 2),",
+							"        challstring.slice(two*2, two*2 + 2)",
+							"    ]",
+							"}",
+							"pm.variables.set('body', JSON.stringify(body));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    pm.expect(pm.response.text()).include('File correctly signed by user TSNLNZ99E06E690J');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -1450,7 +2425,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"codes\":[\n        \"EF\",\n        \"Fg\"\n    ]\n}",
+					"raw": "{{body}}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -1477,13 +2452,30 @@
 		},
 		{
 			"name": "CancelTerminated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! You cannot cancel a terminated sign process\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -1517,7 +2509,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -1530,7 +2522,7 @@
 						{
 							"key": "document",
 							"type": "file",
-							"src": "/home/lorenzo/Downloads/d03cbf35_202206_PA_G01.docx"
+							"src": "challcodeMiei.txt"
 						},
 						{
 							"key": "firmatari[0]",
@@ -1564,13 +2556,29 @@
 		},
 		{
 			"name": "CancelSignProcess",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    pm.expect(pm.response.text()).include(\"Sign Process has been correctly cancelled\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
 							"type": "string"
 						}
 					]
@@ -1604,7 +2612,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1617,7 +2625,7 @@
 						{
 							"key": "document",
 							"type": "file",
-							"src": "/home/lorenzo/challcodeMiei.txt"
+							"src": "d03cbf35_202206_PA_G01.docx"
 						},
 						{
 							"key": "firmatari[0]",
@@ -1651,13 +2659,30 @@
 		},
 		{
 			"name": "getSignProcessStatusFailed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! This operation is forbidden to the current user\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -1685,13 +2710,50 @@
 		},
 		{
 			"name": "getSignProcessStatus",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = [",
+							"    {",
+							"        \"Codice_fiscale\": \"MNCDRN82T30D542U\",",
+							"        \"Stato_firma\": \"Firma del documento non ancora eseguita\"",
+							"    },",
+							"    {",
+							"        \"Codice_fiscale\": \"TSNLNZ99E06E690J\",",
+							"        \"Stato_firma\": \"Firma del documento non ancora eseguita\"",
+							"    }",
+							"]",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    let jsonData = pm.response.json();",
+							"    pm.expect(JSON.stringify(jsonData)).eql(JSON.stringify(response));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1719,13 +2781,39 @@
 		},
 		{
 			"name": "DownloadNotSignerOrApplicant",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! This operation is forbidden to the current user\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIn0.cYlUqSjB6UrjGJo0mQStu7qv7diBTO_Zei8Nhxjntlw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -1752,13 +2840,30 @@
 		},
 		{
 			"name": "DownloadNotTerminated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! The specified document has not been signed yet\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
 							"type": "string"
 						}
 					]
@@ -1784,55 +2889,57 @@
 			"response": []
 		},
 		{
-			"name": "DownloadSigner",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIn0.1RScQDmsR9O-zLJOS48_YbdvjnuJv3aZrvFkbjBJ3z0",
-							"type": "string"
-						}
-					]
+			"name": "NotAdmin",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
 				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://0.0.0.0:8080/download/1",
-					"protocol": "http",
-					"host": [
-						"0",
-						"0",
-						"0",
-						"0"
-					],
-					"port": "8080",
-					"path": [
-						"download",
-						"1"
-					]
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 403\", function () {",
+							"    pm.response.to.have.status(403);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! This operation is forbidden to the current user\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "DownloadApplicant",
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
 				},
-				"method": "GET",
+				"method": "POST",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"demo2@mailinator.com\",\n    \"nToken\": 10000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "http://0.0.0.0:8080/download/1",
+					"raw": "http://0.0.0.0:8080/admin/refill",
 					"protocol": "http",
 					"host": [
 						"0",
@@ -1842,8 +2949,8 @@
 					],
 					"port": "8080",
 					"path": [
-						"download",
-						"1"
+						"admin",
+						"refill"
 					]
 				}
 			},
@@ -1851,13 +2958,30 @@
 		},
 		{
 			"name": "MissingEmail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Invalid or malformed input\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -1893,13 +3017,30 @@
 		},
 		{
 			"name": "MissingToken",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! No token number provided or it is an invalid value. Note: token number must be a positive integer\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -1935,13 +3076,39 @@
 		},
 		{
 			"name": "AdminBadEmail",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! Invalid or malformed input\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -1977,13 +3144,39 @@
 		},
 		{
 			"name": "AdminEmailNotExist",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.have.status(404);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! User with given email doesn't exist, please try another email\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -2019,13 +3212,30 @@
 		},
 		{
 			"name": "AdminTokenNegativeOrZero",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"pm.test(\"Correct Error String\", function () {",
+							"        var jsonData = pm.response.json();",
+							"        pm.expect(jsonData.error).eql(\"Error! No token number provided or it is an invalid value. Note: token number must be a positive integer\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -2061,13 +3271,29 @@
 		},
 		{
 			"name": "AdminRefill",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    pm.expect(pm.response.text()).include('Token added to user demo2@mailinator.com, new token number is: 20');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTUzODgwOTUsImV4cCI6MTY4NjkyNDA5NSwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSAifQ.pRwlnc86X2n4zORpbpaUfyVq6jpN9LndNRfRdlY7EcA",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -2103,13 +3329,31 @@
 		},
 		{
 			"name": "CreditReqCheck",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Body\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.User).eql(\"TSNLNZ99E06E690J\");",
+							"    pm.expect(jsonData.nToken).eql(20)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU1Njk4NzEsImV4cCI6MTY4NzEwNjA3MiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIn0.OZOXGtjwntpVol3L_20x1B4AEboLAyvthekZ5u5TEpc",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFRpc2VuaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiTUMiLCJsb2NhbGl0eU5hbWUiOiJQb3J0byBSZWNhbmF0aSIsIm9yZ2FuaXphdGlvbk5hbWUiOiJBQ01FIiwib3JnYW5pemF0aW9uYWxVbml0TmFtZSI6IklUIiwiZW1haWxBZGRyZXNzIjoiZGVtbzJAbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJUU05MTlo5OUUwNkU2OTBKIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiVGlzZW5pIiwicm9sZSI6InVzZXIifQ.Q0Dw895Q6OogdRJ1xoGui-8Kb0d1EZXikJR4kga34HA",
 							"type": "string"
 						}
 					]
@@ -2135,13 +3379,29 @@
 		},
 		{
 			"name": "InvalidateSuccess",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Correct Response\", function () {",
+							"    pm.expect(pm.response.text()).include('Certificate has been correctly invalidated');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "bearer",
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU3MjE1MjIsImV4cCI6MTY4NzI1NzUyMiwiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIn0.cYlUqSjB6UrjGJo0mQStu7qv7diBTO_Zei8Nhxjntlw",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJCcnVubyBSb3NzaSIsImNvdW50cnlOYW1lIjoiSVQiLCJzdGF0ZU9yUHJvdmluY2VOYW1lIjoiQU4iLCJsb2NhbGl0eU5hbWUiOiJBbmNvbmEiLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8zQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiR0hFTEZOODVHNTZBMjcxRSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlJvc3NpIiwicm9sZSI6ImFkbWluIn0.cHULb8PvffAFogtHV5wWQcNQrRtcG9KWQLUe2MuNKgg",
 							"type": "string"
 						}
 					]
@@ -2160,6 +3420,72 @@
 					"port": "8080",
 					"path": [
 						"invalidate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DownloadSigner",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://0.0.0.0:8080/download/1",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"download",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DownloadApplicant",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://0.0.0.0:8080/download/1",
+					"protocol": "http",
+					"host": [
+						"0",
+						"0",
+						"0",
+						"0"
+					],
+					"port": "8080",
+					"path": [
+						"download",
+						"1"
 					]
 				}
 			},
