@@ -55,8 +55,8 @@ Document.init({
     tableName: 'documenti',
     createdAt: 'created_at',
     updatedAt: false
-})
+});
 
 Document.hasMany(SignProcess,{
     foreignKey: 'id_documento'
-})
+});

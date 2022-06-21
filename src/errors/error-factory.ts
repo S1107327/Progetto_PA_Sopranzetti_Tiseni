@@ -1,4 +1,4 @@
-import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken, NoChallCodes, CannotCancel, RouteNotFound, ChallCodesNotRequested, JWTExpired, WrongAuthHeader} from "./error-types"
+import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken, NoChallCodes, CannotCancel, RouteNotFound, ChallCodesNotRequested, JWTExpired, WrongAuthHeader, UnregisteredSigner} from "./error-types";
 
 
 export const errorFactory = {
@@ -37,6 +37,9 @@ export const errorFactory = {
                 break;
             case ErrEnum.UnregisteredUser:
                 returnValue = new UnregisteredUser();
+                break;
+            case ErrEnum.UnregisteredSigner:
+                returnValue = new UnregisteredSigner();
                 break;
             case ErrEnum.SignError:
                 returnValue = new SignError();

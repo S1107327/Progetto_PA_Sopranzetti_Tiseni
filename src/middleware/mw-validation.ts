@@ -22,10 +22,10 @@ export const RouteNotFound = (req: Request, res: Response, next: NextFunction): 
  */
 export const checkPayload = (req: Request, res: Response, next: NextFunction): void => {
     try {
-        req.body = JSON.parse(req.body)
-        next()
+        req.body = JSON.parse(req.body);
+        next();
     } catch (error) {
-        next(errorFactory.getError(ErrEnum.InvalidJSONPayload))
+        next(errorFactory.getError(ErrEnum.InvalidJSONPayload));
     }
 };
 

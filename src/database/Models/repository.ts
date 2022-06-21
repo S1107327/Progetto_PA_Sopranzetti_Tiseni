@@ -2,9 +2,9 @@ import { IRepository } from "./repositoryInterface";
 import { User } from "./DAOs/userDAO";
 import { Document } from "./DAOs/documentDAO";
 import { SignProcess } from "./DAOs/signProcessDAO";
-import { sequelize } from "../connection"
+import { sequelize } from "../connection";
 import { Transaction } from "sequelize";
-import { Retryable, BackOffPolicy } from "typescript-retry-decorator"
+import { Retryable, BackOffPolicy } from "typescript-retry-decorator";
 
 /** 
  * Classe per la gestione del repository pattern per l'accesso al database
@@ -59,12 +59,12 @@ export class Repository implements IRepository {
         return newDocument;
     }
     /**
-    * Funzione che peremette a una qualsiasi firmatario coinvolto in un processo di firma 
+    * Funzione che permette a una qualsiasi firmatario coinvolto in un processo di firma 
     * di apporre la firma sul documento. Ritorna true se la firma apposta ha concluso il 
     * processo di firma e false altrimenti.
     * @param {number} document_id id del documento e del processo di firma
     * @param {string} codice_fiscale codice fiscale del firmatario che deve apporre la firma
-    * @returns Promise<boolean> booleano che indica se è stata apposta l'ultima firma al documento
+    * @returns {Promise<boolean>} booleano che indica se è stata apposta l'ultima firma al documento
     */
     @Retryable({
         maxAttempts: 3,
@@ -89,7 +89,7 @@ export class Repository implements IRepository {
                 where: {
                     id: document_id
                 }
-            })
+            });
             return true;
         } else {
             return false;
@@ -135,12 +135,12 @@ export class Repository implements IRepository {
         backOff: 1000,
     })
     async refillUserToken(user_email: string, adding_token: number): Promise<void> {
-        let user = await User.update({
+        await User.update({
             numero_token: adding_token
         },
             {
                 where: { email_address: user_email }
-            })
+            });
     }
 
     /**
@@ -159,7 +159,7 @@ export class Repository implements IRepository {
         },
             {
                 where: { codice_fiscale: codice_fiscale }
-            })
+            });
     }
 
     /**

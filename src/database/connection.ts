@@ -14,5 +14,5 @@ export const sequelize = new Sequelize('progettopa', 'postgres', 'postgres',{
     ],
     max: 3
   }
-})
+});
 

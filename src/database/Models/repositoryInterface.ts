@@ -1,4 +1,4 @@
-import { Document } from "./DAOs/documentDAO"
+import { Document } from "./DAOs/documentDAO";
 
 export interface IRepository {
     //avvia il processo di firma e inserisce il documento associato a quel processo nel db

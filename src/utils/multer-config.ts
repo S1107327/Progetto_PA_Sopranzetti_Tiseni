@@ -7,11 +7,11 @@ import * as os from 'os';
  */
 export const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, os.tmpdir())
+        cb(null, os.tmpdir());
     },
     filename: (req, file, cb) => {
-        let tempName = `${file.originalname}--${Date.now()}`
-        cb(null, tempName)
+        let tempName = `${file.originalname}--${Date.now()}`;
+        cb(null, tempName);
     }
 })
 

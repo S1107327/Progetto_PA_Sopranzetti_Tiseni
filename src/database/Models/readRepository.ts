@@ -1,7 +1,7 @@
 import { User } from "./DAOs/userDAO";
 import { Document } from "./DAOs/documentDAO";
 import { SignProcess } from "./DAOs/signProcessDAO";
-import { Retryable, BackOffPolicy } from "typescript-retry-decorator"
+import { Retryable, BackOffPolicy } from "typescript-retry-decorator";
 import { IReadRepository } from "./readRepositoryInterface";
 import { Op } from "sequelize";
 
@@ -42,9 +42,9 @@ export class readRepository implements IReadRepository{
         });
         console.log(document?.created_at);
         if (document !== null && document.SignProcesses !== undefined){
-           return document.SignProcesses
+           return document.SignProcesses;
         }
-        return null
+        return null;
     }
 
     /**
@@ -97,9 +97,9 @@ export class readRepository implements IReadRepository{
                 user.challenging_code_one * 2 + 2));
             challStrings.push(user.challenging_string.slice(user.challenging_code_two * 2,
                 user.challenging_code_two * 2 + 2));
-            return challStrings
+            return challStrings;
           }
-          return null
+          return null;
       }
 
       /**
@@ -175,7 +175,7 @@ export class readRepository implements IReadRepository{
               where: {
                   email_address: email
               }
-          })
+          });
       }
 
       /**

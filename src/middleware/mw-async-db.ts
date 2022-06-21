@@ -3,7 +3,7 @@ import { NextFunction } from "express";
 import { errorFactory } from "../errors/error-factory";
 import { ErrEnum } from "../errors/error-types";
 import handler from "express-async-handler";
-import crypto from "crypto"
+import crypto from "crypto";
 import { readFileSync } from "fs";
 import { readRepository } from "../database/Models/readRepository";
 import { Document } from "../database/Models/DAOs/documentDAO";
@@ -27,20 +27,8 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
             if(result){
                 next();
             }else{
-                next(errorFactory.getError(ErrEnum.UnregisteredUser));
+                next(errorFactory.getError(ErrEnum.UnregisteredSigner));
             }
-            /*
-            let error = null;
-            for (let i = 0; i<signers.length && error === null; i++){
-                let result = await readRepo.getUser(signers[i]);
-                if (result === null){
-                    error=errorFactory.getError(ErrEnum.UnregisteredUser) 
-                    next(error)
-                }
-            }
-            if (error === null){
-                next()   
-            }*/   
         }else{
             next(errorFactory.getError(ErrEnum.InvalidFormPayload));
         }
@@ -111,9 +99,9 @@ export const checkIfApplicant = handler(async (req: any, res: any, next: NextFun
     let document: Document | null = await readRepo.getDocument(documentId);
     //document non può essere null perché controllato il checkId
     if (document!.codice_fiscale_richiedente === codice_fiscale){
-        next()
+        next();
     }else{
-        next(errorFactory.getError(ErrEnum.Forbidden))
+        next(errorFactory.getError(ErrEnum.Forbidden));
     }
 });
 
@@ -156,7 +144,7 @@ export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next:
         req.params.id = Number(req.params.id);
         let document: Document | null = await readRepo.getDocument(req.params.id);
         if (document !== null){
-            next()
+            next();
         }else{
             next(errorFactory.getError(ErrEnum.InvalidId));
         }
@@ -167,7 +155,8 @@ export const checkIfSignerOrApplicant = handler(async (req: any, res: any, next:
 
 /**
  * Controlla se l'utente che sta facendo la richiesta è tra i firmatari di un certo documento 
- * il cui id è specificato nei parametri della richiesta.
+ * il cui id è specificato nei parametri della richiesta e se un utente ha già firmato 
+ * il documento.
  * 
  * @param {any} req
  * @param {any} res
@@ -241,7 +230,7 @@ export const checkIfCompleted = handler(async (req: any, res: any, next: NextFun
         if (document!.stato_firma)
             next(errorFactory.getError(ErrEnum.CannotCancel));
         else
-            next()
+            next();
 });
 
 
@@ -275,7 +264,7 @@ export const checkIfSigned = handler(async (req: any, res: any, next: NextFuncti
     let signProcessId = req.params.id;
     let document: Document | null = await readRepo.getDocument(signProcessId);
     if (document!.stato_firma)
-        next()
+        next();
     else
         next(errorFactory.getError(ErrEnum.DocumentNotSigned));
 });
@@ -296,6 +285,6 @@ export const checkTokenQty = handler(async (req: any, res: any, next: NextFuncti
     if (user!.numero_token - tokenToBeSpent >= signers_number){
         next();
     }else{
-        next(errorFactory.getError(ErrEnum.NotEnoughToken))
+        next(errorFactory.getError(ErrEnum.NotEnoughToken));
     }
 })

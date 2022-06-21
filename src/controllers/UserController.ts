@@ -2,7 +2,7 @@ import { createCnfFile, deleteFile } from '../utils/files';
 import path from 'path';
 import * as openssl from '../utils/commands';
 import { ErrEnum } from '../errors/error-types';
-import {errorFactory} from '../errors/error-factory'
+import {errorFactory} from '../errors/error-factory';
 import { Controller } from './Controller';
 
 export class UserController extends Controller{
@@ -21,7 +21,7 @@ export class UserController extends Controller{
         try{
             let user:any = createCnfFile(req.user, cnfPath);
             openssl.opensslCreateCertificate(req.user.serialNumber, cnfPath);
-                res.send({
+                res.status(201).send({
                     message:`Created certificate for user ${req.user.serialNumber}`,
                     certificate_datas: user
                 });
@@ -30,8 +30,8 @@ export class UserController extends Controller{
             deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".key");
             deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".csr");
             deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".crt");
-            let error = errorFactory.getError(ErrEnum.CertCreationError)
-            res.status(error.status).json(error.message)
+            let error = errorFactory.getError(ErrEnum.CertCreationError);
+            res.status(error.status).json(error.message);
         }
     }
     /**
@@ -47,7 +47,7 @@ export class UserController extends Controller{
         deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".key");
         deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".csr");
         deleteFile(openssl.certificatePath+"/"+req.user.serialNumber+".crt");
-        res.json("Certificate has been correctly invalidated")
+        res.json("Certificate has been correctly invalidated");
     }
     
     /**
@@ -60,14 +60,14 @@ export class UserController extends Controller{
         let codice_fiscale: string = req.user.serialNumber;
         this.readRepo.getUser(codice_fiscale).then((user) => {
             //User non può essere null perchè controllato nel middleware
-            let nToken = user!.numero_token
+            let nToken = user!.numero_token;
             res.send({
                 User: codice_fiscale,
                 nToken: nToken
-            })
+            });
         }).catch((err: any) => {
-            let error = errorFactory.getError(ErrEnum.GenericError)
-            res.status(error.status).json(error.message)
+            let error = errorFactory.getError(ErrEnum.GenericError);
+            res.status(error.status).json(error.message);
         })
     }
 
@@ -79,13 +79,13 @@ export class UserController extends Controller{
      * @param {any} res: risposta da inviare al client 
      */
     public getSignedDocument(req: any, res: any): void {
-        let documentId: number = req.params.id
+        let documentId: number = req.params.id;
         this.readRepo.getDocument(documentId).then((document) => {
-            let hashName = document!.hash_documento
-            let extension = path.extname(document!.nome_documento)
-            let createAt = Date.parse(document!.created_at.toString())
-            let filePath: string = `/home/node/app/documenti/signed/${hashName}-${createAt}${extension}.p7m`
-            let filename: string = `${document!.nome_documento}.p7m`
+            let hashName = document!.hash_documento;
+            let extension = path.extname(document!.nome_documento);
+            let createAt = Date.parse(document!.created_at.toString());
+            let filePath: string = `/home/node/app/documenti/signed/${hashName}-${createAt}${extension}.p7m`;
+            let filename: string = `${document!.nome_documento}.p7m`;
             res.download(filePath, filename, (err: any) => {
                 if(err){
                     let error = errorFactory.getError(ErrEnum.GenericError);
@@ -93,8 +93,8 @@ export class UserController extends Controller{
                 }
             });
         }).catch((err) => {
-            let error = errorFactory.getError(ErrEnum.GenericError)
-            res.status(error.status).json(error.message)
+            let error = errorFactory.getError(ErrEnum.GenericError);
+            res.status(error.status).json(error.message);
         });
     }
 

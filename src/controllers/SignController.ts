@@ -26,7 +26,7 @@ export class SignController extends Controller{
         .then((document) => {
             let newPath: string | null = createNewFile(req.file, fileHash, Date.parse(document.created_at.toString()));
             if (newPath !== null){
-                res.send({
+                res.status(201).send({
                     Success: `Sign Process correctly started for file ${srcDocument.originalname}`,
                     Sign_Process_Id: `To retrieve the document or the sign process status use this id: ${document.id}. Please keep it with care.`});
             }else{
@@ -50,32 +50,32 @@ export class SignController extends Controller{
      * @param {any} res: risposta da inviare al client 
      */
      public getSignProcessStatus( req:any, res: any ): void{
-        let processId: number = req.params.id
+        let processId: number = req.params.id;
         this.readRepo.getSignProcessStatus(processId).then((signProcesses: Array<SignProcess> | null) => {
             //Valutare se eliminare if-else sostituendolo con non-null assertion
             if (signProcesses !== null){
                 let responseObj: Array<object> = []
                 signProcesses.forEach(process => {
                     if (process.stato) {
-                        var stato_firma: string = "Firma del documento eseguita"
+                        var stato_firma: string = "Firma del documento eseguita";
                     }else{
-                        var stato_firma: string = "Firma del documento non ancora eseguita"
+                        var stato_firma: string = "Firma del documento non ancora eseguita";
                     }
                     let obj = {
                         Codice_fiscale: process.codice_fiscale_firmatario,
                         Stato_firma: stato_firma
-                    }
-                    responseObj.push(obj)
+                    };
+                    responseObj.push(obj);
                 });
-                res.send(responseObj)
+                res.send(responseObj);
             }
             else{
-                let error = errorFactory.getError(ErrEnum.GenericError)
-                res.status(error.status).json(error.message)
+                let error = errorFactory.getError(ErrEnum.GenericError);
+                res.status(error.status).json(error.message);
             }
         }).catch((err: any) => {
-            let error = errorFactory.getError(ErrEnum.GenericError)
-            res.status(error.status).json(error.message)
+            let error = errorFactory.getError(ErrEnum.GenericError);
+            res.status(error.status).json(error.message);
         })
     }
 
@@ -88,7 +88,7 @@ export class SignController extends Controller{
      * @param {any} res: risposta da inviare al client 
      */
      public getChallengingNumbers(req: any, res: any): void{
-        let code_one: number = Math.floor(Math.random() * 16)
+        let code_one: number = Math.floor(Math.random() * 16);
         let code_two: number;
         do{
            code_two = Math.floor(Math.random() * 16);
@@ -96,8 +96,8 @@ export class SignController extends Controller{
         this.repo.setChallengingCodes(req.user.serialNumber, [code_one, code_two], 
                                         new Date(Date.now()+120000))
         .catch((err) => {
-            let error = errorFactory.getError(ErrEnum.GenericError)
-            res.status(error.status).json(error.message)
+            let error = errorFactory.getError(ErrEnum.GenericError);
+            res.status(error.status).json(error.message);
         });
         res.send(`Send your codes associated to ${code_one} and ${code_two} to following link\n http://${config.HOST}:${config.PORT}/sign\nPlease specify numbers as shown in the manual`);
     }
@@ -121,11 +121,11 @@ export class SignController extends Controller{
                         });
                         try{
                             execSync(command, {cwd: openssl.documentFolder});
-                            this.repo.consumeToken(document!.codice_fiscale_richiedente,signers!.length)
+                            this.repo.consumeToken(document!.codice_fiscale_richiedente,signers!.length);
                             res.send(`File correctly signed by user ${req.user.serialNumber}`);
                         }catch(err){
                             let error = errorFactory.getError(ErrEnum.SignError);
-                            res.status(error.status).json(error.message)
+                            res.status(error.status).json(error.message);
                         }
                     });
                 });
@@ -149,7 +149,7 @@ export class SignController extends Controller{
         this.readRepo.getDocument(documentId).then((document:Document | null) => {
             this.repo.cancelSignProcess(documentId).then(() => {
                 if (document !== null){
-                    let ext: string = path.extname(document.nome_documento)
+                    let ext: string = path.extname(document.nome_documento);
                     let filePath: string =  `${openssl.documentFolder}/src/${document.hash_documento}-${Date.parse(document.created_at.toString())}${ext}`;
                     deleteFile(filePath);
                     res.json("Sign Process has been correctly cancelled");

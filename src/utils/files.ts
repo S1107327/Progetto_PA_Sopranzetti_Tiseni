@@ -1,7 +1,7 @@
 import path from 'path';
 import * as fs from 'fs';
-import * as openssl from './commands'
-import mime from 'mime-types'
+import * as openssl from './commands';
+import mime from 'mime-types';
 
 /**
  * Crea un nuovo file di configurazione associato a un utente, per la creazione dei 
@@ -37,7 +37,6 @@ export const createCnfFile = (dati: any, folderPath: string): any => {
  * @returns {string | null} il path al file creato
  */
 export function createNewFile (srcDocument: any , fileHash: string, createdAt: any): string | null {
-    //TODO: controllare quale è la data del documento, se si vuole usare (caso firme multiple con stessi firmatari) deve corrispondere a quella sul db
     try{
         let extension = mime.extension(srcDocument.mimetype);
         let filePath: string = `${openssl.documentFolder}/src/${fileHash}-${createdAt}.${extension}`;
@@ -62,6 +61,6 @@ export function deleteFile(filepath: string): void{
             console.error('cannot delete file');
             return;
         }
-        console.log(`deleted ${filepath}`)
+        console.log(`deleted ${filepath}`);
     });
 }

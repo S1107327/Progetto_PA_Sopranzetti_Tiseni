@@ -2,9 +2,9 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import config from './config';
 import router from "./route";
-import signRouter from "./route-sign"
+import signRouter from "./route-sign";
 import { appErrorHandler } from './middleware/mw-error';
-import * as chain from './middleware/middleware-chain'
+import * as chain from './middleware/middleware-chain';
 
 const app = express();
 app.use(bodyParser.json()); 
@@ -21,7 +21,7 @@ app.use((req, res, next) => {
 app.use('/', router);
 
 //Router che getisce tutte le rotte che gestiscono operazioni di firma
-app.use('/sign', signRouter)
+app.use('/sign', signRouter);
 
 app.all('*', chain.GENERIC_MW);
 

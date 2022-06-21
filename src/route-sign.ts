@@ -1,5 +1,5 @@
 import Express from 'express';
-import * as chain from './middleware/middleware-chain'
+import * as chain from './middleware/middleware-chain';
 import { SignController } from './controllers/SignController';
 
 const controller = new SignController();
@@ -32,7 +32,7 @@ signRouter.post('/start', chain.JWT_AUTH_MW, chain.SIGN_PROCESS_MW, (req:any, re
  * del quale se ne vuole cancellare il processo 
  */
 signRouter.get('/cancel/:id', chain.JWT_AUTH_MW, chain.CANC_PROCESS_MW, (req: any, res: any) => {
-    controller.cancelSignProcess(req, res)
+    controller.cancelSignProcess(req, res);
 });
 
 /**

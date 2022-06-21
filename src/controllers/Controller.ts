@@ -6,6 +6,6 @@ export class Controller {
     readRepo: readRepository
     constructor(){
         this.repo = Repository.getRepo();
-        this.readRepo = readRepository.getRepo()
+        this.readRepo = readRepository.getRepo();
     }
 }

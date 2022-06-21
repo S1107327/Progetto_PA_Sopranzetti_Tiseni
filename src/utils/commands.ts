@@ -7,7 +7,7 @@ import { Document } from "../database/Models/DAOs/documentDAO";
 export const certificatePath: string = path.resolve(__dirname, "../../certificati/");
 
 //path alla cartella che contiene tutti i documenti firmati e non
-export const documentFolder: string = "/home/node/app/documenti"
+export const documentFolder: string = "/home/node/app/documenti";
 
 /**
  * Restituisce il path al file di configurazione associato all'utente registrato
@@ -38,8 +38,8 @@ export const opensslCreateCertificate = (codice_fiscale: string, cnfPath:string)
  */
 
 export const opensslSignBase = (document: Document): string => {
-    let ext = path.extname(document!.nome_documento)
-    return `openssl cms -sign -in ./src/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext} -out ./signed/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext}.p7m -nodetach -cades -outform DER -stream -binary -passin pass:${config.PEMPASSPHRASE}`
+    let ext = path.extname(document!.nome_documento);
+    return `openssl cms -sign -in ./src/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext} -out ./signed/${document!.hash_documento}-${Date.parse(document!.created_at.toString())}${ext}.p7m -nodetach -cades -outform DER -stream -binary -passin pass:${config.PEMPASSPHRASE}`;
 }
 
 /**
@@ -49,5 +49,5 @@ export const opensslSignBase = (document: Document): string => {
  * @returns {string} il comando completo da eseguire con openssl per firmare un documento
  */
 export const opensslAddSigner = (codice_fiscale: string): string => {
-    return ` -signer ../certificati/${codice_fiscale}.crt -inkey ../certificati/${codice_fiscale}.key`
+    return ` -signer ../certificati/${codice_fiscale}.crt -inkey ../certificati/${codice_fiscale}.key`;
 }

@@ -65,6 +65,12 @@ export class UnregisteredUser extends Forbidden implements ErrorMsg{
     }
 }
 
+export class UnregisteredSigner extends Forbidden implements ErrorMsg{
+    constructor(){
+        super(errorMessages.UnregisteredSigner);
+    }
+}
+
 export class NotFound extends GenericError implements ErrorMsg{
     constructor(message?: string){
         super(message || errorMessages.NotFound, 404);
@@ -86,7 +92,7 @@ export class InvalidId extends NotFound implements ErrorMsg{
 
 export class InvalidEmail extends NotFound implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidUserEmail)
+        super(errorMessages.InvalidUserEmail);
     }
 }
 
@@ -117,7 +123,7 @@ export class InvalidFormPayload extends ValidationError implements ErrorMsg{
 
 export class InvalidTokenNumber extends ValidationError implements ErrorMsg{
     constructor(){
-        super(errorMessages.InvalidTokenNumber)
+        super(errorMessages.InvalidTokenNumber);
     }
 }
 
@@ -129,7 +135,7 @@ export class InvalidParams extends ValidationError implements ErrorMsg{
 
 export class NoChallCodes extends ValidationError implements ErrorMsg{
     constructor(){
-        super(errorMessages.NoChallCodes)
+        super(errorMessages.NoChallCodes);
     }
 }
 
@@ -159,13 +165,13 @@ export class CertAlreadyExistErr extends Forbidden implements ErrorMsg{
 
 export class DocumentAlreadySigned extends Forbidden implements ErrorMsg{
     constructor(){
-        super(errorMessages.DocumentAlreadySigned)
+        super(errorMessages.DocumentAlreadySigned);
     }
 }
 
 export class DocumentNotSigned extends Forbidden implements ErrorMsg{
     constructor(){
-        super(errorMessages.DocumentNotSigned)
+        super(errorMessages.DocumentNotSigned);
     }
 }
 
@@ -183,7 +189,7 @@ export class ChallengingCodeExpired extends Unauthorized implements ErrorMsg{
 
 export class NotEnoughToken extends Unauthorized implements ErrorMsg{
     constructor(){
-        super(errorMessages.NotEnoughToken)
+        super(errorMessages.NotEnoughToken);
     }
 }
 
@@ -207,7 +213,7 @@ export class CannotCancel extends Forbidden implements ErrorMsg{
 
 export class ChallCodesNotRequested extends Forbidden implements ErrorMsg{
     constructor(){
-        super(errorMessages.ChallCodesNotRequested)
+        super(errorMessages.ChallCodesNotRequested);
     }
 }
 
@@ -232,6 +238,7 @@ export enum ErrEnum {
     InvalidJWTPayload,
     JWTExpired,
     UnregisteredUser,
+    UnregisteredSigner,
     SignError,
     FileReadingError,
     FileAlreadyExistError,

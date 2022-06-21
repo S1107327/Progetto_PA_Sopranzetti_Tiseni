@@ -14,7 +14,7 @@ import config from "../config";
  */
 export const checkHeader = (req:any, res: Response, next: NextFunction): void => {
     const autheader = req.headers.authorization;
-    autheader ? next() : next(errorFactory.getError(ErrEnum.MissingAuthHeader))
+    autheader ? next() : next(errorFactory.getError(ErrEnum.MissingAuthHeader));
 }
 
 
@@ -57,22 +57,6 @@ export const verifyAndAuthenticate = (req:any, res: Response, next: NextFunction
         }
     }catch{
         next(errorFactory.getError(ErrEnum.JWTVerifyError));
-    }
-};
-
-/**
- * Verifica che il token JWT non sia scaduto
- * 
- * @param {any} req: contiene la richiesta arrivata dal client
- * @param {Response} res: contiene la risposta del sercer
- * @param {NextFunction} next: funzione che contiene il riferimento al prossimo middleware
- */
-export const checkJWTExpiration = (req:any, res:Response, next: NextFunction): void => {
-    if(Date.now() < req.user.exp*1000){
-        next();
-    }
-    else{
-        next(errorFactory.getError(ErrEnum.JWTExpired));
     }
 };
 

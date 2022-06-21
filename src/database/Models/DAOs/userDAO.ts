@@ -1,8 +1,8 @@
-import { SignProcess } from "./signProcessDAO"
-import { sequelize } from "../../connection"
-import { Association, DataTypes, HasManyAddAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyHasAssociationMixin, NonAttribute } from "sequelize"
-import { Document } from "./documentDAO"
-import { Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
+import { SignProcess } from "./signProcessDAO";
+import { sequelize } from "../../connection";
+import { Association, DataTypes, NonAttribute } from "sequelize";
+import { Document } from "./documentDAO";
+import { Model, InferAttributes, InferCreationAttributes } from 'sequelize';
 
 export class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare codice_fiscale: string;
@@ -58,12 +58,12 @@ User.init({
         timestamps: false,
         createdAt: false,
         updatedAt: false,
-})
+});
 
 User.hasMany(SignProcess,{
     foreignKey: 'codice_fiscale_firmatario'
-})
+});
 
 User.hasMany(Document,{
     foreignKey: 'codice_fiscale_richiedente'
-})
+});

@@ -1,8 +1,8 @@
-import { sequelize } from "../../connection"
-import { Document } from "./documentDAO"
-import { User } from "./userDAO"
+import { sequelize } from "../../connection";
+import { Document } from "./documentDAO";
+import { User } from "./userDAO";
 import { Association, DataTypes } from "sequelize";
-import { Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
+import { Model, InferAttributes, InferCreationAttributes, } from 'sequelize';
 
 export class SignProcess extends Model<InferAttributes<SignProcess>, InferCreationAttributes<SignProcess>> {
     declare codice_fiscale_firmatario: string;
@@ -34,4 +34,4 @@ SignProcess.init({
     timestamps: false,
     createdAt: false,
     updatedAt: false,
-})
+});
