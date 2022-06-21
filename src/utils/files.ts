@@ -16,7 +16,7 @@ export const createCnfFile = (dati: any, folderPath: string): any => {
     let dim = data.toString().split('\n').length;
     const dataArray2 = data.toString().split('\n').slice(18,dim).join('\n');
     fs.writeFileSync(folderPath, dataArray);
-    let noFields: Array<string> = ["iss", "iat", "exp", "aud", "sub"];
+    let noFields: Array<string> = ["iss", "iat", "exp", "aud", "sub", "role"];
     let user: any = {};
     for(let field in dati){
         if(!noFields.includes(field)){

@@ -23,15 +23,13 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
     try{
         if(req.file !== undefined && req.body.firmatari.length === new Set(req.body.firmatari).size){
             let signers: Array<string> = req.body.firmatari;
-            /*
-            let users = await readRepo.getAllUsers();
-            let result:bool = signers.every(signer => users.includes(signer))
-            if (result) {
-                next()
+            let result: boolean = await readRepo.checkSigners(req.body.firmatari);
+            if(result){
+                next();
             }else{
-                next(errorFactory.getError(ErrEnum.UnregisteredUser))
+                next(errorFactory.getError(ErrEnum.UnregisteredUser));
             }
-             */
+            /*
             let error = null;
             for (let i = 0; i<signers.length && error === null; i++){
                 let result = await readRepo.getUser(signers[i]);
@@ -42,7 +40,7 @@ export const checkForm_Data = handler(async (req: any, _res: any, next: NextFunc
             }
             if (error === null){
                 next()   
-            }   
+            }*/   
         }else{
             next(errorFactory.getError(ErrEnum.InvalidFormPayload));
         }

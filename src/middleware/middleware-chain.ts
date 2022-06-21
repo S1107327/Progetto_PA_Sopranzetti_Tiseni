@@ -8,8 +8,9 @@ import * as VALIDMW from './mw-validation'
  * Variabili che contengono le catene di middleware da usare nelle varie rotte
  */
 
-export const JWT_AUTH_MW = [AJWT.checkHeader, AJWT.checkToken, AJWT.verifyAndAuthenticate, 
-                                AJWT.checkJWTPayload, DBMW.checkUserAuthJWT];
+export const JWT_AUTH_MW = [AJWT.checkHeader, AJWT.checkToken, AJWT.verifyAndAuthenticate,
+                                AJWT.checkJWTExpiration, AJWT.checkJWTPayload,
+                                DBMW.checkUserAuthJWT];
 
 export const ERR_HANDL_MW = ERRMW.errorHandler;
 
@@ -33,4 +34,4 @@ export const SIGN_DOCUMENT_MW = [VALIDMW.checkChallJSONBody, DBMW.checkId, VALID
 
 export const DOWNLOAD_DOC_MW = [DBMW.checkId, DBMW.checkIfSignerOrApplicant, DBMW.checkIfSigned, ERRMW.errorHandler]
 
-export const ADMIN_MW = [VALIDMW.checkUserEmail, DBMW.checkIfUserEmailExist, VALIDMW.checkTokenNumber, ERRMW.errorHandler]                               
+export const ADMIN_MW = [AJWT.checkIfAdmin, VALIDMW.checkUserEmail, DBMW.checkIfUserEmailExist, VALIDMW.checkTokenNumber, ERRMW.errorHandler]                               
