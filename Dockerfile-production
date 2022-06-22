@@ -20,4 +20,4 @@ ENV NODE_PATH=./build
 
 RUN npm run build
 
-RUN rm -r src && rm tsconfig.json global.d.ts
+RUN rm -r src && rm tsconfig.json global.d.ts && rm docker-* && rm Makefile && rm nodemon.json
