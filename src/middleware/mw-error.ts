@@ -29,7 +29,7 @@ export function appErrorHandler (err: any, req:any, res:any, next: NextFunction)
  */
 export function multerErrorHandler (err: any, req: any, res: Response, next: NextFunction):void {
     if (err instanceof multer.MulterError){
-        next(errorFactory.getError(ErrEnum.FileReadingError));
+        next(errorFactory.getError(ErrEnum.InvalidFormPayload));
     }
     else
         next(err);
