@@ -15,7 +15,7 @@ export class AdminController extends Controller{
         let userEmail: string = req.body.email;
         let nToken: number = req.body.nToken;
         this.repo.refillUserToken(userEmail, nToken).then(() => {
-            res.json(`Token added to user ${userEmail}, new token number is: ${nToken}`);
+            res.json(`Token number changed for user ${userEmail}, new token number is: ${nToken}`);
         }).catch((err) => {
             let error = errorFactory.getError(ErrEnum.GenericError);
             res.status(error.status).json(error.message);
