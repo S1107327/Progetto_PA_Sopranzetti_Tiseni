@@ -62,6 +62,7 @@ export class readRepository implements IReadRepository{
       let document = await Document.findAll({
         where: {
           codice_fiscale_richiedente: codice_fiscale,
+          stato_firma: false
         },
         include: [
           {
