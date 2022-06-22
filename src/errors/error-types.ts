@@ -53,12 +53,6 @@ export class JWTVerifyError extends Forbidden implements ErrorMsg{
     }
 }
 
-export class JWTExpired extends Forbidden implements ErrorMsg{
-    constructor(){
-        super(errorMessages.JWTExpired);
-    }
-}
-
 export class UnregisteredUser extends Forbidden implements ErrorMsg{
     constructor(){
         super(errorMessages.UnregisteredUser);
@@ -236,7 +230,6 @@ export enum ErrEnum {
     InvalidJSONPayload,
     JWTVerifyError,
     InvalidJWTPayload,
-    JWTExpired,
     UnregisteredUser,
     UnregisteredSigner,
     SignError,

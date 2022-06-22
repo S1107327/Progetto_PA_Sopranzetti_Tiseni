@@ -1,6 +1,5 @@
 import { SignProcess } from "./signProcessDAO"
-import { User } from "./userDAO"
-import { Association, DataTypes, HasManyAddAssociationMixin, HasManyCountAssociationsMixin, HasManyCreateAssociationMixin, HasManyGetAssociationsMixin, HasManyHasAssociationMixin, NonAttribute } from "sequelize";
+import { Association, DataTypes, NonAttribute } from "sequelize";
 import { sequelize } from "../../connection"
 import { Model, InferAttributes, InferCreationAttributes, CreationOptional } from 'sequelize';
 

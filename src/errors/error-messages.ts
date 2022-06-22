@@ -11,7 +11,6 @@ export enum errorMessages {
     InvalidJSONPayload = "Error! JSON payload is not correctly formatted",
     JWTVerifyError = "Error! JWT verification failed",
     InvalidJWTPayload = "Error! One or more values in JWT payload are malformed",
-    JWTExpired = "Error! Provided JWT is expired. Please insert a time-valid JWT",
     UnregisteredUser = "Error! User isn't registered",
     UnregisteredSigner = "Error! One or more signers are not registered",
     SignError = "Error! An error occurred during sign process",
