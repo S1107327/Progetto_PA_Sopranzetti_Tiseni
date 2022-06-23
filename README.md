@@ -150,43 +150,44 @@ Per fare la richiesta è necessario che nel token JWT sia impostato come ruolo "
     "nToken": 10
 }
 ```
+All'utente verrà ritornato un messaggio che conferma l'avvenuto cambiamo del numero di token dell'utente.
 
 ### Diagramma delle classi
 
 Per ogni macro elemento dell'applicazione è stato costruito un diagramma delle classi per rappresentarne schematicamente la struttura. 
 
 Legenda:
-- Giallo: in giallo sono colorati tutti quegli elementi che non rappresentano una classe ma rappresentano un modulo typescript.
-- Blu: sono delle classi vere e proprie
-- Rosa: in rosa sono colorate le interfacce 
+- Giallo: elementi che rappresentano un modulo typescript.
+- Blu: elementi che rappresentano classi typescript
+- Rosa: interfacce
 
 #### Node server base
 ![alt text](./res-readme/class-diagram-node.jpg)
 
 In questa parte di applicazione sono presenti tre elementi:
-- [index.ts](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/index.ts): è il modulo che crea il server express e si occupa, principalmente, di gestire gli errori di mal-formattazione dei payload json, e di indicare all'applicazione di utilizzare i router in maniera corretta.
-- [route.ts](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/route.ts): è il modulo che gestisce, attraverso un router, tutte le rotte dell'applicazione che non concernono il processo di firma.
-- [route-sign.ts](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/route-sign.ts): è il modulo che gestisce, attraverso un router, tutte le rotte dell'applicazione per il processo di firma. 
+- [index.ts](./src/index.ts): crea il server express e si occupa, principalmente, di gestire gli errori di mal-formattazione dei payload json, e di indicare all'applicazione di utilizzare i router in maniera corretta.
+- [route.ts](./src/route.ts): gestisce, attraverso un router, tutte le rotte dell'applicazione che non concernono il processo di firma.
+- [route-sign.ts](./src/route-sign.ts): gestisce, attraverso un router, tutte le rotte dell'applicazione per il processo di firma. 
 
 #### Controller
 ![alt text](./res-readme/class-diagram-controller.jpg)
 I controller dell'applicazione sono:
-- [Controller](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/controllers/Controller.ts): è la classe padre di tutti i controller e contiene i campi "readRepo" e "repo" che sono dei riferimenti alle repository, utili per tutte le operazioni che richiedono interazioni con i database.
-- [AdminController](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/controllers/AdminController.ts): classe che identifica il controller per l'admin, essa contiene il metodo per cambiare i token di un determinato utente.
-- [SignController](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/controllers/SignController.ts): è il controller che si occupa di gestire tutte le oprazioni riguardanti la firma o il processo di firma di un documento.
-- [UserController](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/controllers/UserController.ts): è il controller per l'utente base e contiene al suo interno diverse operazioni che l'utente può compiere, escludendo quelle per il processo di firma che si trovano nel controller dedicato.
+- [Controller](./src/controllers/Controller.ts): è la classe base di tutti i controller e contiene i campi "readRepo" e "repo" che sono dei riferimenti alle repository, utili per tutte le operazioni che richiedono interazioni con i database.
+- [AdminController](./src/controllers/AdminController.ts): identifica il controller per l'admin, essa contiene il metodo per cambiare i token di un determinato utente.
+- [SignController](./src/controllers/SignController.ts): si occupa di gestire tutte le operazioni riguardanti la firma o il processo di firma di un documento.
+- [UserController](./src/controllers/UserController.ts): è il controller per l'utente base e contiene al suo interno diverse operazioni che l'utente può compiere, escludendo quelle per il processo di firma che si trovano nel controller dedicato.
 
 #### Database
 ![alt text](./res-readme/class-diagram-database.jpg)
 Nella parte che si relaziona con il database sono presenti i seguenti elementi:
-- [connection.ts](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/connection.ts): è il modulo che si occupa di fare la connessione al database attraverso "sequelize" indicando tutti i parametri necessari.
-- [SignProcess](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/Models/DAOs/signProcessDAO.ts): è un DAO costrutito attraverso le funzionalità fornite da sequelize che mappa la tabella del database contenente i processi di firma.
-- [User](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/Models/DAOs/userDAO.ts): DAO costruito attraverso sequelize che mappa la tabella del database contenente gli utenti.
-- [Document](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/Models/DAOs/documentDAO.ts): DAO costruito attraverso sequelize che mappa la tabella del database contenente le informazioni sui documenti. 
-- [IReadRepository](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/Models/readRepositoryInterface.ts): è l'interfaccia della repository che contiene tutte le operazioni di lettura sul database.
-- [IRepository](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/Models/repositoryInterface.ts): è l'interfaccia della repository che contiene le operazioni di scrittura sul database.
-- [readRepository](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/Models/readRepository.ts): è la classe che implementa la corrispondente interfaccia. Questa classe è costruita in maniera tale da essere un singleton, infatti è previsto un metodo "getRepo()" per poter accedere all'unica istanza della classe.
-- [Repository](https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni/blob/main/src/database/Models/repository.ts): anche questa è una classe singletone che implementa la corrispondente interfaccia.
+- [connection.ts](./src/database/connection.ts): si occupa di fare la connessione al database attraverso "sequelize" indicando tutti i parametri necessari.
+- [SignProcess](./src/database/Models/DAOs/signProcessDAO.ts): DAO costrutito attraverso le funzionalità fornite da sequelize che mappa la tabella del database contenente i processi di firma.
+- [User](./src/database/Models/DAOs/userDAO.ts): DAO costruito attraverso sequelize che mappa la tabella del database contenente gli utenti.
+- [Document](./src/database/Models/DAOs/documentDAO.ts): DAO costruito attraverso sequelize che mappa la tabella del database contenente le informazioni sui documenti. 
+- [IReadRepository](./src/database/Models/readRepositoryInterface.ts): interfaccia della repository che contiene tutte le operazioni di lettura sul database.
+- [IRepository](./src/database/Models/repositoryInterface.ts): interfaccia della repository che contiene le operazioni di scrittura sul database.
+- [readRepository](./src/database/Models/readRepository.ts): implementa la corrispondente interfaccia. Questa classe è costruita in maniera tale da essere un singleton, infatti è previsto un metodo "getRepo()" per poter accedere all'unica istanza della classe.
+- [Repository](./src/database/Models/repository.ts): anche questa è una classe singleton che implementa la corrispondente interfaccia.
 
 Entrambe queste repository fanno uso di tutti e tre i DAO descritti per intervenire sul database in maniera rapida ed efficiente.
 
@@ -196,12 +197,12 @@ Entrambe queste repository fanno uso di tutti e tre i DAO descritti per interven
 ![alt text](./res-readme/class-diagram-errors.jpg)
 
 Il modulo contenente tutti gli errori dell'applicazione presenta:
-- [error-factory.ts](): è il modulo che contiene la factory vera e propria degli errori attraverso la quale è possibili recuperare la giusta istanza del giusto errore quando necessario.
-- [error-messages.ts](): modulo contenente tutti i messaggi degli errori personalizzati dell'applicazione. Tutte queste stringhe sono state racchiuse in un unico modulo per renderne più facile l'individuazione e l'eventuale modifica.
-- [ErrorMsg](): è l'interfaccia comune a tutti gli errori personalizzati dell'applicazione. Essa contiene due attributi "status" e "message". Il primo indica lo status code dal ritornare al client, mentre il secondo il messaggio di errore da ritornare al client.
-- [GenericError](): è l'errore più generale tra quelli realizzati. GenericError estende "Error" ovvero l'errore più generale di Typescript. Questa classe si occupa di impostare lo status code e il messaggio da tornare al client, nel caso in cui non venga passato nulla al costruttore, verrà automaticamente impostato un messaggio di default e uno status code 500.
+- [error-factory.ts](./src/errors/error-factory.ts):  contiene la factory vera e propria degli errori attraverso la quale è possibile recuperare la giusta istanza del giusto errore quando necessario.
+- [error-messages.ts](./src/errors/error-messages.ts): contiene tutti i messaggi degli errori personalizzati dell'applicazione. Tutte queste stringhe sono state racchiuse in un unico modulo per renderne più facile l'individuazione e l'eventuale modifica.
+- [ErrorMsg](./src/errors/error-types.ts): interfaccia comune a tutti gli errori personalizzati dell'applicazione. Contiene due attributi "status" e "message". Il primo indica lo status code da ritornare al client, mentre il secondo il messaggio di errore da ritornare al client.
+- [GenericError](./src/errors/error-types.ts): è l'errore più generale tra quelli realizzati. GenericError estende "Error" ovvero l'errore più generale di Typescript. Questa classe si occupa di impostare lo status code e il messaggio da tornare al client, nel caso in cui non venga passato nulla al costruttore, verrà automaticamente impostato un messaggio di default e uno status code 500.
 
-Tra gli altri errori presenti, alcuni di essi estendono direttamente GenericError cambiandone messaggio e status code, alcuni esempi sono: "NotFound", "Forbidden". Altri invece, essendo errori a "livello più basso" estendono a loro volta errorri come "NotFound" o "Forbidden" andandone a cambiare solamente il messaggio di errore ma non lo status code, alcuni esempi sono: "InvalidEmail", InvalidId" o "CertAlreadyExistError".
+Tra gli altri errori presenti, alcuni di essi estendono direttamente GenericError cambiandone messaggio e status code essi sono: "NotFound", "Forbidden", "ValidationError" e "Unauthorized". Altri invece, essendo errori a "livello più basso" estendono a loro volta errorri come "NotFound" o "Forbidden" andandone a cambiare solamente il messaggio di errore ma non lo status code, alcuni esempi sono: "InvalidEmail", InvalidId" o "CertAlreadyExistError".
 
 L'intera gerarchia e struttura degli errori è visibile nell'immagine.
 
