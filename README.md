@@ -80,7 +80,7 @@ Se l'invalidazione va a buon fine viene tornato all'utente un messaggio che ne c
 
 L'utente può, in questo modo, visualizzare il proprio credito residuo in token. Basta chiamare questa rotta dopo aver impostato il proprio token JWT. 
 
-All'utente verrà ritornato il numero di token rimanenti.
+All'utente verrà ritornato, in risposta, un oggetto che contiene due campi: uno indica il codice fiscale dell'utente, l'altro l'attuale numero di token.All'utente verrà ritornato il numero di token rimanenti.
 
 - Rotta: **/download/:id**
 
@@ -98,7 +98,10 @@ Si sottolinea come la richiesta che deve essere effettuata all'applicazione deve
 
 In alternativa se non si vuole utilizzare il client postman come indicato nell'immagine si può utilizzare l'applicativo "curl" nella seguente modalità:
 
-AGGIUNGERE COMANDO
+```
+curl -X POST -F document=@.<<path del documento da caricare>> -F firmatari[0]="LSPDRN94T30D542U" -F firmatari[1]="TSNLNZ99E06E690J" http://0.0.0.0:8080/sign/start -H "Authorization: Bearer <<token JWT dell'utente>>"
+```
+
 
 - Rotta: **/sign/cancel/:id**
 
@@ -166,8 +169,8 @@ Legenda:
 
 In questa parte di applicazione sono presenti tre elementi:
 - [index.ts](./src/index.ts): crea il server express e si occupa, principalmente, di gestire gli errori di mal-formattazione dei payload json, e di indicare all'applicazione di utilizzare i router in maniera corretta.
-- [route.ts](./src/route.ts): gestisce, attraverso un router, tutte le rotte dell'applicazione che non concernono il processo di firma.
-- [route-sign.ts](./src/route-sign.ts): gestisce, attraverso un router, tutte le rotte dell'applicazione per il processo di firma. 
+- [route.ts](./src/route.ts): gestisce, attraverso un router, tutte le rotte dell'applicazione che non concernono il processo di firma specificando la catena di middleware per la richiesta e chiamando infine la corretta funzione del controller.
+- [route-sign.ts](./src/route-sign.ts): gestisce, attraverso un router, tutte le rotte dell'applicazione per il processo di firma specificando la catena di middleware per la richiesta e chiamando infine la corretta funzione del controller.
 
 #### Controller
 ![alt text](./res-readme/class-diagram-controller.jpg)
@@ -191,8 +194,6 @@ Nella parte che si relaziona con il database sono presenti i seguenti elementi:
 
 Entrambe queste repository fanno uso di tutti e tre i DAO descritti per intervenire sul database in maniera rapida ed efficiente.
 
-
-
 #### Errori
 ![alt text](./res-readme/class-diagram-errors.jpg)
 
@@ -211,24 +212,90 @@ L'intera gerarchia e struttura degli errori è visibile nell'immagine.
 
 Per ogni rotta dell'applicazione, ad eccezione di quella di bevenuto, è stato definito un diagramma delle sequenze che spiega cosa accade internamente e quali sono le componenti attraversate dalla richiesta.
 
+Come già detto in precedenza, tutte le richieste all'applicazione sono autenticate mediante token JWT, dunque i primi middleware sono sempre gli stessi e servono per verificare questo token, in particolare:
+- [checkHeader()](./src/middleware/mw-auth-JWT.ts): controlla se nella richiesta sia presente l'authorization header.
+- [checkToken()](./src/middleware/mw-auth-JWT.ts): controlla se nell'header della richiesta è presente un Bearer token ovvero il token JWT. 
+- [verifyAndAuthenticate()](./src/middleware/mw-auth-JWT.ts): verifica se il token è valido controllando che la chiave segreta utilizzata per la cifratura sia corretta e che il token non sia scaduto. 
+- [checkJWTPayload()](./src/middleware/mw-auth-JWT.ts): controlla se il payload del token è corretto secondo le specifiche verificando elemento per elemento del body. 
+- [checkUserAuthJWT()](./src/middleware/mw-async-db.ts): controlla se l'utente, i cui dati sono codificati nel token, sia uno tra quelli registrati nell'applicazione, in particolare, si verifica se il codice fiscale presente nel token corrisponde ad uno di quelli presenti nel database.
+
+Si vuole sottolineare inoltre che, in tutti i casi in cui è necessario richiamare il database, i middleware e i controller si avvalgono delle due classi repository come indicato nei diagrammi.
+
+#### **Rotta "/create"**
 ![alt text](./res-readme/sequence-diagram-certificato.jpg)
+
+Nella rotta per la creazione di un certificato oltre ai classici middleware è presente:
+- [checkCertificateAlreadyExist()](./src/middleware/mw-validation.ts): controlla se nella directory del filesystem contenente i certificati degli utenti sia già presente un certificato per l'utente che sta facendo la richiesta, in quel caso la richiesta viene bloccata.
+
+Superati tutti i middleware, il controller genera tutti i file necessari per la creazione del certificato dell'utente e il certificato stesso, salvandoli nelle cartelle dedicate. Ritorna, infine, un messaggio che indica all'utente l'avvenuta creazione del certificato.
+
+#### Rotta "/invalidate"
 ![alt text](./res-readme/sequence-diagram-invalidare.jpg)
+
+I controlli peculiari della rotta sono:
+- [checkCertificateNotExist()](./src/middleware/mw-validation.ts): controlla se l'utente che sta richiedendo l'invalidazione del certificato ne abbia effettivamente uno. 
+
+Il controller si occupa di invalidare il certificato, eliminando tutti i file per la firma digitale associati a quell'utente. Ritorna poi un messaggio di conferma all'utente.
+
+#### Rotta "/credit"
 ![alt text](./res-readme/sequence-diagram-credito.jpg)
+
+Nel momento in cui l'utente richiede il proprio credito non sono presenti particolari middleware oltre a quelli per la validazione del token
+
+In questo caso il controller si occupa solamente di recuperare il numero di token dell'utente che ha fatto la richiesta e di inviare la risposta al client. 
+
+#### Rotta "/download/:id"
 ![alt text](./res-readme/sequence-diagram-firmato.jpg)
+
+In questo caso sono presenti diversi middleware aggiuntivi data la complessità della richiesta:
+- [checkId()](src/middleware/mw-async-db.ts): questo middleware effettua due controlli:
+  - verifica se l'id indicato è un numero intero positivo. 
+  - verifica che l'id corrisponda a un documento realmente esistente nell'applicazione.
+- [checkIfSignerOrApplicant()](src/middleware/mw-async-db.ts): middleware che controlla se l'utente che sta facendo la richiesta sia effettivamente un utente autorizzato, ovvero un firmatario o il richiedente.
+- [checkIfSigned()](src/middleware/mw-async-db.ts): verifica se il processo di firma del documento corrispondente all'id indicato sia effettivamente completato e il documento sia stato firmato. 
+ 
+Se tutte le verifiche vanno a buon fine, il controller recupera le informazioni sul documento dal database effettuando l'apposita chiamata, in seguito, utilizzato l'hash del documento e la data di creazione recupera il file vero e proprio dal filesystem e avvia il processo di download.
+
+
 ![alt text](./res-readme/sequence-diagram-start.jpg)
 ![alt text](./res-readme/sequence-diagram-cancellazione.jpg)
 ![alt text](./res-readme/sequence-diagram-stato.jpg)
 ![alt text](./res-readme/sequence-diagram-codes.jpg)
 ![alt text](./res-readme/sequence-diagram.jpg)
+
+#### Rotta "/admin/refill"
 ![alt text](./res-readme/sequence-diagram-admin.jpg)
+
+Per l'unica rotta dedicata all'admin i controlli da effettuare sono:
+- [checkIfAdmin()](./src/middleware/mw-auth-JWT.ts): controlla che l'utente che sta facendo la richiesta sia effettivamente un admin, controllando il campo role nel token JWT. 
+- [checkUserEmail()](src/middleware/mw-validation.ts): controlla se l'email dell'utente, impostata dall'admin nella richiesta, abbia un formato valido. 
+- [checkIfUserEmailExist()](src/middleware/mw-async-db.ts): verifica che l'email inserita dall'admin corrisponda alla email di un utente registrato nell'applicazione. 
+- [checkTokenNumber()](./src/middleware/mw-validation.ts): controlla che il nuovo numero di token inserito dall'admin nella richiesta sia un intero positivo. 
+
+Quindi, il controller si occuperà di aggiornare il numero di token disponibili per l'utente con la particolare email.
+
 ![alt text](./res-readme/sequence-diagram-cancellazione-errore.jpg)
 
+Infine, per completezza si riporta un caso in cui uno dei middleware vada in errore. In questo caso si può notare come la richiesta non arrivi al controller ma venga bloccata dal middleware [checkIfApplicant()](src/middleware/mw-async-db.ts). In caso di errori, vengono autoamticamente richiamati i middleware che si occupano di gestirli.
 
-PER OGNI DIAGRAMMA SI SPIEGA COSA ACCADE E QUALI CONTROLLI SI SONO IMPLEMENTATI IN OGNI MIDDLEWARE
 
-COSA FA IL CONTROLLER
+
 
 ### Pattern
+#### Factory
+La factory è un design pattern creazionale che fornisce una interfaccia per la creazione di oggetti. Essa consiste nel delegare ad un unico oggetto, chiamato factory, la creazione di oggetti molto simili che implementano un'interfaccia comune.
+
+L'utilizzo più comune di questo pattern che è stato implementato nell'applicazione è quello della gestione degli errori. Infatti tutti gli errori personalizzati hanno in comune due proprietà, ovvero status code e messaggio di errore. Per questo, il design pattern applicato alla costruzione degli errori permette di semplificarne la gestione delegando alla factory la costruzione dell'errore.
+#### Chain of Responsibility
+La chain of responsibility è un design pattern comportamentale che consente di passare una richiesta attraverso multipli handler che intervengono in vario modo e in maniera incrementale su di essa. Questo permette, nel caso ci siano molteplici controlli da fare, di non creare un flusso di esecuzione dell'applicazione troppo complesso e difficile da manutenere. Il funzionamento è molto semplice, ogni handler effettua uno o più controlli sulla richiesta e, solo se tutti i controlli vengono superati la richiesta viene passata all'handler successivo. In caso di errore, invece, si blocca l'esecuzione.
+
+Nell'applicazione, data la grande mole di controlli da effettuare, si è reso necessario utilizzare questo pattern. I vari handler sono stati implementati attraverso delle middleware function messe a disposizione da express. Ogni middleware function può accedere alla richiesta, alla risposta e ha un riferimento al middleware successivo. Questo consente di effettuare tutti i controlli sulle richieste in catena potendo in qualsiasi momento ritornare un errore nel caso in cui i controlli non vadano a buon fine.
+
+Questo risulta fondamentale per validare tutte le richieste dell'utente impedendo che arrivino delle richieste malevoli o sbagliate al controller, che possano modificare, irreparabilmente, lo stato interno del server. Un ulteriore vantaggio dato dal pattern è che si evitano le ripetizioni di codice in quando lo stesso middleware può esse utilizzato per più richieste.
+
+#### Singleton
+Il singleton è un design pattern creazionale che forza una classe ad avere una sola istanza.
+Nell'applicazione il singleton viene utilizzato nella [connessione](src/database/connection.ts) al database e nelle classi delle repository ([Repository](./src/database/Models/repository.ts) e [readRepository](src/database/Models/readRepository.ts)). Nel primo caso il singleton risulta necessario perché avere multiple connessioni al database produce un overhead troppo grande. Nel secondo caso, il singleton è stato utilizzato perché le repository vengono chiamate in molte parti del programma, questo avrebbe prodotto un numero di istanze esageratamente grande e non necessario. Con il singleton si è così limitato il numero di istanze risparmiando molte risorse.
 
 ## Utilizzo
 
