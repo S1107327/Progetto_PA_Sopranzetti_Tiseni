@@ -228,14 +228,55 @@ COSA FA IL CONTROLLER
 ## Utilizzo
 
 ### Prerequisiti
-
-### Setup (non so se serve)
+- Avere installato un ambiente docker sulla propria macchina
+- Possibilità di eseguire comandi definiti in un Makefile
 
 ### Avviare l'applicazione
+Prima di iniziare il processo di avvio è necessario clonare questo repository, e spostarsi nella cartella di progetto con il comando:
+```
+git clone https://github.com/S1107327/Progetto_PA_Sopranzetti_Tiseni.git
+cd Progetto_PA_Sopranzetti_Tiseni
+```
+L'applicazione può essere avviata in due modalità: 
+- Modalità DEV: utilizzata durante lo sviluppo.
+- Modalità BUILD: da utilizzare in fase di produzione per avviare l'applicazione compilata.
 
+L'avvio dell'applicazione in modalità build avviene eseguendo i comandi presenti in un Makefile. Questi ultimi sono stati definiti in maniera tale che l'utente finale non dovesse eseguire comandi complessi da scrivere per avviare l'applicazione. Inoltre, poichè l'applicazione fa uso di una versione di openssl che non è ancora presente nei repository stabili di ubuntu, è necessario prima creare un'immagine docker locale in cui è installata una versione minimale di NodeJS e openssl 3.0.3. Tale immagine può essere creata con il comando:
+```Shell
+make openssl-build
+```
+L'esecuzione di questo comando è molto lunga e impiega all'incirca 10-15 minuti a seconda delle potenzialità della macchina. Costruita l'immagine a questo punto è possibile avviare l'applicazione operando in sequenza i due comandi:
+```Shell
+make build-prod
+make up-prod
+```
 ## Testing
+Per facilitare il testing in fase di sviluppo e per fornire a chi vuole iniziare a usare l'applicazione uno scenario pre-costituito è possibile utilizzare la collection postman [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json). Non tutte le richieste presenti nella collection hannno associati dei test, in quanto alcune servono solo a preparare lo scenario di test di altre richieste. Per poter eseguire lo scenario di test della collection è necessario importare la collection su postman cliccando su "Import"
+![alt text](res-readme/postman_import.png)
 
-TEST CON COLLEZIONE POSTMAN
-METODO PER TESTARE DOWNLOAD DEL FILE 
+e poi cliccando su "Upload Files" per scegliere la collection [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json)
+
+![alt text](res-readme/psotman_upload.png)
+
+Successivamente cliccare sui tre puntini vicino al nome della collection e selezionare "Run Collection" nel menù a tendina aperto.
+
+![alt text](res-readme/postman_collection.png)
+
+Quindi nella finestra che si apre, in cui è possibile settare le opzioni di esecuzione della collection, impostare Delay pari a 600 ms e spuntare la casella "Save Responses". Lasciare il resto delle opzioni con i valori predefiniti.
+
+![alt text](res-readme/postman_run.png)
+
+Infine per avviare i test cliccare su Run. La durata dei test è di circa tre minuti in quanto prima della richiesta "SignChallCodeExpired" è impostato un setTimeout di circa due minuti per dare tempo ai challenging codes di scadere e generare l'errore aspettato. Eseguiti i test con postman, è possibile eseguire una serie aggiuntiva di tre test eseguendo il file [test.sh](test.sh). Questi test aggiuntivi vengono eseguiti con cURL da riga di comando perchè più complicati da eseguire con il client postman. Si prega di rendere il file [test.sh](test.sh) eseguibile con:
+```Shell
+chmod +x test.sh
+```
+e poi eseguire con
+```Shell
+./test.sh
+```
+Come nota finale si prega di eseguire tutti i test citati, solo dopo il primo avvio dell'applicazione.
+
+## Note di sviluppo
+
 
 
