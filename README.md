@@ -28,7 +28,7 @@ L'obiettivo del progetto è di realizzare un sistema che consenta di gestire il 
 
   Per gli utenti admin nel campoo role ci sarà scritto "admin" invece che "user".
 
-- Nel momento in cui si verifica il numero di token di un utente, ovvero quando esso chiede di avviare un nuovo processo di firma, nel conteggio si fa riferimento anche al numero di token "impegnati" dell'utente. Ovvero quei token che l'utente potrebbe utilizzare in futuro qualora dei processi di firma che esso aveva già avviato andassero a buon fine. Questo serve ad evitare che un utente possa avviare più processi di firma di quanti se ne può effittavamente permettere una volta che saranno completati.
+- Nel momento in cui si verifica il numero di token di un utente, ovvero quando esso chiede di avviare un nuovo processo di firma, nel conteggio si fa riferimento anche al numero di token "impegnati" dell'utente, ovvero quei token che l'utente potrebbe utilizzare in futuro qualora dei processi di firma che esso aveva già avviato andassero a buon fine. Questo serve ad evitare che un utente possa avviare più processi di firma di quanti se ne può effittavamente permettere una volta che saranno completati.
  
 - Per ogni utente, nel caso di firma multipla, viene utilizzata sempre la stessa PEMPASSPHRASE, ovvero la stessa password. Questo viene fatto perché openssl non prevede un comando che consenta di inserire più password nel caso di firme multiple.
 
@@ -68,7 +68,7 @@ Questa rotta ha semplicemente il compito di inviare un messaggio di benvenuto al
 
 Rotta dedicata al processo di creazione di un nuovo certificato. All'utente sarà necessario fare una richiesta a questa rotta, dopo aver impostato correttamente il proprio token JWT, per creare un proprio certificato nell'applicazione. Tutti i dati per crearlo, infatti, sono recuperati direttamente dal token come da specifiche.
 
-Qualora la creazione del messaggio andasse a buon fine all'utente viene tornato un messaggio che conferma la corretta creazione del certificato.
+Qualora la creazione del certificato andasse a buon fine all'utente viene tornato un messaggio che conferma la corretta creazione del certificato indicando i dati inseriti.
 
 - Rotta: **/invalidate**
 
@@ -88,13 +88,17 @@ Si utilizza per scaricare un determinato documento del quale è terminato il pro
 
 - Rotta: **/sign/start**
   
-Consente di avviare un nuovo processo di firma. Affiché questa rotta funzioni correttamente l'utente deve indicare nel body della richiesta: un campo contenente il documento da caricare sul server, provvisto di estenzione, avente come chiave la parola "document", e altri campi, sotto forma di array, contenenti i codici fiscali dei firmatari del documento.
+Consente di avviare un nuovo processo di firma. Affiché questa rotta funzioni correttamente l'utente deve indicare nel body della richiesta: un campo contenente il documento da caricare sul server, provvisto di estensione, avente come chiave la parola "document", e altri campi, sotto forma di array, contenenti i codici fiscali dei firmatari del documento.
 
 ![alt text](./res-readme/sign-start.png "Sign-start")
 
-Se la richiesta va a buon fine all'utente viene ritornato un messaggio di conferma e l'id del documento del quale si è avviato il processo. Questo id sarà necessario per tutte le altre rotta che lo richiedono.
+Se la richiesta va a buon fine all'utente viene ritornato un messaggio di conferma e l'id del documento del quale si è avviato il processo. Questo id sarà necessario per tutte le altre rotte che lo richiedono.
 
 Si sottolinea come la richiesta che deve essere effettuata all'applicazione deve essere di tipo "*multipart/form-data*". Questa scelta è stata fatta perché rende molto più semplice l'upload di file rispetto all'utilizzo di un body in JSON.
+
+In alternativa se non si vuole utilizzare il client postman come indicato nell'immagine si può utilizzare l'applicativo "curl" nella seguente modalità:
+
+AGGIUNGERE COMANDO
 
 - Rotta: **/sign/cancel/:id**
 
@@ -130,15 +134,15 @@ Nel body della richiesta vanno indicati i challenging codes che devono essere st
   ]
 }
 ```
-E si deve inserire all'interno dei codes i challenging codes che sono stati tornati dalla rotta apposita
+E si deve inserire all'interno dei codes i challenging codes che sono stati tornati dalla rotta apposita nell'ordine indicato.
 
 Nel caso in cui il processo di firma andasse a buon fine viene ritornato all'utente un messaggio che conferma l'avvenuta firma. 
 
 - Rotta: **/admin/refill**
 
-Questa è la rotta dell'admin che consente di cambiare i token associato a un utente.
+Questa è la rotta dell'admin che consente di cambiare i token associati a un utente.
 
-Per fare la richiesta è necessario che nel token JWT sia impostato come ruolo "admin" e che nel body della richiesta vengano inseriti la mail dell'utente del quale si vogliono modificare i token formattati nel seguente modo: 
+Per fare la richiesta è necessario che nel token JWT sia impostato come ruolo "admin" e che nel body della richiesta vengano inseriti la mail dell'utente del quale si vogliono modificare i token e il nuovo numero di token formattati nel seguente modo: 
 
 ```JSON
 {
