@@ -215,11 +215,63 @@ Per ogni rotta dell'applicazione, ad eccezione di quella di bevenuto, è stato d
 ![alt text](./res-readme/sequence-diagram-invalidare.jpg)
 ![alt text](./res-readme/sequence-diagram-credito.jpg)
 ![alt text](./res-readme/sequence-diagram-firmato.jpg)
+
+#### **Rotta /sign/start** 
+
 ![alt text](./res-readme/sequence-diagram-start.jpg)
+
+La rotta che permette a un utente registrato di iniziare un processo di firma, oltre a quelli legati al JWT, ha montati una serie di moduli middleware, che si occupano di perseguire una serie di controlli di integrità sul processo di firma:
+- **upload.single()**:  creato grazie alla libreria multer, si occupa di verificare che nel payload della richiesta ci sia un campo "document" contenente un file. Esso viene attivato solo nel momento in cui è presente un campo contenente un file nel body della richiesta
+- **checkFormData()**: opera una serie di controlli sul payload della richiesta. Per prima cosa, verifica se sono valorizzati tutti i campi della richiesta;successivamente verifica che non ci siano ripetizioni tra i firmatari; infine controlla che tutti i firmatari indicati siano utenti registrati.
+- **checkIfAlreadyExistOrSigned()**: impedisce di avviare il processo di firma nel momento in cui esista un altro processo di firma che coinvolge lo stesso documento(stesso contenuto) e gli stessi firmatari. In caso contrario lascia passare la richiesta al middleware successivo.
+- **checkTokenQty()**: evita che un utente possa avviare un processo di firma con un numero di firmatari superiore al numero di token a sua disposizione. I token a disposizione di un utente sono quelli registrati nel database meno quelli impegnati in altri processi di firma.
+
+Nel caso in cui tutti i controlli sono superati la richiesta arriva filtrata e processata al controller, che si occupa, mediante i metodi del repository, di creare l'istanza del documento e di tutti i firmatari partecipanti nelle tabelle del database
+
+#### **Rotta /sign/cancel/:id**
+
 ![alt text](./res-readme/sequence-diagram-cancellazione.jpg)
+
+Nel momento in cui l'utente fa una richiesta di annullamento di un processo di firma, contrassegnato dall'id passato come parametro, partono una serie di delicati controlli operati dai middleware montati sulla rotta:
+- [**checkId()**](). 
+- **checkIfApplicant()**: controlla se l'utente che ha inviato la richiesta è il richiedente che ha avviato il processo di firma associato a quell'id.
+- **checkIfCompleted()**: impedisce a un utente di annullare o invalidare un processo di firma già concluso.
+
+Nel momento in cui la richiesta supera tutte le verifiche viene processata dal controller. Esso elimina dal database tutti i dati collegati al processo di firma annullato e cancella sul server il documento da firmare.
+
+#### **Rotta /sign/status/:id**
+
 ![alt text](./res-readme/sequence-diagram-stato.jpg)
+
+Sulla rotta che permette a un utente di vedere lo stato di un processo di firma sono montati due middleware già discussi nella rotta precedente:
+- [**checkId()**](#rotta-signcancelid)
+- [**checkIfApplicant()**](#rotta-signcancelid)
+
+Superate le due verifiche citate, viene richiamata una funzione del controller, dedicato ai processi di firma, che si occupa di recuperare in lettura dal database le informazioni richieste sul processo di firma.
+
+#### **Rotta /sign/getchallnumbers**
+
 ![alt text](./res-readme/sequence-diagram-codes.jpg)
+
+Oltre ai middleware relativi alla verifica del payload del token JWT, la rotta corrente non monta middleware specifici, quindi superato il primo blocco di controlli la richiesta viene processata dal controller.
+
+Il controller genera due numeri casuali, i challenging codes, e li salva nel database insieme alla loro data di scadenza, ritornandoli poi al client.
+
+**Rotta /sign/:id**
+
 ![alt text](./res-readme/sequence-diagram.jpg)
+
+La richiesta di firmare un documento è una richiesta molto delicata. Per questo la rotta associata monta molti middleware, per operare i necessari controlli di integrità:
+
+- **checkChallJSONBody()**: controlla che il body JSON della richiesta sia formattato nella maniera descritta in precedenza.
+- [**checkId()**](#rotta-signcancelid)
+- **checkCertificateNotExist()**: impedisce a un utente che non possiede un certificato valido sul server di proseguire nella firma del documento indicato.
+- **checkSigner()**: verifica che l'utente è abilitato alla firma del documento richiesto, perchè specificato tra i firmatari dello stesso.
+- **checkExpiration()**: per prima cosa controlla se sono stati richiesti dei challenging codes, dall'utente che fa la richiesta. Se la condizione è soddisfatta si verifica anche che i due codici non siano scaduti.
+- **checkChallString()**: confronta le stringhe nella richiesta, con quelle associate ai codici correnti e salvate nel database. Se le stringhe fornite sono uguali e nell'ordine corretto viene abilitata la firma.
+
+Superate tutte le verifiche necessarie il controller  registra nel database la firma di chi ha fatto la richiesta. Inoltre, se il firmatario che ha fatto la richiesta era l'ultimo rimasto, il controller si occupa di aggiornare lo stato del documento sul database, marcandolo come firmato. Infine, esegue sul server il comando openssl che produce il documento firmato.
+
 ![alt text](./res-readme/sequence-diagram-admin.jpg)
 ![alt text](./res-readme/sequence-diagram-cancellazione-errore.jpg)
 
@@ -230,6 +282,41 @@ COSA FA IL CONTROLLER
 
 ### Pattern
 
+#### **DAO**
+Il design pattern DAO(Data Access Object), si utilizza quando è necessario creare l'astrazione di uno strato di persistenza dei dati, come quello rappresentato da un database. Esso permette di dividere il livello applicazione dallo strato di persistenza, facilitando qualsiasi tipo di operazione CRUD, e svincolandola dallo strato sottostante. 
+
+Tipicamente una best practice, che è stata adottata durante la progettazione dell'applicazione, consiste nel creare una classe DAO per ognuna delle tabelle presenti all'interno del database. In essa sono definite come proprietà di una classe gli attributi della tabella, e come metodi le operazioni CRUD. L'uso dei DAO era chiaramente necessario nel caso dell'applicazione progettata, che si appoggia su un database relazionale con tre tabelle.
+
+Nell'implementazione ci si è affidati all'ORM [Sequelize](https://sequelize.org/), in quanto altrimenti si sarebbero dovute implementare da zero le funzionalità CRUD del DAO. Sequelize permette di definire dei DAO, o Model, che espongono nativamente una serie di metodi per operare query sullo strato di persistenza. Nella definizione dei DAO ci si è attenuti alla documentazione di Sequelize.
+
+#### **Repository**
+
+Il repository è un design pattern che si colloca a un livello di astrazione superiore rispetto al DAO. Le funzionalità del repository consistono in:
+- preparare i dati per la memorizzazione, passanodoli poi al DAO per salvarli nello strato di persistenza.
+- recuperare, attraverso i DAO, informazioni provenienti dal database restituendole in un formato adeguato per l'elaborazione. 
+
+Tipicamente i repository possono utilizzare allo stesso tempo più di un DAO. Questo è stato decisivo nella scelta di adottare il pattern nell'applicazione. Possedendo un insieme di tre tabelle sul database, se non si fosse implementato un repository si sarebbero dovuti utilizzare direttamente i DAO nel controller. Questa scelta oltre a causare problemi di ripetizione del codice, avrebbero reso i metodi del controller estremamente complessi.
+
+Per questo si è deciso di implementare due repository, uno per tutte le operazioni che concernessero le scritture sul database, e uno per tutte le operazioni che riguardavano invece il retrieving dei dati dal database, e la mappatura di questi in oggetti del dominio.
+
+Anche se sarebbe stato comunuque corretto avere un unico repository, in quanto mischiare tutte le operazioni sarebbe stato comunque aderente alla definizione del pattern, la scelta operata ha fornito alcuni vantaggi:
+- Ha aumentato la leggibilità del codice, vista la verbosità dei metodi dei DAO implementati da Sequelize
+- Ha permesso di bilanciare il carico di lavoro, avendo due oggetti che svolgessero due tipi di funzionalità diverse
+- Ha aumentato la manutenibilità del codice, permettendo di verificare più velocemente la presenza di eventuali errori
+- Ha facilitato l'implementazione dei controlli concernenti lo stato database, all'interno dei middleware
+
+#### **Model-View-Controller**
+
+Il pattern MVC divide l'architettura di un'applicazione in tre componenti chiave:
+ - **Model**: è la parte dell'applicazione più vicina ai dati e a un eventuale strato di persistenza. Si occupa di gestire tutti i metodi che consentono di modificare i dati presenti nello schema di persistenza, e ottenere informazioni dal database.
+ - **Controller**: il controller si occupa di gestire la logica del programma e di esaudire le richieste che l'utente fa attraverso la vista compiendo delle azioni. Tipicamente, ma non per forza, il controller riceve le richieste dell'utente, nel momento in cui queste sono state validate da un insieme di middleware appositi.
+ - **View**: ottiene i dati del model per aggiornarsi, nel momento in cui ci sono cambiamenti, e si occupa di inviare le richieste dell'utente al controller.
+
+Uno dei difetti più impotanti del pattern MVC è che il model e la view sono fortementi accoppiati. Quindi un qualsiasi cambiamento nella codebase del model implica un cambiamento nel codice della vista. Nel nostro caso avendo realizzato solo un backend, un'API, interrogabile mediante cURL o postman, questo problema non si pone.
+
+Quindi, adottare l'MVC permette di ottenere un codice robusto e facilmente manutenibile. Oltretutto, l'MVC non richiede che il controller sia unico. Questo ha permesso di creare più controller, disaccopiando ulteriormente la logica e le azioni che dovevano essere eseguite, sulla base anche della loro semantica. 
+
+ 
 ## Utilizzo
 
 ### Prerequisiti
