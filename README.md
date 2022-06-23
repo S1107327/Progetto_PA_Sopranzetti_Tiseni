@@ -256,7 +256,8 @@ make build-prod
 make up-prod
 ```
 ## Testing
-Per facilitare il testing in fase di sviluppo e per fornire a chi vuole iniziare a usare l'applicazione uno scenario pre-costituito è possibile utilizzare la collection postman [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json). Non tutte le richieste presenti nella collection hannno associati dei test, in quanto alcune servono solo a preparare lo scenario di test di altre richieste. Per poter eseguire lo scenario di test della collection è necessario importare la collection su postman cliccando su "Import"
+Per facilitare il testing in fase di sviluppo e per fornire a chi vuole iniziare a usare l'applicazione uno scenario pre-costituito è possibile utilizzare la collection postman [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json). Non tutte le richieste presenti nella collection hannno associati dei test, in quanto alcune servono solo a preparare lo scenario di test di altre richieste. Per poter eseguire lo scenario di test della collection è necessario importare la collection su postman cliccando su "Import"7
+
 ![alt text](res-readme/postman_import.png)
 
 e poi cliccando su "Upload Files" per scegliere la collection [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json)
