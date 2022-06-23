@@ -857,66 +857,6 @@
 			"response": []
 		},
 		{
-			"name": "KeyError",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 500\", function () {",
-							"    pm.response.to.have.status(500);",
-							"});",
-							"pm.test(\"Correct Error String\", function () {",
-							"        var jsonData = pm.response.json();",
-							"        pm.expect(jsonData.error).eql(\"Error! There is a problem in the reading file process, it's impossible to handle the request\");",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
-							"type": "string"
-						}
-					]
-				},
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "file",
-							"type": "file",
-							"src": "Diario_degli_esperimenti.pdf"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://0.0.0.0:8080/sign/start",
-					"protocol": "http",
-					"host": [
-						"0",
-						"0",
-						"0",
-						"0"
-					],
-					"port": "8080",
-					"path": [
-						"sign",
-						"start"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "RepeatedSigner",
 			"event": [
 				{
@@ -1039,6 +979,16 @@
 						{
 							"key": "firmatari[1]",
 							"value": "UTNTFK94T30D542U",
+							"type": "text"
+						},
+						{
+							"key": "firmatari[2]",
+							"value": "TSNLNZ99E06E690J",
+							"type": "text"
+						},
+						{
+							"key": "firmatari[3]",
+							"value": "UTNTFK94T30D722U",
 							"type": "text"
 						}
 					]
@@ -3280,7 +3230,7 @@
 							"    pm.response.to.have.status(200);",
 							"});",
 							"pm.test(\"Correct Response\", function () {",
-							"    pm.expect(pm.response.text()).include('Token added to user demo2@mailinator.com, new token number is: 20');",
+							"    pm.expect(pm.response.text()).include('Token number changed for user demo2@mailinator.com, new token number is: 20');",
 							"});"
 						],
 						"type": "text/javascript"
@@ -3420,72 +3370,6 @@
 					"port": "8080",
 					"path": [
 						"invalidate"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DownloadSigner",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://0.0.0.0:8080/download/1",
-					"protocol": "http",
-					"host": [
-						"0",
-						"0",
-						"0",
-						"0"
-					],
-					"port": "8080",
-					"path": [
-						"download",
-						"1"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "DownloadApplicant",
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
-						{
-							"key": "token",
-							"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY",
-							"type": "string"
-						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://0.0.0.0:8080/download/1",
-					"protocol": "http",
-					"host": [
-						"0",
-						"0",
-						"0",
-						"0"
-					],
-					"port": "8080",
-					"path": [
-						"download",
-						"1"
 					]
 				}
 			},
