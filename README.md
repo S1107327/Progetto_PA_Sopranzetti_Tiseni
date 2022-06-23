@@ -221,7 +221,7 @@ Come già detto in precedenza, tutte le richieste all'applicazione sono autentic
 
 Si vuole sottolineare inoltre che, in tutti i casi in cui è necessario richiamare il database, i middleware e i controller si avvalgono delle due classi repository come indicato nei diagrammi.
 
-#### **Rotta "/create"**
+#### **Rotta /create**
 ![alt text](./res-readme/sequence-diagram-certificato.jpg)
 
 Nella rotta per la creazione di un certificato oltre ai classici middleware è presente:
@@ -229,7 +229,7 @@ Nella rotta per la creazione di un certificato oltre ai classici middleware è p
 
 Superati tutti i middleware, il controller genera tutti i file necessari per la creazione del certificato dell'utente e il certificato stesso, salvandoli nelle cartelle dedicate. Ritorna, infine, un messaggio che indica all'utente l'avvenuta creazione del certificato.
 
-#### Rotta "/invalidate"
+#### **Rotta /invalidate**
 ![alt text](./res-readme/sequence-diagram-invalidare.jpg)
 
 I controlli peculiari della rotta sono:
@@ -237,14 +237,14 @@ I controlli peculiari della rotta sono:
 
 Il controller si occupa di invalidare il certificato, eliminando tutti i file per la firma digitale associati a quell'utente. Ritorna poi un messaggio di conferma all'utente.
 
-#### Rotta "/credit"
+#### **Rotta /credit**
 ![alt text](./res-readme/sequence-diagram-credito.jpg)
 
 Nel momento in cui l'utente richiede il proprio credito non sono presenti particolari middleware oltre a quelli per la validazione del token
 
 In questo caso il controller si occupa solamente di recuperare il numero di token dell'utente che ha fatto la richiesta e di inviare la risposta al client. 
 
-#### Rotta "/download/:id"
+#### **Rotta /download/:id**
 ![alt text](./res-readme/sequence-diagram-firmato.jpg)
 
 In questo caso sono presenti diversi middleware aggiuntivi data la complessità della richiesta:
@@ -256,14 +256,63 @@ In questo caso sono presenti diversi middleware aggiuntivi data la complessità 
  
 Se tutte le verifiche vanno a buon fine, il controller recupera le informazioni sul documento dal database effettuando l'apposita chiamata, in seguito, utilizzato l'hash del documento e la data di creazione recupera il file vero e proprio dal filesystem e avvia il processo di download.
 
+#### **Rotta /sign/start** 
 
 ![alt text](./res-readme/sequence-diagram-start.jpg)
+
+La rotta che permette a un utente registrato di iniziare un processo di firma, oltre a quelli legati al JWT, ha montati una serie di moduli middleware, che si occupano di perseguire una serie di controlli di integrità sul processo di firma:
+- **upload.single()**:  creato grazie alla libreria multer, si occupa di verificare che nel payload della richiesta ci sia un campo "document" contenente un file. Esso viene attivato solo nel momento in cui è presente un campo contenente un file nel body della richiesta
+- **checkFormData()**: opera una serie di controlli sul payload della richiesta. Per prima cosa, verifica se sono valorizzati tutti i campi della richiesta;successivamente verifica che non ci siano ripetizioni tra i firmatari; infine controlla che tutti i firmatari indicati siano utenti registrati.
+- **checkIfAlreadyExistOrSigned()**: impedisce di avviare il processo di firma nel momento in cui esista un altro processo di firma che coinvolge lo stesso documento(stesso contenuto) e gli stessi firmatari. In caso contrario lascia passare la richiesta al middleware successivo.
+- **checkTokenQty()**: evita che un utente possa avviare un processo di firma con un numero di firmatari superiore al numero di token a sua disposizione. I token a disposizione di un utente sono quelli registrati nel database meno quelli impegnati in altri processi di firma.
+
+Nel caso in cui tutti i controlli sono superati la richiesta arriva filtrata e processata al controller, che si occupa, mediante i metodi del repository, di creare l'istanza del documento e di tutti i firmatari partecipanti nelle tabelle del database
+
+#### **Rotta /sign/cancel/:id**
+
 ![alt text](./res-readme/sequence-diagram-cancellazione.jpg)
+
+Nel momento in cui l'utente fa una richiesta di annullamento di un processo di firma, contrassegnato dall'id passato come parametro, partono una serie di delicati controlli operati dai middleware montati sulla rotta:
+- [**checkId()**](). 
+- **checkIfApplicant()**: controlla se l'utente che ha inviato la richiesta è il richiedente che ha avviato il processo di firma associato a quell'id.
+- **checkIfCompleted()**: impedisce a un utente di annullare o invalidare un processo di firma già concluso.
+
+Nel momento in cui la richiesta supera tutte le verifiche viene processata dal controller. Esso elimina dal database tutti i dati collegati al processo di firma annullato e cancella sul server il documento da firmare.
+
+#### **Rotta /sign/status/:id**
+
 ![alt text](./res-readme/sequence-diagram-stato.jpg)
+
+Sulla rotta che permette a un utente di vedere lo stato di un processo di firma sono montati due middleware già discussi nella rotta precedente:
+- [**checkId()**](#rotta-signcancelid)
+- [**checkIfApplicant()**](#rotta-signcancelid)
+
+Superate le due verifiche citate, viene richiamata una funzione del controller, dedicato ai processi di firma, che si occupa di recuperare in lettura dal database le informazioni richieste sul processo di firma.
+
+#### **Rotta /sign/getchallnumbers**
+
 ![alt text](./res-readme/sequence-diagram-codes.jpg)
+
+Oltre ai middleware relativi alla verifica del payload del token JWT, la rotta corrente non monta middleware specifici, quindi superato il primo blocco di controlli la richiesta viene processata dal controller.
+
+Il controller genera due numeri casuali, i challenging codes, e li salva nel database insieme alla loro data di scadenza, ritornandoli poi al client.
+
+**Rotta /sign/:id**
+
 ![alt text](./res-readme/sequence-diagram.jpg)
 
-#### Rotta "/admin/refill"
+La richiesta di firmare un documento è una richiesta molto delicata. Per questo la rotta associata monta molti middleware, per operare i necessari controlli di integrità:
+
+- **checkChallJSONBody()**: controlla che il body JSON della richiesta sia formattato nella maniera descritta in precedenza.
+- [**checkId()**](#rotta-signcancelid)
+- **checkCertificateNotExist()**: impedisce a un utente che non possiede un certificato valido sul server di proseguire nella firma del documento indicato.
+- **checkSigner()**: verifica che l'utente è abilitato alla firma del documento richiesto, perchè specificato tra i firmatari dello stesso.
+- **checkExpiration()**: per prima cosa controlla se sono stati richiesti dei challenging codes, dall'utente che fa la richiesta. Se la condizione è soddisfatta si verifica anche che i due codici non siano scaduti.
+- **checkChallString()**: confronta le stringhe nella richiesta, con quelle associate ai codici correnti e salvate nel database. Se le stringhe fornite sono uguali e nell'ordine corretto viene abilitata la firma.
+
+Superate tutte le verifiche necessarie il controller  registra nel database la firma di chi ha fatto la richiesta. Inoltre, se il firmatario che ha fatto la richiesta era l'ultimo rimasto, il controller si occupa di aggiornare lo stato del documento sul database, marcandolo come firmato. Infine, esegue sul server il comando openssl che produce il documento firmato.
+
+#### Rotta **/admin/refill**
 ![alt text](./res-readme/sequence-diagram-admin.jpg)
 
 Per l'unica rotta dedicata all'admin i controlli da effettuare sono:
@@ -274,6 +323,7 @@ Per l'unica rotta dedicata all'admin i controlli da effettuare sono:
 
 Quindi, il controller si occuperà di aggiornare il numero di token disponibili per l'utente con la particolare email.
 
+#### **Rotta /sign/cancel/:id**
 ![alt text](./res-readme/sequence-diagram-cancellazione-errore.jpg)
 
 Infine, per completezza si riporta un caso in cui uno dei middleware vada in errore. In questo caso si può notare come la richiesta non arrivi al controller ma venga bloccata dal middleware [checkIfApplicant()](src/middleware/mw-async-db.ts). In caso di errori, vengono autoamticamente richiamati i middleware che si occupano di gestirli.
@@ -282,21 +332,56 @@ Infine, per completezza si riporta un caso in cui uno dei middleware vada in err
 
 
 ### Pattern
-#### Factory
+#### **Factory**
 La factory è un design pattern creazionale che fornisce una interfaccia per la creazione di oggetti. Essa consiste nel delegare ad un unico oggetto, chiamato factory, la creazione di oggetti molto simili che implementano un'interfaccia comune.
 
 L'utilizzo più comune di questo pattern che è stato implementato nell'applicazione è quello della gestione degli errori. Infatti tutti gli errori personalizzati hanno in comune due proprietà, ovvero status code e messaggio di errore. Per questo, il design pattern applicato alla costruzione degli errori permette di semplificarne la gestione delegando alla factory la costruzione dell'errore.
-#### Chain of Responsibility
+#### **Chain of Responsibility**
 La chain of responsibility è un design pattern comportamentale che consente di passare una richiesta attraverso multipli handler che intervengono in vario modo e in maniera incrementale su di essa. Questo permette, nel caso ci siano molteplici controlli da fare, di non creare un flusso di esecuzione dell'applicazione troppo complesso e difficile da manutenere. Il funzionamento è molto semplice, ogni handler effettua uno o più controlli sulla richiesta e, solo se tutti i controlli vengono superati la richiesta viene passata all'handler successivo. In caso di errore, invece, si blocca l'esecuzione.
 
 Nell'applicazione, data la grande mole di controlli da effettuare, si è reso necessario utilizzare questo pattern. I vari handler sono stati implementati attraverso delle middleware function messe a disposizione da express. Ogni middleware function può accedere alla richiesta, alla risposta e ha un riferimento al middleware successivo. Questo consente di effettuare tutti i controlli sulle richieste in catena potendo in qualsiasi momento ritornare un errore nel caso in cui i controlli non vadano a buon fine.
 
 Questo risulta fondamentale per validare tutte le richieste dell'utente impedendo che arrivino delle richieste malevoli o sbagliate al controller, che possano modificare, irreparabilmente, lo stato interno del server. Un ulteriore vantaggio dato dal pattern è che si evitano le ripetizioni di codice in quando lo stesso middleware può esse utilizzato per più richieste.
 
-#### Singleton
+#### **Singleton**
 Il singleton è un design pattern creazionale che forza una classe ad avere una sola istanza.
 Nell'applicazione il singleton viene utilizzato nella [connessione](src/database/connection.ts) al database e nelle classi delle repository ([Repository](./src/database/Models/repository.ts) e [readRepository](src/database/Models/readRepository.ts)). Nel primo caso il singleton risulta necessario perché avere multiple connessioni al database produce un overhead troppo grande. Nel secondo caso, il singleton è stato utilizzato perché le repository vengono chiamate in molte parti del programma, questo avrebbe prodotto un numero di istanze esageratamente grande e non necessario. Con il singleton si è così limitato il numero di istanze risparmiando molte risorse.
 
+#### **DAO**
+Il design pattern DAO(Data Access Object), si utilizza quando è necessario creare l'astrazione di uno strato di persistenza dei dati, come quello rappresentato da un database. Esso permette di dividere il livello applicazione dallo strato di persistenza, facilitando qualsiasi tipo di operazione CRUD, e svincolandola dallo strato sottostante. 
+
+Tipicamente una best practice, che è stata adottata durante la progettazione dell'applicazione, consiste nel creare una classe DAO per ognuna delle tabelle presenti all'interno del database. In essa sono definite come proprietà di una classe gli attributi della tabella, e come metodi le operazioni CRUD. L'uso dei DAO era chiaramente necessario nel caso dell'applicazione progettata, che si appoggia su un database relazionale con tre tabelle.
+
+Nell'implementazione ci si è affidati all'ORM [Sequelize](https://sequelize.org/), in quanto altrimenti si sarebbero dovute implementare da zero le funzionalità CRUD del DAO. Sequelize permette di definire dei DAO, o Model, che espongono nativamente una serie di metodi per operare query sullo strato di persistenza. Nella definizione dei DAO ci si è attenuti alla documentazione di Sequelize.
+
+#### **Repository**
+
+Il repository è un design pattern che si colloca a un livello di astrazione superiore rispetto al DAO. Le funzionalità del repository consistono in:
+- preparare i dati per la memorizzazione, passanodoli poi al DAO per salvarli nello strato di persistenza.
+- recuperare, attraverso i DAO, informazioni provenienti dal database restituendole in un formato adeguato per l'elaborazione. 
+
+Tipicamente i repository possono utilizzare allo stesso tempo più di un DAO. Questo è stato decisivo nella scelta di adottare il pattern nell'applicazione. Possedendo un insieme di tre tabelle sul database, se non si fosse implementato un repository si sarebbero dovuti utilizzare direttamente i DAO nel controller. Questa scelta oltre a causare problemi di ripetizione del codice, avrebbero reso i metodi del controller estremamente complessi.
+
+Per questo si è deciso di implementare due repository, uno per tutte le operazioni che concernessero le scritture sul database, e uno per tutte le operazioni che riguardavano invece il retrieving dei dati dal database, e la mappatura di questi in oggetti del dominio.
+
+Anche se sarebbe stato comunuque corretto avere un unico repository, in quanto mischiare tutte le operazioni sarebbe stato comunque aderente alla definizione del pattern, la scelta operata ha fornito alcuni vantaggi:
+- Ha aumentato la leggibilità del codice, vista la verbosità dei metodi dei DAO implementati da Sequelize
+- Ha permesso di bilanciare il carico di lavoro, avendo due oggetti che svolgessero due tipi di funzionalità diverse
+- Ha aumentato la manutenibilità del codice, permettendo di verificare più velocemente la presenza di eventuali errori
+- Ha facilitato l'implementazione dei controlli concernenti lo stato database, all'interno dei middleware
+
+#### **Model-View-Controller**
+
+Il pattern MVC divide l'architettura di un'applicazione in tre componenti chiave:
+ - **Model**: è la parte dell'applicazione più vicina ai dati e a un eventuale strato di persistenza. Si occupa di gestire tutti i metodi che consentono di modificare i dati presenti nello schema di persistenza, e ottenere informazioni dal database.
+ - **Controller**: il controller si occupa di gestire la logica del programma e di esaudire le richieste che l'utente fa attraverso la vista compiendo delle azioni. Tipicamente, ma non per forza, il controller riceve le richieste dell'utente, nel momento in cui queste sono state validate da un insieme di middleware appositi.
+ - **View**: ottiene i dati del model per aggiornarsi, nel momento in cui ci sono cambiamenti, e si occupa di inviare le richieste dell'utente al controller.
+
+Uno dei difetti più impotanti del pattern MVC è che il model e la view sono fortementi accoppiati. Quindi un qualsiasi cambiamento nella codebase del model implica un cambiamento nel codice della vista. Nel nostro caso avendo realizzato solo un backend, un'API, interrogabile mediante cURL o postman, questo problema non si pone.
+
+Quindi, adottare l'MVC permette di ottenere un codice robusto e facilmente manutenibile. Oltretutto, l'MVC non richiede che il controller sia unico. Questo ha permesso di creare più controller, disaccopiando ulteriormente la logica e le azioni che dovevano essere eseguite, sulla base anche della loro semantica. 
+
+ 
 ## Utilizzo
 
 ### Prerequisiti
@@ -324,6 +409,7 @@ make up-prod
 ```
 ## Testing
 Per facilitare il testing in fase di sviluppo e per fornire a chi vuole iniziare a usare l'applicazione uno scenario pre-costituito è possibile utilizzare la collection postman [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json). Non tutte le richieste presenti nella collection hannno associati dei test, in quanto alcune servono solo a preparare lo scenario di test di altre richieste. Per poter eseguire lo scenario di test della collection è necessario importare la collection su postman cliccando su "Import"
+
 ![alt text](res-readme/postman_import.png)
 
 e poi cliccando su "Upload Files" per scegliere la collection [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json)
@@ -350,5 +436,15 @@ Come nota finale si prega di eseguire tutti i test citati, solo dopo il primo av
 
 ## Note di sviluppo
 
+Nello sviluppo dell'applicazione si sono utilizzati i seguenti software:
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Docker](https://www.docker.com/)
+- [cURL](https://curl.se/)
+- [Postman](https://www.postman.com/)
 
+Una peculiarità del progetto presentato è la separazione stretta tra applicazione di produzione a applicazione di sviluppo. Dividere in maniera attenta le due fasi ha permesso uno sviluppo più agevole e rapido del progetto e del codice. In particolare, una tecnologia di rilievo è stata [nodemon](https://www.npmjs.com/package/nodemon), un pacchetto di NodeJS che in fase di sviluppo ha permesso di lavorare con "Hot Reload". Montando come volume nel container la cartella contenente il codice sorgente in typescript, si poteva indicare a nodemon di "osservare" quella cartella, configurando il file [nodemon.json](nodemon.json). In questa maniera, non appena vengono apportati e salvati cambiamenti sul codice, nodemon fa ripartire l'applicazione rendendo i cambiamenti subito operativi. Ciò ha evitato di dover rifare il processo di build ad ogni cambiamento nel codice, velocizzando notevolmente lo sviluppo. La build si rendeva quindi necessaria solo nel momento in cui ci fossero stati cambiamenti nello strato di persistenza del database oppure, all'aggiunta di nuovi file nella cartella di progetto
+
+## Autori
+- Sopranzetti Lorenzo [github](https://github.com/lorenzo8743)
+- Tiseni Lorenzo [github](https://github.com/S1107327)
 
