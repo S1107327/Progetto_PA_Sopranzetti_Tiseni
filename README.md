@@ -127,7 +127,7 @@ Chiamando questa rotta vengono ritornati all'utente i challenging codes per effe
 
 Consente di firmare un determinato documento indicandone l'id nella rotta.
 
-Nel body della richiesta vanno indicati i challenging codes che devono essere stati richiesti in precedenza mediante la rotta apposita. Il body deve essere un JSON formattato nel seguente modo:
+Nel body della richiesta vanno indicati i challenging codes che devono essere stati richiesti in precedenza mediante la rotta apposita inserendoli nello stesso ordine con cui sono stati ritornati. Il body deve essere un JSON formattato nel seguente modo:
 
 ```JSON
 {
@@ -137,7 +137,7 @@ Nel body della richiesta vanno indicati i challenging codes che devono essere st
   ]
 }
 ```
-E si deve inserire all'interno dei codes i challenging codes che sono stati tornati dalla rotta apposita nell'ordine indicato.
+
 
 Nel caso in cui il processo di firma andasse a buon fine viene ritornato all'utente un messaggio che conferma l'avvenuta firma. 
 
@@ -153,7 +153,7 @@ Per fare la richiesta è necessario che nel token JWT sia impostato come ruolo "
     "nToken": 10
 }
 ```
-All'utente verrà ritornato un messaggio che conferma l'avvenuto cambiamo del numero di token dell'utente.
+All'utente verrà ritornato un messaggio che conferma l'avvenuto cambiamento del numero di token dell'utente.
 
 ### Diagramma delle classi
 
@@ -203,7 +203,7 @@ Il modulo contenente tutti gli errori dell'applicazione presenta:
 - [ErrorMsg](./src/errors/error-types.ts): interfaccia comune a tutti gli errori personalizzati dell'applicazione. Contiene due attributi "status" e "message". Il primo indica lo status code da ritornare al client, mentre il secondo il messaggio di errore da ritornare al client.
 - [GenericError](./src/errors/error-types.ts): è l'errore più generale tra quelli realizzati. GenericError estende "Error" ovvero l'errore più generale di Typescript. Questa classe si occupa di impostare lo status code e il messaggio da tornare al client, nel caso in cui non venga passato nulla al costruttore, verrà automaticamente impostato un messaggio di default e uno status code 500.
 
-Tra gli altri errori presenti, alcuni di essi estendono direttamente GenericError cambiandone messaggio e status code essi sono: "NotFound", "Forbidden", "ValidationError" e "Unauthorized". Altri invece, essendo errori a "livello più basso" estendono a loro volta errorri come "NotFound" o "Forbidden" andandone a cambiare solamente il messaggio di errore ma non lo status code, alcuni esempi sono: "InvalidEmail", InvalidId" o "CertAlreadyExistError".
+Tra gli altri errori presenti, alcuni di essi estendono direttamente GenericError cambiandone messaggio e status code, essi sono: "NotFound", "Forbidden", "ValidationError" e "Unauthorized". Altri invece, essendo errori a "livello più basso" estendono a loro volta errorri come "NotFound" o "Forbidden" andandone a cambiare solamente il messaggio di errore ma non lo status code, alcuni esempi sono: "InvalidEmail", InvalidId" o "CertAlreadyExistError".
 
 L'intera gerarchia e struttura degli errori è visibile nell'immagine.
 
@@ -213,11 +213,11 @@ L'intera gerarchia e struttura degli errori è visibile nell'immagine.
 Per ogni rotta dell'applicazione, ad eccezione di quella di bevenuto, è stato definito un diagramma delle sequenze che spiega cosa accade internamente e quali sono le componenti attraversate dalla richiesta.
 
 Come già detto in precedenza, tutte le richieste all'applicazione sono autenticate mediante token JWT, dunque i primi middleware sono sempre gli stessi e servono per verificare questo token, in particolare:
-- [checkHeader()](./src/middleware/mw-auth-JWT.ts): controlla se nella richiesta sia presente l'authorization header.
-- [checkToken()](./src/middleware/mw-auth-JWT.ts): controlla se nell'header della richiesta è presente un Bearer token ovvero il token JWT. 
-- [verifyAndAuthenticate()](./src/middleware/mw-auth-JWT.ts): verifica se il token è valido controllando che la chiave segreta utilizzata per la cifratura sia corretta e che il token non sia scaduto. 
-- [checkJWTPayload()](./src/middleware/mw-auth-JWT.ts): controlla se il payload del token è corretto secondo le specifiche verificando elemento per elemento del body. 
-- [checkUserAuthJWT()](./src/middleware/mw-async-db.ts): controlla se l'utente, i cui dati sono codificati nel token, sia uno tra quelli registrati nell'applicazione, in particolare, si verifica se il codice fiscale presente nel token corrisponde ad uno di quelli presenti nel database.
+- [**checkHeader()**](./src/middleware/mw-auth-JWT.ts): controlla se nella richiesta sia presente l'authorization header.
+- [**checkToken()**](./src/middleware/mw-auth-JWT.ts): controlla se nell'header della richiesta è presente un Bearer token ovvero il token JWT. 
+- [**verifyAndAuthenticate()**](./src/middleware/mw-auth-JWT.ts): verifica se il token è valido controllando che la chiave segreta utilizzata per la cifratura sia corretta e che il token non sia scaduto. 
+- [**checkJWTPayload()**](./src/middleware/mw-auth-JWT.ts): controlla se il payload del token è corretto secondo le specifiche verificando elemento per elemento del body. 
+- [**checkUserAuthJWT()**](./src/middleware/mw-async-db.ts): controlla se l'utente, i cui dati sono codificati nel token, sia uno tra quelli registrati nell'applicazione, in particolare, si verifica se il codice fiscale presente nel token corrisponde ad uno di quelli presenti nel database.
 
 Si vuole sottolineare inoltre che, in tutti i casi in cui è necessario richiamare il database, i middleware e i controller si avvalgono delle due classi repository come indicato nei diagrammi.
 
@@ -225,7 +225,7 @@ Si vuole sottolineare inoltre che, in tutti i casi in cui è necessario richiama
 ![alt text](./res-readme/sequence-diagram-certificato.jpg)
 
 Nella rotta per la creazione di un certificato oltre ai classici middleware è presente:
-- [checkCertificateAlreadyExist()](./src/middleware/mw-validation.ts): controlla se nella directory del filesystem contenente i certificati degli utenti sia già presente un certificato per l'utente che sta facendo la richiesta, in quel caso la richiesta viene bloccata.
+- [**checkCertificateAlreadyExist()**](./src/middleware/mw-validation.ts): controlla se nella directory del filesystem contenente i certificati degli utenti sia già presente un certificato per l'utente che sta facendo la richiesta, in quel caso la richiesta viene bloccata.
 
 Superati tutti i middleware, il controller genera tutti i file necessari per la creazione del certificato dell'utente e il certificato stesso, salvandoli nelle cartelle dedicate. Ritorna, infine, un messaggio che indica all'utente l'avvenuta creazione del certificato.
 
@@ -233,14 +233,14 @@ Superati tutti i middleware, il controller genera tutti i file necessari per la 
 ![alt text](./res-readme/sequence-diagram-invalidare.jpg)
 
 I controlli peculiari della rotta sono:
-- [checkCertificateNotExist()](./src/middleware/mw-validation.ts): controlla se l'utente che sta richiedendo l'invalidazione del certificato ne abbia effettivamente uno. 
+- [**checkCertificateNotExist()**](./src/middleware/mw-validation.ts): controlla se l'utente che sta richiedendo l'invalidazione del certificato ne abbia effettivamente uno. 
 
 Il controller si occupa di invalidare il certificato, eliminando tutti i file per la firma digitale associati a quell'utente. Ritorna poi un messaggio di conferma all'utente.
 
 #### **Rotta /credit**
 ![alt text](./res-readme/sequence-diagram-credito.jpg)
 
-Nel momento in cui l'utente richiede il proprio credito non sono presenti particolari middleware oltre a quelli per la validazione del token
+Nel momento in cui l'utente richiede il proprio credito non sono presenti particolari middleware oltre a quelli per la validazione del token.
 
 In questo caso il controller si occupa solamente di recuperare il numero di token dell'utente che ha fatto la richiesta e di inviare la risposta al client. 
 
@@ -248,11 +248,11 @@ In questo caso il controller si occupa solamente di recuperare il numero di toke
 ![alt text](./res-readme/sequence-diagram-firmato.jpg)
 
 In questo caso sono presenti diversi middleware aggiuntivi data la complessità della richiesta:
-- [checkId()](src/middleware/mw-async-db.ts): questo middleware effettua due controlli:
+- [**checkId()**](src/middleware/mw-async-db.ts): questo middleware effettua due controlli:
   - verifica se l'id indicato è un numero intero positivo. 
   - verifica che l'id corrisponda a un documento realmente esistente nell'applicazione.
-- [checkIfSignerOrApplicant()](src/middleware/mw-async-db.ts): middleware che controlla se l'utente che sta facendo la richiesta sia effettivamente un utente autorizzato, ovvero un firmatario o il richiedente.
-- [checkIfSigned()](src/middleware/mw-async-db.ts): verifica se il processo di firma del documento corrispondente all'id indicato sia effettivamente completato e il documento sia stato firmato. 
+- [**checkIfSignerOrApplicant()**](src/middleware/mw-async-db.ts): middleware che controlla se l'utente che sta facendo la richiesta sia effettivamente un utente autorizzato, ovvero un firmatario o il richiedente.
+- [**checkIfSigned()**](src/middleware/mw-async-db.ts): verifica se il processo di firma del documento corrispondente all'id indicato sia effettivamente completato e il documento sia stato firmato. 
  
 Se tutte le verifiche vanno a buon fine, il controller recupera le informazioni sul documento dal database effettuando l'apposita chiamata, in seguito, utilizzato l'hash del documento e la data di creazione recupera il file vero e proprio dal filesystem e avvia il processo di download.
 
@@ -261,10 +261,10 @@ Se tutte le verifiche vanno a buon fine, il controller recupera le informazioni 
 ![alt text](./res-readme/sequence-diagram-start.jpg)
 
 La rotta che permette a un utente registrato di iniziare un processo di firma, oltre a quelli legati al JWT, ha montati una serie di moduli middleware, che si occupano di perseguire una serie di controlli di integrità sul processo di firma:
-- **upload.single()**:  creato grazie alla libreria multer, si occupa di verificare che nel payload della richiesta ci sia un campo "document" contenente un file. Esso viene attivato solo nel momento in cui è presente un campo contenente un file nel body della richiesta
-- **checkFormData()**: opera una serie di controlli sul payload della richiesta. Per prima cosa, verifica se sono valorizzati tutti i campi della richiesta;successivamente verifica che non ci siano ripetizioni tra i firmatari; infine controlla che tutti i firmatari indicati siano utenti registrati.
-- **checkIfAlreadyExistOrSigned()**: impedisce di avviare il processo di firma nel momento in cui esista un altro processo di firma che coinvolge lo stesso documento(stesso contenuto) e gli stessi firmatari. In caso contrario lascia passare la richiesta al middleware successivo.
-- **checkTokenQty()**: evita che un utente possa avviare un processo di firma con un numero di firmatari superiore al numero di token a sua disposizione. I token a disposizione di un utente sono quelli registrati nel database meno quelli impegnati in altri processi di firma.
+- [**upload.single()**](./src/utils/multer-config.ts):  creato grazie alla libreria multer, si occupa di verificare che nel payload della richiesta ci sia un campo "document" contenente un file. Esso viene attivato solo nel momento in cui è presente un campo contenente un file nel body della richiesta
+- [**checkFormData()**](src/middleware/mw-async-db.ts): opera una serie di controlli sul payload della richiesta. Per prima cosa, verifica se sono valorizzati tutti i campi della richiesta;successivamente verifica che non ci siano ripetizioni tra i firmatari; infine controlla che tutti i firmatari indicati siano utenti registrati.
+- [**checkIfAlreadyExistOrSigned()**](src/middleware/mw-async-db.ts): impedisce di avviare il processo di firma nel momento in cui esista un altro processo di firma che coinvolge lo stesso documento(stesso contenuto) e gli stessi firmatari. In caso contrario lascia passare la richiesta al middleware successivo.
+- [**checkTokenQty()**](src/middleware/mw-async-db.ts): evita che un utente possa avviare un processo di firma con un numero di firmatari superiore al numero di token a sua disposizione. I token a disposizione di un utente sono quelli registrati nel database meno quelli impegnati in altri processi di firma.
 
 Nel caso in cui tutti i controlli sono superati la richiesta arriva filtrata e processata al controller, che si occupa, mediante i metodi del repository, di creare l'istanza del documento e di tutti i firmatari partecipanti nelle tabelle del database
 
@@ -273,9 +273,9 @@ Nel caso in cui tutti i controlli sono superati la richiesta arriva filtrata e p
 ![alt text](./res-readme/sequence-diagram-cancellazione.jpg)
 
 Nel momento in cui l'utente fa una richiesta di annullamento di un processo di firma, contrassegnato dall'id passato come parametro, partono una serie di delicati controlli operati dai middleware montati sulla rotta:
-- [**checkId()**](). 
-- **checkIfApplicant()**: controlla se l'utente che ha inviato la richiesta è il richiedente che ha avviato il processo di firma associato a quell'id.
-- **checkIfCompleted()**: impedisce a un utente di annullare o invalidare un processo di firma già concluso.
+- [**checkId()**](#rotta-downloadid). 
+- [**checkIfApplicant()**](src/middleware/mw-async-db.ts): controlla se l'utente che ha inviato la richiesta è il richiedente che ha avviato il processo di firma associato a quell'id.
+- [**checkIfCompleted()**](src/middleware/mw-async-db.ts): impedisce a un utente di annullare o invalidare un processo di firma già concluso.
 
 Nel momento in cui la richiesta supera tutte le verifiche viene processata dal controller. Esso elimina dal database tutti i dati collegati al processo di firma annullato e cancella sul server il documento da firmare.
 
@@ -284,7 +284,7 @@ Nel momento in cui la richiesta supera tutte le verifiche viene processata dal c
 ![alt text](./res-readme/sequence-diagram-stato.jpg)
 
 Sulla rotta che permette a un utente di vedere lo stato di un processo di firma sono montati due middleware già discussi nella rotta precedente:
-- [**checkId()**](#rotta-signcancelid)
+- [**checkId()**](#rotta-downloadid)
 - [**checkIfApplicant()**](#rotta-signcancelid)
 
 Superate le due verifiche citate, viene richiamata una funzione del controller, dedicato ai processi di firma, che si occupa di recuperare in lettura dal database le informazioni richieste sul processo di firma.
@@ -303,12 +303,12 @@ Il controller genera due numeri casuali, i challenging codes, e li salva nel dat
 
 La richiesta di firmare un documento è una richiesta molto delicata. Per questo la rotta associata monta molti middleware, per operare i necessari controlli di integrità:
 
-- **checkChallJSONBody()**: controlla che il body JSON della richiesta sia formattato nella maniera descritta in precedenza.
-- [**checkId()**](#rotta-signcancelid)
-- **checkCertificateNotExist()**: impedisce a un utente che non possiede un certificato valido sul server di proseguire nella firma del documento indicato.
-- **checkSigner()**: verifica che l'utente è abilitato alla firma del documento richiesto, perchè specificato tra i firmatari dello stesso.
-- **checkExpiration()**: per prima cosa controlla se sono stati richiesti dei challenging codes, dall'utente che fa la richiesta. Se la condizione è soddisfatta si verifica anche che i due codici non siano scaduti.
-- **checkChallString()**: confronta le stringhe nella richiesta, con quelle associate ai codici correnti e salvate nel database. Se le stringhe fornite sono uguali e nell'ordine corretto viene abilitata la firma.
+- [**checkChallJSONBody()**](src/middleware/mw-validation.ts): controlla che il body JSON della richiesta sia formattato nella maniera descritta in precedenza.
+- [**checkId()**](#rotta-downloadid)
+- [**checkCertificateNotExist()**](src/middleware/mw-validation.ts): impedisce a un utente che non possiede un certificato valido sul server di proseguire nella firma del documento indicato.
+- [**checkSigner()**](src/middleware/mw-async-db.ts): verifica che l'utente è abilitato alla firma del documento richiesto, perchè specificato tra i firmatari dello stesso.
+- [**checkExpiration()**](src/middleware/mw-async-db.ts): per prima cosa controlla se sono stati richiesti dei challenging codes, dall'utente che fa la richiesta. Se la condizione è soddisfatta si verifica anche che i due codici non siano scaduti.
+- [**checkChallString()**](src/middleware/mw-async-db.ts): confronta le stringhe nella richiesta, con quelle associate ai codici correnti e salvate nel database. Se le stringhe fornite sono uguali e nell'ordine corretto viene abilitata la firma.
 
 Superate tutte le verifiche necessarie il controller  registra nel database la firma di chi ha fatto la richiesta. Inoltre, se il firmatario che ha fatto la richiesta era l'ultimo rimasto, il controller si occupa di aggiornare lo stato del documento sul database, marcandolo come firmato. Infine, esegue sul server il comando openssl che produce il documento firmato.
 
