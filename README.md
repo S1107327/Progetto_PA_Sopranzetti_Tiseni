@@ -416,7 +416,7 @@ e poi cliccando su "Upload Files" per scegliere la collection [PROGETTOPATEST](P
 
 ![alt text](res-readme/psotman_upload.png)
 
-Successivamente cliccare sui tre puntini vicino al nome della collection e selezionare "Run Collection" nel menù a tendina aperto.
+Successivamente, prima di iniziare i test, impostare la cartella "TestFiles", all'interno della cartella di progetto, come Working directory di postman, per permettergli di poter utilizzare i file al suo interno.Quindi cliccare sui tre puntini vicino al nome della collection e selezionare "Run Collection" nel menù a tendina aperto.
 
 ![alt text](res-readme/postman_collection.png)
 
