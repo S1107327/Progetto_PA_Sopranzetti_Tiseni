@@ -12,7 +12,7 @@ L'obiettivo del progetto è di realizzare un sistema che consenta di gestire il 
 - Un utente con il ruolo di admin deve poter ricaricare i token di un utente fornendo la mail e il nuovo "credito".
 
 ### Alcuni dettagli
-- In generale, il token JWT utilizzato per utenticare tutte le richieste è sempre il medesimo e contiene un payload JSON con i seguenti campi:
+- In generale, il token JWT utilizzato per autenticare tutte le richieste è sempre il medesimo e contiene un payload JSON con i seguenti campi:
 
   -	commonName=Adriano Mancini
   -	countryName=IT
@@ -26,9 +26,9 @@ L'obiettivo del progetto è di realizzare un sistema che consenta di gestire il 
   -	SN=Mancini 
   -	role=user
 
-  Per gli utenti admin nel campoo role ci sarà scritto "admin" invece che "user".
+  Per gli utenti admin nel campo role ci sarà scritto "admin" invece che "user".
 
-- Nel momento in cui si verifica il numero di token di un utente, ovvero quando esso chiede di avviare un nuovo processo di firma, nel conteggio si fa riferimento anche al numero di token "impegnati" dell'utente, ovvero quei token che l'utente potrebbe utilizzare in futuro qualora dei processi di firma che esso aveva già avviato andassero a buon fine. Questo serve ad evitare che un utente possa avviare più processi di firma di quanti se ne può effittavamente permettere una volta che saranno completati.
+- Nel momento in cui si verifica il numero di token di un utente, ovvero quando esso chiede di avviare un nuovo processo di firma, nel conteggio si fa riferimento anche al numero di token "impegnati" dell'utente, ovvero quei token che l'utente potrebbe utilizzare in futuro qualora dei processi di firma che esso aveva già avviato andassero a buon fine. Questo serve ad evitare che un utente possa avviare più processi di firma di quanti se ne può effettivamente permettere una volta che saranno completati.
  
 - Per ogni utente, nel caso di firma multipla, viene utilizzata sempre la stessa PEMPASSPHRASE, ovvero la stessa password. Questo viene fatto perché openssl non prevede un comando che consenta di inserire più password nel caso di firme multiple.
 
@@ -80,7 +80,7 @@ Se l'invalidazione va a buon fine viene tornato all'utente un messaggio che ne c
 
 L'utente può, in questo modo, visualizzare il proprio credito residuo in token. Basta chiamare questa rotta dopo aver impostato il proprio token JWT. 
 
-All'utente verrà ritornato, in risposta, un oggetto che contiene due campi: uno indica il codice fiscale dell'utente, l'altro l'attuale numero di token.All'utente verrà ritornato il numero di token rimanenti.
+All'utente verrà ritornato, in risposta, un oggetto che contiene due campi: uno indica il codice fiscale dell'utente, l'altro l'attuale numero di token.
 
 - Rotta: **/download/:id**
 
@@ -121,7 +121,7 @@ All'utente che effettua la richiesta vengono ritornate una serie di informazioni
 
 - Rotta: **/sign/getchallnumbers**
 
-Chiamando questa rotta vengono ritornati all'utente i challenging codes per effettuare successivamente la firma. I challenging codes hanno una durata di due minuti. L'utente viene identificato dall'applicazione mendiante le informazioni nel token JWT.
+Chiamando questa rotta vengono ritornati all'utente i challenging codes per effettuare successivamente la firma. I challenging codes hanno una durata di due minuti. L'utente viene identificato dall'applicazione mediante le informazioni nel token JWT.
 
 - Rotta: **/sign/:id**
 
@@ -174,6 +174,7 @@ In questa parte di applicazione sono presenti tre elementi:
 
 #### Controller
 ![alt text](./res-readme/class-diagram-controller.jpg)
+
 I controller dell'applicazione sono:
 - [Controller](./src/controllers/Controller.ts): è la classe base di tutti i controller e contiene i campi "readRepo" e "repo" che sono dei riferimenti alle repository, utili per tutte le operazioni che richiedono interazioni con i database.
 - [AdminController](./src/controllers/AdminController.ts): identifica il controller per l'admin, essa contiene il metodo per cambiare i token di un determinato utente.
@@ -201,9 +202,9 @@ Il modulo contenente tutti gli errori dell'applicazione presenta:
 - [error-factory.ts](./src/errors/error-factory.ts):  contiene la factory vera e propria degli errori attraverso la quale è possibile recuperare la giusta istanza del giusto errore quando necessario.
 - [error-messages.ts](./src/errors/error-messages.ts): contiene tutti i messaggi degli errori personalizzati dell'applicazione. Tutte queste stringhe sono state racchiuse in un unico modulo per renderne più facile l'individuazione e l'eventuale modifica.
 - [ErrorMsg](./src/errors/error-types.ts): interfaccia comune a tutti gli errori personalizzati dell'applicazione. Contiene due attributi "status" e "message". Il primo indica lo status code da ritornare al client, mentre il secondo il messaggio di errore da ritornare al client.
-- [GenericError](./src/errors/error-types.ts): è l'errore più generale tra quelli realizzati. GenericError estende "Error" ovvero l'errore più generale di Typescript. Questa classe si occupa di impostare lo status code e il messaggio da tornare al client, nel caso in cui non venga passato nulla al costruttore, verrà automaticamente impostato un messaggio di default e uno status code 500.
+- [GenericError](./src/errors/error-types.ts): è l'errore più generale tra quelli realizzati ed estende "Error" ovvero l'errore più generale di Typescript. Questa classe si occupa di impostare lo status code e il messaggio da tornare al client, nel caso in cui non venga passato nulla al costruttore, verrà automaticamente impostato un messaggio di default e uno status code 500.
 
-Tra gli altri errori presenti, alcuni di essi estendono direttamente GenericError cambiandone messaggio e status code, essi sono: "NotFound", "Forbidden", "ValidationError" e "Unauthorized". Altri invece, essendo errori a "livello più basso" estendono a loro volta errorri come "NotFound" o "Forbidden" andandone a cambiare solamente il messaggio di errore ma non lo status code, alcuni esempi sono: "InvalidEmail", InvalidId" o "CertAlreadyExistError".
+Tra gli altri errori presenti, alcuni di essi estendono direttamente GenericError cambiandone messaggio e status code, essi sono: "NotFound", "Forbidden", "ValidationError" e "Unauthorized". Altri invece, essendo errori a "livello più basso", estendono a loro volta errori come "NotFound" o "Forbidden" andandone a cambiare solamente il messaggio di errore ma non lo status code, alcuni esempi sono: "InvalidEmail", InvalidId" o "CertAlreadyExistError".
 
 L'intera gerarchia e struttura degli errori è visibile nell'immagine.
 
@@ -396,19 +397,19 @@ cd Progetto_PA_Sopranzetti_Tiseni
 ```
 L'applicazione può essere avviata in due modalità: 
 - Modalità DEV: utilizzata durante lo sviluppo.
-- Modalità BUILD: da utilizzare in fase di produzione per avviare l'applicazione compilata.
+- Modalità PRODUCTION: da utilizzare in fase di produzione per avviare l'applicazione compilata.
 
-L'avvio dell'applicazione in modalità build avviene eseguendo i comandi presenti in un Makefile. Questi ultimi sono stati definiti in maniera tale che l'utente finale non dovesse eseguire comandi complessi da scrivere per avviare l'applicazione. Inoltre, poichè l'applicazione fa uso di una versione di openssl che non è ancora presente nei repository stabili di ubuntu, è necessario prima creare un'immagine docker locale in cui è installata una versione minimale di NodeJS e openssl 3.0.3. Tale immagine può essere creata con il comando:
+L'avvio dell'applicazione in modalità production avviene eseguendo i comandi presenti in un Makefile. Questi ultimi sono stati definiti in maniera tale che l'utente finale non dovesse eseguire comandi complessi da scrivere per avviare l'applicazione. Inoltre, poichè l'applicazione fa uso di una versione di openssl che non è ancora presente nei repository stabili di ubuntu, è necessario prima creare un'immagine docker locale in cui è installata una versione minimale di NodeJS e openssl 3.0.3. Tale immagine può essere creata con il comando:
 ```Shell
 make openssl-build
 ```
-L'esecuzione di questo comando è molto lunga e impiega all'incirca 10-15 minuti a seconda delle potenzialità della macchina. Costruita l'immagine a questo punto è possibile avviare l'applicazione operando in sequenza i due comandi:
+L'esecuzione di questo comando è molto lunga e impiega all'incirca 10-15 minuti a seconda delle potenzialità della macchina. Costruita l'immagine, a questo punto, è possibile avviare l'applicazione, in modalità production, operando in sequenza i due comandi:
 ```Shell
 make build-prod
 make up-prod
 ```
 ## Testing
-Per facilitare il testing in fase di sviluppo e per fornire a chi vuole iniziare a usare l'applicazione uno scenario pre-costituito è possibile utilizzare la collection postman [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json). Non tutte le richieste presenti nella collection hannno associati dei test, in quanto alcune servono solo a preparare lo scenario di test di altre richieste. Per poter eseguire lo scenario di test della collection è necessario importare la collection su postman cliccando su "Import"
+Per facilitare il testing in fase di sviluppo e, per fornire a chi vuole iniziare a usare l'applicazione uno scenario pre-costituito, è possibile utilizzare la collection postman [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json). Non tutte le richieste presenti nella collection hanno associati dei test, in quanto alcune servono solo a preparare lo scenario di test per altre richieste. Per poter eseguire lo scenario di test della collection è necessario importarla su postman cliccando su "Import"
 
 ![alt text](res-readme/postman_import.png)
 
@@ -416,15 +417,15 @@ e poi cliccando su "Upload Files" per scegliere la collection [PROGETTOPATEST](P
 
 ![alt text](res-readme/psotman_upload.png)
 
-Successivamente, prima di iniziare i test, impostare la cartella "TestFiles", all'interno della cartella di progetto, come Working directory di postman, per permettergli di poter utilizzare i file al suo interno.Quindi cliccare sui tre puntini vicino al nome della collection e selezionare "Run Collection" nel menù a tendina aperto.
+Successivamente, prima di iniziare i test, impostare la cartella "TestFiles", all'interno della cartella di progetto, come Working directory di postman, per permettergli di poter utilizzare i file al suo interno. Quindi cliccare sui tre puntini vicino al nome della collection e selezionare "Run Collection" nel menù a tendina aperto.
 
 ![alt text](res-readme/postman_collection.png)
 
-Quindi nella finestra che si apre, in cui è possibile settare le opzioni di esecuzione della collection, impostare Delay pari a 600 ms e spuntare la casella "Save Responses". Lasciare il resto delle opzioni con i valori predefiniti.
+Quindi, nella finestra che si apre, in cui è possibile settare le opzioni di esecuzione della collection, impostare Delay pari a 600 ms e spuntare la casella "Save Responses". Lasciare il resto delle opzioni con i valori predefiniti.
 
 ![alt text](res-readme/postman_run.png)
 
-Infine per avviare i test cliccare su Run. La durata dei test è di circa tre minuti in quanto prima della richiesta "SignChallCodeExpired" è impostato un setTimeout di circa due minuti per dare tempo ai challenging codes di scadere e generare l'errore aspettato. Eseguiti i test con postman, è possibile eseguire una serie aggiuntiva di tre test eseguendo il file [test.sh](test.sh). Questi test aggiuntivi vengono eseguiti con cURL da riga di comando perchè più complicati da eseguire con il client postman. Si prega di rendere il file [test.sh](test.sh) eseguibile con:
+Infine per avviare i test cliccare su Run. La durata dei test è di circa tre minuti in quanto prima della richiesta "SignChallCodeExpired" è impostato un setTimeout di circa due minuti per dare tempo ai challenging codes di scadere e generare l'errore aspettato. Eseguiti i test con postman, è possibile eseguire una serie aggiuntiva di tre test utilizzando lo script [test.sh](test.sh). Questi test aggiuntivi vengono eseguiti con cURL da riga di comando perchè più complicati da eseguire con il client postman. Si prega di rendere il file [test.sh](test.sh) eseguibile con:
 ```Shell
 chmod +x test.sh
 ```
@@ -432,7 +433,7 @@ e poi eseguire con
 ```Shell
 ./test.sh
 ```
-Come nota finale si prega di eseguire tutti i test citati, solo dopo il primo avvio dell'applicazione.
+Come nota finale si prega di fare tutti i test citati, solo dopo il primo avvio dell'applicazione.
 
 ## Note di sviluppo
 
@@ -442,7 +443,7 @@ Nello sviluppo dell'applicazione si sono utilizzati i seguenti software:
 - [cURL](https://curl.se/)
 - [Postman](https://www.postman.com/)
 
-Una peculiarità del progetto presentato è la separazione stretta tra applicazione di produzione a applicazione di sviluppo. Dividere in maniera attenta le due fasi ha permesso uno sviluppo più agevole e rapido del progetto e del codice. In particolare, una tecnologia di rilievo è stata [nodemon](https://www.npmjs.com/package/nodemon), un pacchetto di NodeJS che in fase di sviluppo ha permesso di lavorare con "Hot Reload". Montando come volume nel container la cartella contenente il codice sorgente in typescript, si poteva indicare a nodemon di "osservare" quella cartella, configurando il file [nodemon.json](nodemon.json). In questa maniera, non appena vengono apportati e salvati cambiamenti sul codice, nodemon fa ripartire l'applicazione rendendo i cambiamenti subito operativi. Ciò ha evitato di dover rifare il processo di build ad ogni cambiamento nel codice, velocizzando notevolmente lo sviluppo. La build si rendeva quindi necessaria solo nel momento in cui ci fossero stati cambiamenti nello strato di persistenza del database oppure, all'aggiunta di nuovi file nella cartella di progetto
+Una peculiarità del progetto presentato è la separazione stretta tra applicazione di produzione a applicazione di sviluppo. Dividere in maniera attenta le due fasi ha permesso uno sviluppo più agevole e rapido del progetto e del codice. In particolare, una tecnologia di rilievo è stata [nodemon](https://www.npmjs.com/package/nodemon), un pacchetto di NodeJS che in fase di sviluppo ha permesso di lavorare con "Hot Reload". Montando come volume nel container la cartella contenente il codice sorgente in typescript, si poteva indicare a nodemon di "osservare" quella cartella, configurando il file [nodemon.json](nodemon.json). In questa maniera, non appena vengono apportati e salvati cambiamenti sul codice, nodemon fa ripartire l'applicazione rendendo i cambiamenti subito operativi. Ciò ha evitato di dover rifare il processo di build ad ogni cambiamento nel codice, velocizzando notevolmente lo sviluppo. La build si rendeva quindi necessaria solo nel momento in cui ci fossero stati cambiamenti nello strato di persistenza del database oppure, all'aggiunta o modifica di file nella cartella di progetto.
 
 ## Autori
 - Sopranzetti Lorenzo [github](https://github.com/lorenzo8743)
