@@ -482,6 +482,8 @@ Nello sviluppo dell'applicazione si sono utilizzati i seguenti software:
 
 Una peculiarità del progetto presentato è la separazione stretta tra applicazione di produzione a applicazione di sviluppo. Dividere in maniera attenta le due fasi ha permesso uno sviluppo più agevole e rapido del progetto e del codice. In particolare, una tecnologia di rilievo è stata [nodemon](https://www.npmjs.com/package/nodemon), un pacchetto di NodeJS che in fase di sviluppo ha permesso di lavorare con "Hot Reload". Montando come volume nel container la cartella contenente il codice sorgente in typescript, si poteva indicare a nodemon di "osservare" quella cartella, configurando il file [nodemon.json](nodemon.json). In questa maniera, non appena vengono apportati e salvati cambiamenti sul codice, nodemon fa ripartire l'applicazione rendendo i cambiamenti subito operativi. Ciò ha evitato di dover rifare il processo di build ad ogni cambiamento nel codice, velocizzando notevolmente lo sviluppo. La build si rendeva quindi necessaria solo nel momento in cui ci fossero stati cambiamenti nello strato di persistenza del database oppure, all'aggiunta o modifica di file nella cartella di progetto.
 
+Si vuole inoltre sottolineare che, nel caso in cui si volessero generare nuovi token JWT, la chiave da utilizzare è: chiavesegretissimaperiltokenjwtp.
+
 ## Autori
 - Sopranzetti Lorenzo [github](https://github.com/lorenzo8743)
 - Tiseni Lorenzo [github](https://github.com/S1107327)
