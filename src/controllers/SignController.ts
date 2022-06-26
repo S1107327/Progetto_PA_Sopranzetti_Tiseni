@@ -111,7 +111,7 @@ export class SignController extends Controller{
      * @param {any} res: risposta da inviare al client 
      */
     public signDocument(req: any, res:any){
-        this.repo.signDocument(req.params.id, req.user.serialNumber).then((last: Boolean) => {
+        this.repo.signDocument(req.params.id, req.user.serialNumber).then((last: boolean) => {
             if(last){
                 this.readRepo.getDocument(req.params.id).then((document:Document | null) => {
                     let command: string = openssl.opensslSignBase(document!);

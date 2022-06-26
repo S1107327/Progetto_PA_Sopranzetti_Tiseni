@@ -71,7 +71,7 @@ export class Repository implements IRepository {
         backOffPolicy: BackOffPolicy.FixedBackOffPolicy,
         backOff: 1000,
     })
-    async signDocument(document_id: number, codice_fiscale: string): Promise<Boolean> {
+    async signDocument(document_id: number, codice_fiscale: string): Promise<boolean> {
         let firmatari = await SignProcess.findAll({
             where: {
                 id_documento: document_id,
