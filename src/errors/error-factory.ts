@@ -1,6 +1,9 @@
 import {ErrorMsg, ErrEnum, GenericError, Forbidden, NotFound, ValidationError, MissingAuthHeader, InvalidJSONPayload, JWTVerifyError, InvalidJWTPayload, UnregisteredUser, SignError, FileReadingError, FileAlreadyExistError, InvalidFormPayload, CertCreationError, InvalidId, CertAlreadyExistErr, InvalidParams, BadChallengingString, ChallengingCodeExpired, SignerNotAdmitted, SignAlreadyDone, CertificateNotFound, InvalidTokenNumber, InvalidEmail, DocumentAlreadySigned, DocumentNotSigned, NotEnoughToken, NoChallCodes, CannotCancel, RouteNotFound, ChallCodesNotRequested, WrongAuthHeader, UnregisteredSigner} from "./error-types";
 
-
+/**
+ * Funzione invocata per costruire l'errore desiderato tra quelli personalizzati utilizzando
+ * un enum appositamente definito.
+ */
 export const errorFactory = {
     getError: (errType:ErrEnum): ErrorMsg => {
         let returnValue: ErrorMsg;

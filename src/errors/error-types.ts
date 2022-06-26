@@ -1,10 +1,14 @@
 import { errorMessages } from "./error-messages";
+
+/**
+ * Interfaccia implementata da tutti gli errori personalizzati. Contiene due campi
+ * "status" e "message", il primo contiene lo status code dell'errore, il secondo il 
+ * messaggio di errore personalizzato da ritornare al client.
+ */
 export interface ErrorMsg{
     status: number;
     message: string;
 }
-
-//TODO: completare con tutti gli errori che risulteranno necessari
 
 export class GenericError extends Error implements ErrorMsg {
     status: number;
