@@ -399,14 +399,23 @@ L'applicazione può essere avviata in due modalità:
 - Modalità DEV: utilizzata durante lo sviluppo.
 - Modalità PRODUCTION: da utilizzare in fase di produzione per avviare l'applicazione compilata.
 
-L'avvio dell'applicazione in modalità production avviene eseguendo i comandi presenti in un Makefile. Questi ultimi sono stati definiti in maniera tale che l'utente finale non dovesse eseguire comandi complessi da scrivere per avviare l'applicazione. Inoltre, poichè l'applicazione fa uso di una versione di openssl che non è ancora presente nei repository stabili di ubuntu, è necessario prima creare un'immagine docker locale in cui è installata una versione minimale di NodeJS e openssl 3.0.3. Tale immagine può essere creata con il comando:
+L'avvio dell'applicazione in modalità production avviene eseguendo i comandi presenti in un Makefile. Questi ultimi sono stati definiti in maniera tale che l'utente finale non dovesse eseguire comandi complessi da scrivere per avviare l'applicazione. Tali comandi sono disponibili solo in ambiente linux, perciò, nel caso in cui si volesse avviare l'applicazione in ambiente Windows, è possibile utilizzare i comandi alternativi riportati dopo i corrispondenti comandi make. Inoltre, poichè l'applicazione fa uso di una versione di openssl che non è ancora presente nei repository stabili di ubuntu, è necessario prima creare un'immagine docker locale in cui è installata una versione minimale di NodeJS e openssl 3.0.3. Tale immagine può essere creata con il comando:
 ```Shell
 make openssl-build
+```
+o in alternativa su Windows:
+```Shell
+docker build -t node-openssl ./image
 ```
 L'esecuzione di questo comando è molto lunga e impiega all'incirca 10-15 minuti a seconda delle potenzialità della macchina. Costruita l'immagine, a questo punto, è possibile avviare l'applicazione, in modalità production, operando in sequenza i due comandi:
 ```Shell
 make build-prod
 make up-prod
+```
+o in alternativa su windows:
+```Shell
+docker-compose -f docker-compose.prod.yaml build
+docker-compose -f docker-compose.prod.yaml up
 ```
 ## Testing
 Per facilitare il testing in fase di sviluppo e, per fornire a chi vuole iniziare a usare l'applicazione uno scenario pre-costituito, è possibile utilizzare la collection postman [PROGETTOPATEST](PROGETTOPATEST.postman_collection.json). Non tutte le richieste presenti nella collection hanno associati dei test, in quanto alcune servono solo a preparare lo scenario di test per altre richieste. Per poter eseguire lo scenario di test della collection è necessario importarla su postman cliccando su "Import"
@@ -433,6 +442,34 @@ e poi eseguire con
 ```Shell
 ./test.sh
 ```
+Nel caso in cui si fosse in ambiente Windows, per eseguire la serie di tre test citata, è necessario utilizzare i comandi successivi, che dovranno avere come output, quello riportato subito dopo:
+
+- KeyErrorTest
+```Shell 
+curl -X POST -F file=.\TestFiles\Diario_degli_esperimenti.pdf -s -w "\n%{http_code}\n" localhost:8080/sign/start -H "Accept: application/json" -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY" 
+```
+
+che dovrebbe restituire:
+
+```JSON
+{"error":"Error! Form payload is incorrect"}
+400
+```
+
+- DownloadSignerTest
+```Shell
+curl -O -J -s -w "%{http_code}\n" localhost:8080/download/1 -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJMb3JlbnpvIFNvcHJhbnpldHRpIiwiY291bnRyeU5hbWUiOiJJVCIsInN0YXRlT3JQcm92aW5jZU5hbWUiOiJBTiIsImxvY2FsaXR5TmFtZSI6IkZpbG90dHJhbm8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW8xQG1haWxpbmF0b3IuY29tIiwic2VyaWFsTnVtYmVyIjoiTFNQRFJOOTRUMzBENTQyVSIsImRuUXVhbGlmaWVyIjoiMjAxNzUwMDc2OTMiLCJTTiI6IlNvcHJhbnpldHRpIiwicm9sZSI6InVzZXIifQ.mAdEhfnLfGdlDSHiaz7X1dzDd1P-qvj9e82itMRGyro"
+```
+
+che dovrebbe scaricare il file .p7m nella cartella attuale e restituire il codice 200. Per eseguire l'ultimo test eliminare il file appena scaricato.
+
+- DownloadApplicantTest
+```Shell
+curl -O -J -s -w "%{http_code}\n" localhost:8080/download/1 -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTU4MTc0MTMsImV4cCI6MTY4NzM1MzQxMywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoianJvY2tldEBleGFtcGxlLmNvbSIsImNvbW1vbk5hbWUiOiJBZHJpYW5vIE1hbmNpbmkiLCJjb3VudHJ5TmFtZSI6IklUIiwic3RhdGVPclByb3ZpbmNlTmFtZSI6IkZNIiwibG9jYWxpdHlOYW1lIjoiRmVybW8iLCJvcmdhbml6YXRpb25OYW1lIjoiQUNNRSIsIm9yZ2FuaXphdGlvbmFsVW5pdE5hbWUiOiJJVCIsImVtYWlsQWRkcmVzcyI6ImRlbW9AbWFpbGluYXRvci5jb20iLCJzZXJpYWxOdW1iZXIiOiJNTkNEUk44MlQzMEQ1NDJVIiwiZG5RdWFsaWZpZXIiOiIyMDE3NTAwNzY5MyIsIlNOIjoiTWFuY2luaSIsInJvbGUiOiJ1c2VyIn0.PzK1TPpQSLF5cN1stO6hczyuQVG4v2Nq_XLqQizVGiY"
+```
+
+che dovrebbe scaricare il file .p7m nella cartella attuale e restituire il codice 200.
+
 Come nota finale si prega di fare tutti i test citati, solo dopo il primo avvio dell'applicazione.
 
 ## Note di sviluppo
