@@ -1,4 +1,4 @@
-FROM node:lts-stretch-slim
+FROM node:lts-slim
 
 RUN apt update && apt-get install perl -y &&  \
 apt-get install gcc -y && apt install make -y && apt-get install wget -y
